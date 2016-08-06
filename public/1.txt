@@ -1,0 +1,5 @@
+HTTP/1.0 200 OK
+Cache-Control: no-cache
+Content-Type:  application/json
+
+{"id":"1","ad_account_id":"1","date":"2016-07-05","advertising_cost":"12.261","click_amount":"1231","checkout":"123","transformation_cost":"1231","trade_money":"23123","transaction_orders":"123","change_proportion":"123","site":"www.baidu.com"}
