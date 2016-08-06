@@ -19,14 +19,14 @@ class Common  {
         //$this->data['htmlheader'] = new Htmlheader;
 
         $this->data['sidebar'] = [
-            'home'         => ['show' => false , 'active' => false],
-            'advertising'  => ['show' => false , 'active' => false],
-            'ad_acount'    => ['show' => false , 'active' => false],
-            'ad_table'     => ['show' => false , 'active' => false],
+            'home'         => ['show' => false , 'active' => false , 'url' => 'home'],
+            'ad_user'      => ['show' => false , 'active' => false , 'url' => 'user'],
+            'ad_acount'    => ['show' => false , 'active' => false , 'url' => 'account'],
+            'ad_table'     => ['show' => false , 'active' => false , 'url' => 'table'],
         ];
 
         if($user->is('responsible')){
-            $this->setVisable('sidebar',['home','advertising','ad_acount','ad_table']);
+            $this->setVisable('sidebar',['home','ad_user','ad_acount','ad_table']);
         }elseif($user->is('advertising')){
             $this->setVisable('sidebar',['home','ad_table']);
         }

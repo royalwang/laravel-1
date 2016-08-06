@@ -11,22 +11,22 @@
 |
 */
 
-
 Route::auth();
 
 Route::group(['middleware' => 'auth'], function () {
-
+    
 	Route::get('/',            'HomeController@index');
     Route::get('/home',        'HomeController@index');
     Route::get('/user',        'UserController@index');
-    Route::get('/adaccount',   'ADAccountController@index');
+    Route::get('/account',     'AccountController@index');
+    Route::get('/table',       'TableController@index');
 
     Route::post('/ajax/adtable'          , 'Ajax\ADTable@index');
     Route::post('/ajax/adtable/update'   , 'Ajax\ADTable@update');
 
     //test
-    Route::get('/ajax/adtable','Ajax\ADTable@index');
-    Route::get('/test','Ajax\ADTable@test');
+    Route::get('/ajax/adtable'  ,'Ajax\ADTable@index');
+    Route::get('/test'          ,'Ajax\ADTable@test');
 	    
 	
 });
