@@ -19,7 +19,11 @@
 				<tr>
 					<th width="35"></th>
 					<th width="180">date</th>
-					<th>name</th>
+					<th>ID</th>
+					<th>balance</th>
+					<th>information</th>
+					<th>user</th>
+					<th>status</th>
 					<th></th>
 				</tr>
 			</thead>
@@ -29,19 +33,26 @@
 	</div>
 	<div class="col-md-3">
 		<div class="add-user-form">
-        <form name="add-user">
-            <div class="form-group has-feedback">
-                <input type="text" class="form-control" placeholder="Name" name="name" value="{{ old('name') }}"/>
-                <span class="glyphicon glyphicon-user form-control-feedback"></span>
-            </div>
-            <div class="form-group has-feedback">
-                <input type="password" class="form-control" placeholder="Password" name="password"/>
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-            </div>
-            <div class="form-group has-feedback">
-                <input type="password" class="form-control" placeholder="Password Confirmation" name="password_confirmation"/>
-                <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
-            </div>
+        <form name="add-account">
+        	<div class="row">
+	        	<div class="col-md-5">
+	        		<div class="form-group has-feedback">
+		                <input type="text" class="form-control" placeholder="ID" name="id" value="{{ old('id') }}"/>
+		                <span class="glyphicon glyphicon-link form-control-feedback"></span>
+		            </div>
+		            <div class="form-group has-feedback">
+		                <input type="number" class="form-control" placeholder="Money" name="Money"/>
+		                <span class="glyphicon glyphicon-usd form-control-feedback"></span>
+		            </div>
+	        	</div>
+	        	<div class="col-md-7">
+	        		<div class="form-group has-feedback">
+		                <textarea class="form-control" placeholder="information" name="note"></textarea>
+		                <span class="glyphicon glyphicon-book form-control-feedback"></span>
+		            </div>
+	        	</div>
+        	</div>
+
             <div class="form-group">
                     <button id="add-user" onclick="addUser();return false;" type="submit" class="btn btn-primary btn-block btn-flat">submit</button>
             </div>
@@ -54,7 +65,11 @@
 <tr>  
     <td></td>  
     <td>{created_at}</td>  
-    <td>{name}</td>  
+    <td>{id}</td>  
+    <td>{money}</td> 
+    <td>{note}</td>
+    <th>{user}</th>
+    <th>{statu}</th>
     <td>
     	<span><a href=""><i class="fa fa-key fa-fw"></i></a></span>
     	<span><a href=""><i class="fa fa-table"></i></a></span>

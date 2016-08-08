@@ -1,4 +1,21 @@
 .c-container{
-	padding:20px;
+
 }
 
+@media (min-width: 992px){
+	.add-user-form{
+		padding-right:30px;
+		padding-top:30px;
+	}
+}
+
+
+.c-container table td{
+	text-align: center;
+}
+
+.add-user-form textarea{
+	overflow-y: auto;
+	resize: vertical;
+	height: 69px;
+}

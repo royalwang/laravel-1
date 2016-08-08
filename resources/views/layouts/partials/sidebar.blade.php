@@ -34,7 +34,7 @@
             <li class="header">{{ trans('message.header') }}</li>
             <!-- Optionally, you can add icons to the links -->
                 @foreach( $common->sidebar as $key=>$value )
-                <li class="{{ ($value['active']?'active':'') }}"><a href="{{ url($value['url']) }}"><i class='fa fa-link'></i> <span>{{ trans('sidebar.' .$key ) }}</span></a></li>
+                <li class="{{ ($value['active']?'active':'') }}"><a href="{{ url($value['url']) }}"><i class='fa {{ $value['icon'] }}'></i> <span>{{ trans('sidebar.' .$key ) }}</span></a></li>
                 @endforeach
 
 

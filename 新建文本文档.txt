@@ -1,0 +1,15 @@
+RewriteEngine on
+# 下行中把“wphostz.com”改为您自己的域名
+RewriteCond %{HTTP_HOST} ^(www.)?wphostz.com$
+# 下行中将“subfolder”修改为您要将主域名指向的子目录
+RewriteCond %{REQUEST_URI} !^/subfolder/
+# 以下两行不要修改
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# 下行中将“subfolder”修改为您要将主域名指向的子目录
+RewriteRule ^(.*)$ /subfolder/$1
+# 下行中把“wphostz.com”改为您自己的域名
+RewriteCond %{HTTP_HOST} ^(www.)?wphostz.com$
+# 下行中将“subfolder”修改为您要将主域名指向的子目录，如果您的
+# 首页的文件不是index.php，则修改为您自己的，如index.html
+RewriteRule ^(/)?$ subfolder/index.php [L]
