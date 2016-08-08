@@ -14,9 +14,7 @@
 	
 	
 <div class="adtable">	
-
-	<table>
-
+	<table class="form-table">
 		<thead>
 			<td class="current_date">
 				<div id="current_date">{{ $date['year'].' / '.$date['month'] }}</div>

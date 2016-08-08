@@ -11,23 +11,47 @@
 |
 */
 
-Route::auth();
+Route::get('login', 'Auth\AuthController@showLoginForm');
+Route::post('login', 'Auth\AuthController@login');
+Route::get('logout', 'Auth\AuthController@logout');
 
-Route::group(['middleware' => 'auth'], function () {
+// Registration Routes...
+
+
+// Password Reset Routes...
+//Route::get('password/reset/{token?}', 'Auth\PasswordController@showResetForm');
+//Route::post('password/email', 'Auth\PasswordController@sendResetLinkEmail');
+//Route::post('password/reset', 'Auth\PasswordController@reset');
+
+
+Route::group(['middleware' => 'auth'], function () {    
     
-	Route::get('/',            'HomeController@index');
-    Route::get('/home',        'HomeController@index');
-    Route::get('/user',        'UserController@index');
-    Route::get('/account',     'AccountController@index');
-    Route::get('/table',       'TableController@index');
+	Route::get('/',                         'HomeController@index');
+    Route::get('/home',                     'HomeController@index');
+    Route::get('/table',                    'TableController@index');
+    //AJAX
+    Route::post('/ajax/adtable',            'Ajax\ADTable@index');
+    
+    Route::group(['middleware' => 'user_group:responsible'] ,function(){
+        Route::get('/users',                'UsersController@index');
+        Route::get('/account',              'AccountController@index');
+        //AJAX
+        Route::post('/ajax/users',          'Ajax\Users@index');
+        Route::post('/ajax/users/add',      'Ajax\Users@add');
+        
+    });
 
-    Route::post('/ajax/adtable'          , 'Ajax\ADTable@index');
-    Route::post('/ajax/adtable/update'   , 'Ajax\ADTable@update');
+    Route::group(['middleware' => 'user_group:advertising'] ,function(){
+        //AJAX
+        Route::post('/ajax/adtable/update', 'Ajax\ADTable@update');
+    });
 
     //test
-    Route::get('/ajax/adtable'  ,'Ajax\ADTable@index');
-    Route::get('/test'          ,'Ajax\ADTable@test');
+    Route::get('/ajax/adtable'    ,'Ajax\ADTable@index');
+    Route::get('/test'            ,'Ajax\ADTable@test');
+    Route::get('/ajax/users/add'  ,'Ajax\Users@add');
 	    
+
 	
 });
 

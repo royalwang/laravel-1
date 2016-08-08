@@ -8,11 +8,11 @@ use App\Http\Requests;
 
 use Common;
 
-class UserController extends Controller
+class UsersController extends Controller
 {
 	public function index(Request $request){
 		Common::setActive('sidebar','ad_user');
-		return view('user');
+		return view('users');
 	}
     
 }

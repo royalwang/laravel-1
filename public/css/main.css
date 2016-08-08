@@ -8,3 +8,58 @@ a{
     cursor: pointer;
 }
 
+.left{
+	float:felt;
+}
+.right{
+	float:right;
+}
+
+
+table.form-table{
+    width: 100%;
+    background-color: #fff;
+    z-index: 1;
+}
+.form-table td,.form-table th{
+    height:30px;
+    line-height: 30px;
+    padding: 0 5px;
+    border-left: 1px solid #ccc;
+}
+.form-table td:first-child,.form-table th:first-child{
+    border-left: none;
+}
+.form-table th{
+    text-align: center;
+}
+
+.form-table tbody{
+    border: 1px solid #000;
+    border-top:none; 
+}
+.form-table thead{
+    border: 1px solid #000;
+    border-bottom:none; 
+}
+.form-table thead tr{
+    border: none;
+    background-color: #000;
+    color: #fff;
+}
+
+.form-table tr{
+    border: 1px solid #000;
+    border-bottom: 1px solid #ccc;
+}
+
+.form-table tr:last-child{
+    padding-bottom: 1px;
+    border-bottom: none;
+}
+
+
+
+.form-table tbody tr:hover{
+    background: #efefef;
+}

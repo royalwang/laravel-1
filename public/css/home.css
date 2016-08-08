@@ -10,57 +10,7 @@
     top: 0;
     background: #fff;
 }
-.adtable-row{
 
-}
-
-.adtable table{
-    width: 100%;
-    background-color: #fff;
-    z-index: 1;
-}
-.adtable td,.adtable th{
-    height:30px;
-    line-height: 30px;
-    padding: 0 5px;
-    border-left: 1px solid #ccc;
-}
-.adtable td:first-child,.adtable th:first-child{
-    border-left: none;
-}
-.adtable th{
-    text-align: center;
-}
-
-.adtable tbody{
-    border: 1px solid #000;
-    border-top:none; 
-}
-.adtable thead{
-    border: 1px solid #000;
-    border-bottom:none; 
-}
-.adtable thead tr{
-    border: none;
-    background-color: #000;
-    color: #fff;
-}
-
-.adtable tr{
-    border: 1px solid #000;
-    border-bottom: 1px solid #ccc;
-}
-
-.adtable tr:last-child{
-    padding-bottom: 1px;
-    border-bottom: none;
-}
-
-
-
-.adtable tbody tr:hover{
-    background: #efefef;
-}
 
 .adtable-footer-header{
     border-top: 1px solid #000;

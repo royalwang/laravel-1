@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\TableColumnName;
 
-class ADTable extends Controller
+class ADTable extends AjaxController
 {
 	protected $default_data = array(
 		'e'      => 0,

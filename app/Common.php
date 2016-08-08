@@ -20,7 +20,7 @@ class Common  {
 
         $this->data['sidebar'] = [
             'home'         => ['show' => false , 'active' => false , 'url' => 'home'],
-            'ad_user'      => ['show' => false , 'active' => false , 'url' => 'user'],
+            'ad_user'      => ['show' => false , 'active' => false , 'url' => 'users'],
             'ad_acount'    => ['show' => false , 'active' => false , 'url' => 'account'],
             'ad_table'     => ['show' => false , 'active' => false , 'url' => 'table'],
         ];

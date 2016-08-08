@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'password','users_group_id'
+        'name', 'password' 
     ];
 
     protected $table = 'users';
@@ -54,6 +54,7 @@ class User extends Authenticatable
     public function is($value = '')
     {
         $group = $this->getGroup();
+        if($group == null) return null;
         if(empty($value)) return $group->code;
 
         if($group->code == $value){
