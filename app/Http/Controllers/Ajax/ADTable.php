@@ -6,15 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\TableColumnName;
+use App\Libs\FormulaCalculator;
 
 class ADTable extends AjaxController
 {
-	protected $default_data = array(
-		'e'      => 0,
-    	'e_msg'  => '',
-    	'd'      => array(),
-    );
-
     function index(Request $request){
 
         $data        = $this->default_data;
@@ -24,6 +19,9 @@ class ADTable extends AjaxController
         $date_start  = strtotime($date .'-1')-1;
         $date_end    = strtotime($date .'-' . $num)+1;
 
+        $id = 1; 
+        
+
         if(empty($id) || empty($date)) {
             $data['e'] = 1;
             $data['e_msg'] = 'code or month miss!';
@@ -31,8 +29,9 @@ class ADTable extends AjaxController
         }   
 
         $user = $request->user();
+        $array = array();
         if($user->is('responsible')){
-           $data['d'] = $user->child->find($id)->adTable()
+          $array = $user->child->find($id)->adTable()
                             ->selectRaw('date,sum(advertising_cost) as advertising_cost, 
                                         sum(click_amount) as click_amount, 
                                         sum(transformation_cost) as transformation_cost, 
@@ -46,28 +45,52 @@ class ADTable extends AjaxController
                             ->groupBy('date')
                             ->get();
 
-            return response()->json($data); 
         }else{
-            
-            $data['d'] = $user->adTable()
+            $array = $user->adTable()
                 ->where('ad_account_id',$id)
                 ->where('date','>', $date_start)
                 ->where('date','<', $date_end)
                 ->get();    
-     
-            return response()->json($data); 
         }
 
+        $col_names = TableColumnName::getUserStyle('ad_table',$user);
+        $new_array = array();
 
+        foreach($array as $key=>$table){
+            $new_array[$key]['date'] = $table->date;
+            $new_array[$key]['id']   = $table->id;
+            foreach($col_names as $col_name){
+                $new_array[$key][$col_name['key']] = FormulaCalculator::make($col_name['value'],$table);
+            }
+        }
+
+     
+        $data['d'] = $new_array;
+
+        return response()->json($data); 
     }
 
     function update(Request $request){
-        if($request->user()->is('responsible')) return response('Unauthorized.', 401);
+        $user = $request->user();
+        if($user->is('responsible')) return response('Unauthorized.', 401);
 
     	$data = $this->default_data;
 
+        // data change key To array
+        $new_fill_data = array();
+        $col_names     = TableColumnName::getUserStyleByKeyValue('ad_table',$user);
+        $fill_data     = $request->all();
+        
+        foreach($fill_data as $key=>$value){
+            if(isset($col_names[$key]))
+                $new_fill_data[$col_names[$key]] = $value;
+        }
+
+        $adatable = '';
+
+        //add or update
     	if($request->id == 0){
-			$account = $request->user()->adAccount()->find($request->ad_account_id);
+			$account = $user->adAccount()->find($request->ad_account_id);
 
 			if($account == null){
 				$data['e'] = 1; $data['e_msg'] = 'no account!';
@@ -75,38 +98,48 @@ class ADTable extends AjaxController
 			}else{
 				
 				$date = str_replace(array(' ','/'), array('','-'), $request->date);
+                $date = empty($date)? date('Y-m-d'): $date;
 
-				$adatable = $account->adTable()
+                $adatable = $account->adTable()
                     ->where('date',strtotime($date))
                     ->first();
 
-				if($adatable == null){
-					$table = new \App\Advertising\ADTable($request->all());
-					$table->date = strtotime($date);
-					$table->ad_account_id = $request->ad_account_id;
-					$table->save();
-				}else{
-					if(!$adatable->fill($request->all())->save()){
-						$data['e'] = 1; $data['e_msg'] = 'save faild!';
-					}
-				}
+                if($adatable == null){
+                    $adatable = new \App\Advertising\ADTable($new_fill_data);
+                    $adatable->date = strtotime($date);
+                    $adatable->ad_account_id = $request->ad_account_id;
+                    $adatable->save();
+                }else{
+                    $adatable->fill($request->all())->save();
+                }
+
 			}
 
     	}else{
-    		$adatable = $request->user()->adTable()->find($request->id);
+    		$adatable = $user->adTable()->find($request->id);
 
 			if($adatable == null){
 				$data['e'] = 1; $data['e_msg'] = 'no table!';
 				return response()->json($data);
 			}
-			if(!$adatable->fill($request->all())->save()){
-				$data['e'] = 1; $data['e_msg'] = 'save faild!';
-			}
+
+			$adatable->fill($new_fill_data)->save();
     	}
-    	
+
+        //success ,array to key
+        $col_names = TableColumnName::getUserStyle('ad_table',$user);
+        $new_array = array();
+        foreach($col_names as $col_name){
+            $new_array['date'] = $adatable->date;
+            $new_array['id']   = $adatable->id;
+            $new_array[$col_name['key']] = FormulaCalculator::make($col_name['value'],$adatable);
+        }
+        $data['d'] = $new_array;
     	return response()->json($data);
     }
 
-
+    public function test(Request $request){
+        print_r($request->all());
+    }
     
 }

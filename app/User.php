@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\UserGroup;
 use App\Advertising\ADAccount;
 use App\Advertising\ADTable;
+use App\Advertising\ADTableStyle;
 
 
 class User extends Authenticatable
@@ -50,6 +51,9 @@ class User extends Authenticatable
         return $this->hasManyThrough(ADTable::class,ADAccount::class,'users_id','ad_account_id');
     }
    
+    public function adTableStyle(){
+        return $this->hasOne(ADTableStyle::class,'users_id','id');
+    }
 
     public function is($value = '')
     {

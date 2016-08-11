@@ -28,6 +28,7 @@
     <![endif]-->
 
     <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="{{ asset('/js/common.js') }}"></script>
     <link href="{{ asset('/css/main.css') }}" rel="stylesheet">
 
     @section('style')

@@ -12,9 +12,7 @@ class ADAccount extends AjaxController
 {
 
     function index(Request $request){
-        $data = $this->default_data;
-
-        return response()->json($data); 
+        return \App\Advertising\ADAccount::orderBy('created_at','desc')->paginate(30);
     }
 
     function update(Request $request){
@@ -23,7 +21,20 @@ class ADAccount extends AjaxController
 
     function add(Request $request){
         $data = $request->all();
+        $validator = Validator::make($data, [
+            'code' => 'required|max:255|unique:ad_account',
+        ]);
 
+        if ($validator->fails()) {
+           $data = $this->default_data;
+           $data['e'] = 1;
+           $data['e_msg'] = 'data error';
+           return response()->json($validator->errors()->all());   
+        } 
+        $account = \App\Advertising\ADAccount::create($data);
+
+        $data = $this->default_data;
+        $data['d'][] = $account;
         return response()->json($data); 
         
     }

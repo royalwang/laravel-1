@@ -11,6 +11,13 @@ use App\Advertising\ADAccountStatus;
 class ADAccount extends Model
 {
 	protected $table = 'ad_account';
+    protected $fillable = array(
+        'code',
+        'money',
+        'note',
+        'users_id',
+        'ad_account_status_id'
+    );
 
 	public function user(){
 		return $this->belongsTo(User::class);

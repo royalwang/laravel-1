@@ -57,19 +57,7 @@ class HomeController extends Controller
 			return $date;
 		}
 		private function getThead(){
-			$column_name = array();
-			foreach(TableColumnName::get('ad_table') as $value){
-				if($value == 'date' || $value == 'id'){
-					$column_name[$value] = array(
-						'type'=>'text',
-					);
-				}else{
-					$column_name[$value] = array(
-						'type'=>'input',
-					);
-				}
-			}
-			return $column_name;
+			return TableColumnName::getUserStyle('ad_table',$this->user);
 		}
 
 		private function getSwitchTab(){

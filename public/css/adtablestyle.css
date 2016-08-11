@@ -1,0 +1,87 @@
+
+#style-col-body a{
+	width: 25px;
+	height:25px;
+	display: inline-block;
+	text-align: center;
+	color: #000;
+}
+
+#style-col-body tr:first-child a.up,
+#style-col-body tr:last-child a.down
+{
+	color:grey;
+	cursor: default;
+}
+
+.default-col > span{
+	float: left;
+	border:1px solid #000;
+	display: block;
+	width: 100%;
+	margin: 5px 0;
+	padding: 5px 5px 5px 50px;
+	background-color: #fff; 
+	position: relative;
+}
+.default-col > span > div{
+	position: absolute;
+	left:10px;
+	top:0;
+	height: 100%;
+	line-height: 31px;
+}
+.default-col span a.default-add{
+	position: absolute;
+	display: block;
+	right: 6px;
+	top: 6px;
+	height: 20px;
+	width: 20px;
+	color: #000;
+	text-align: center;
+}
+
+#style-col-body input{
+	padding: 2px 5px 2px 10px;
+	margin: 0;
+	height: 35px;
+	width: 100%;
+	border: none;
+}
+
+.form-table td{
+	height: 35px;
+	padding: 0;
+}
+
+.form-table tfoot td{
+	height: 50px;
+}
+
+.form-table tfoot{
+	border-bottom: 1px solid #000;
+	background-color: #000;
+}
+.form-table tfoot tr{
+	position: relative;
+}
+.form-table tfoot button{
+	border: none;
+	background-color: #fff;
+	float: right;
+	margin: 0 10px;
+	padding: 0 15px;  
+}
+tfoot .help{
+	width: 25px;
+	height:25px;
+	background-color: #fff;
+	border-radius: 15px;
+	display: block;
+	float: left;
+	text-align: center;
+	line-height: 25px;
+	color: #000;
+	margin: 3px 0 0 20px; 
+}

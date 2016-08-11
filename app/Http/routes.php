@@ -28,8 +28,11 @@ Route::group(['middleware' => 'auth'], function () {
     
 	Route::get('/',                         'HomeController@index');
     Route::get('/home',                     'HomeController@index');
-    Route::get('/table',                    'TableController@index');
+    //Route::get('/table',                    'TableController@index');
+    Route::get('/tablestyle',               'ADTableStyleController@index');
+
     //AJAX
+    Route::post('/ajax/adtablestyle',       'Ajax\ADTableStyle@index');
     Route::post('/ajax/adtable',            'Ajax\ADTable@index');
     
     Route::group(['middleware' => 'user_group:responsible'] ,function(){
@@ -38,6 +41,8 @@ Route::group(['middleware' => 'auth'], function () {
         //AJAX
         Route::post('/ajax/users',          'Ajax\Users@index');
         Route::post('/ajax/users/add',      'Ajax\Users@add');
+        Route::post('/ajax/account',        'Ajax\ADAccount@index');
+        Route::post('/ajax/account/add',        'Ajax\ADAccount@add');
         
     });
 
@@ -48,8 +53,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     //test
     Route::get('/ajax/adtable'    ,'Ajax\ADTable@index');
-    Route::get('/test'            ,'Ajax\ADTable@test');
     Route::get('/ajax/users/add'  ,'Ajax\Users@add');
+    Route::get('/ajax/account'    ,'Ajax\ADAccount@index');
+    Route::get('/test'            ,'Ajax\ADTable@update');
 	    
 
 	

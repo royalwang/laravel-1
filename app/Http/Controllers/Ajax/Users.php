@@ -29,7 +29,9 @@ class Users extends AjaxController
             'password' => 'required|min:6|confirmed',
         ]);
 
-        if ($validator->fails())  return response()->json($data); 
+        if ($validator->fails()) {
+            return response()->json($this->default_data); 
+        } 
         
         $user = new User([
             'name' => $data['name'],

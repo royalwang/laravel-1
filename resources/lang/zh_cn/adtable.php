@@ -18,7 +18,13 @@ return [
         'site'                 => '网站',
         'recharge'             => '充值',
         'balance'              => '余额',
+        'no_account'           => '当前没有账号',
 
+
+        'ad_table_style'             => '列表样式',
+        'ad_table_style_colname'     => '自定义列表名称',
+        'ad_table_style_colvalue'    => '自定义列表值',
+        'ad_table_style_colsort'     => '排序',
 
 
 

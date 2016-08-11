@@ -28,25 +28,44 @@
 		</table>
 	</div>
 	<div class="col-md-3">
-		<div class="add-user-form">
-        <form name="add-user">
-            <div class="form-group has-feedback">
-                <input type="text" class="form-control" placeholder="Name" name="name" value="{{ old('name') }}"/>
-                <span class="glyphicon glyphicon-user form-control-feedback"></span>
-            </div>
-            <div class="form-group has-feedback">
-                <input type="password" class="form-control" placeholder="Password" name="password"/>
-                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-            </div>
-            <div class="form-group has-feedback">
-                <input type="password" class="form-control" placeholder="Password Confirmation" name="password_confirmation"/>
-                <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
-            </div>
-            <div class="form-group">
-                    <button id="add-user" onclick="addUser();return false;" type="submit" class="btn btn-primary btn-block btn-flat">submit</button>
-            </div>
-        </form>
-        </div>
+		<div class="user-right">
+			<div class="row">
+				<div class="col-md-12">
+			        <form name="add-user">
+				        <h4>add_new_account</h4>
+			            <div class="form-group has-feedback">
+			                <input type="text" class="form-control" placeholder="Name" name="name" value="{{ old('name') }}"/>
+			                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+			            </div>
+			            <div class="form-group has-feedback">
+			                <input type="password" class="form-control" placeholder="Password" name="password"/>
+			                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+			            </div>
+			            <div class="form-group has-feedback">
+			                <input type="password" class="form-control" placeholder="Password Confirmation" name="password_confirmation"/>
+			                <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+			            </div>
+			            <div class="form-group">
+			                    <button id="add-user" onclick="addUser();return false;" type="submit" class="btn btn-primary btn-block btn-flat">submit</button>
+			            </div>  
+			        </form>
+				       
+			    </div>    
+	        </div>
+	        <div class="row">
+		    	<div class="col-md-12">
+		    		<h4>user_bat</h4>
+		    		<div class="row">
+			    		<div class="col-md-6">
+			    			<button id="add-user" onclick="delUser();return false;" type="submit" class="btn btn-primary btn-block btn-flat">删除所有用户</button>
+			    		</div>	
+			    		<div class="col-md-6">	
+			    			<button id="add-user" onclick="resetUser();return false;" type="submit" class="btn btn-primary btn-block btn-flat">重置用户权限</button>
+			    		</div>	
+		    		</div>	
+		    	</div>
+		    </div>
+	    </div>
 	</div>
 </div>	
 

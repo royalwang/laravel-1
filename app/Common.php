@@ -19,16 +19,17 @@ class Common  {
         //$this->data['htmlheader'] = new Htmlheader;
 
         $this->data['sidebar'] = [
-            'home'         => ['show' => false , 'active' => false , 'url' => 'home' , 'icon'=> 'fa-table'],
-            'ad_user'      => ['show' => false , 'active' => false , 'url' => 'users' , 'icon'=>'fa-users'],
-            'ad_account'    => ['show' => false , 'active' => false , 'url' => 'account', 'icon'=> 'fa-list-alt'],
-            'ad_table'     => ['show' => false , 'active' => false , 'url' => 'table' , 'icon' => 'fa-bar-chart'],
+            'home'        => ['show' => true , 'active' => false , 'url' => 'home' , 'icon'=> 'fa-table'],
+            'ad_user'     => ['show' => false , 'active' => false , 'url' => 'users' , 'icon'=>'fa-users'],
+            'ad_account'  => ['show' => false , 'active' => false , 'url' => 'account', 'icon'=> 'fa-list-alt'],
+            'ad_table_style' => ['show' => false , 'active' => false , 'url' => 'tablestyle' , 'icon' => 'fa-bar-chart'],
+            'setting'     => ['show' => true , 'active' => false , 'url' => 'setting' , 'icon' => 'fa-cog'],
         ];
 
         if($user->is('responsible')){
-            $this->setVisable('sidebar',['home','ad_user','ad_account','ad_table']);
+            $this->setVisable('sidebar',['home','ad_user','ad_account','ad_table_style']);
         }elseif($user->is('advertising')){
-            $this->setVisable('sidebar',['home','ad_table']);
+            $this->setVisable('sidebar',['home','ad_table_style']);
         }
           
     }

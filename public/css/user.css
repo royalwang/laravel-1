@@ -3,9 +3,8 @@
 }
 
 @media (min-width: 992px){
-	.add-user-form{
+	.account-right,.user-right{
 		padding-right:30px;
-		padding-top:30px;
 	}
 }
 
@@ -14,7 +13,7 @@
 	text-align: center;
 }
 
-.add-user-form textarea{
+.account-right textarea{
 	overflow-y: auto;
 	resize: vertical;
 	height: 69px;

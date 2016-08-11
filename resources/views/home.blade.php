@@ -11,8 +11,12 @@
 
 
 @section('main-content')
-	
-	
+<div class="cover">
+	<div class="cover-bg"></div>
+	<div class="cover-content">
+		<span></span>
+	</div>
+</div>	
 <div class="adtable">	
 	<table class="form-table">
 		<thead>
@@ -22,7 +26,7 @@
 				<input class="month" type="" name="month" value="{{ $date['month'] }}" maxlength="2">
 			</td>
 		@foreach($table_column_name as $key=>$v)
-			<th class="db-{{ $key }}">{{ trans('adtable.'. $key) }}</th>
+			<th class="db-{{ $key }}">{{ $v['name'] }}</th>
 		@endforeach
 		</thead>
 
@@ -31,12 +35,12 @@
 			<tr data-date="{{ $i }}" data-id="0">
 				<td class="current_date">{{ $i }}</td>
 				@foreach($table_column_name as $key=>$v)
-				<td class="db-{{ $key }}" data-name="{{ $key }}">
+				<td class="db-{{ $key }}" data-name="{{ $v['key'] }}">
 					<div></div>
-					@if ($v['type'] == 'input')
-					<input autocomplete="off" name="{{ $key }}" value="" />
+					@if ( $v['edit'] == true )
+					<input autocomplete="off" name="{{ $v['key'] }}" value="" />
 					@else
-					<input name="{{ $key }}" value="" disabled="disabled" />
+					<input name="{{ $v['key'] }}" value="" disabled="disabled" />
 					@endif
 				</td>
 				@endforeach
@@ -56,25 +60,71 @@
 
 <script type="text/javascript">
 
-
+var $cover = $('.cover');
+var $cover_bg = $('.cover-bg');
+var $cover_content = $('.cover-content');
 
 var $ajax_btn = $('.adtable-footer-header li');
 var $body = $('.adtable-content-center');
 var $foot = $('.adtable tfoot');
 var $first_load = $ajax_btn.eq(0);
 
-var table_edit = {{ $table_edit }}
+var table_edit = {{ $table_edit }};
+var loading_img = '<img src="{{ asset('img/loading.gif') }}">';
 var current_data = [];
 var current_switch_id = $first_load.attr('data-id');
 var current_eidt_row = -1;
 var current_date = $('#current_date').html();
 
 
-$first_load.addClass('active');
-getTableData();
-if(table_edit == 1) bindDBclick();
-bindTab();
-dateClick();
+if(current_switch_id == undefined){
+	coverShow('{{ trans('adtable.no_account') }}')
+}else{
+	$first_load.addClass('active');
+	getTableData();
+
+	if(table_edit == 1) bindDBclick();
+	bindTab();
+	dateClick();
+}
+
+
+coverInit()
+$(window).resize(coverInit);
+
+
+function coverShow(html ='',sw = true){
+    if(sw == true)
+        $cover.addClass('show');
+    else
+        $cover.removeClass('show');
+    $cover_content.children('span').html(html);
+}
+
+function coverInit(){
+    
+
+    var cover_width = $cover.next().outerWidth();
+    var cover_height = $cover.next().outerHeight();
+
+    var content_width = $('.cover-content').outerWidth();
+    var content_height = $('.cover-content').outerHeight();
+
+    $cover_bg.css({
+        'width':cover_width,
+        'height':cover_height,
+    });
+
+    $cover_content.css({
+        'left': (cover_width-content_width)/2 + 'px',
+        'top': (cover_height-content_height)/2-100 + 'px',
+    })
+
+}
+
+
+
+
 
 function dateClick(){
 	$('.current_date').click(function() {
@@ -144,13 +194,15 @@ function addToTable(obj){
 }
 
 function addToTableRow(obj,d){
+	if(! d.id) return;
 	obj.attr('data-id',d.id);
 	@foreach($table_column_name as $key=>$v)
-	obj.find('td[data-name="{{ $key }}"]').children('div').html(d.{{ $key }});
+	obj.find('td[data-name="{{ $v['key'] }}"]').children('div').html(d['{{ $v['key'] }}']);
 	@endforeach
 }
 
 function getTableData(){
+	coverShow(loading_img);
 	clearTable();
 	removeEdit();
 
@@ -166,11 +218,16 @@ function getTableData(){
 			}else{
 				addToTable(e['d']);				
 			}
+		},
+		complete:function(){
+			coverShow('',false);
 		}
 	});
+	
 }
 
 function updateTableData(obj,new_data){
+	coverShow(loading_img);
 	$.ajax({
 		url: "{{ asset('/ajax/adtable/update') }}",
 		data: new_data,
@@ -179,11 +236,12 @@ function updateTableData(obj,new_data){
 		headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')} ,
 		success: function(e){
 			if(e['e'] != 1 || e != undefined){
-				addToTableRow(obj,new_data);
+				addToTableRow(obj,e['d']);
 			}
 		},
 		complete: function(){
 			current_eidt_row = -1;
+			coverShow('',false);
 		}
 	});
 }
@@ -220,8 +278,14 @@ function listernKeyCode(){
         $(this).children('td[class^="db-"]').each(function(){
         	var o = $(this).children('div').html();
         	var n = $(this).children('input').val();
-        	if(o != n) status = true;
-         	update_data[$(this).attr('data-name')] = $(this).children('input').val();
+        	if(o != n) {
+        		update_data[$(this).attr('data-name')] = $(this).children('input').val();
+        		status = true;
+        	}
+
+        	
+         		
+        	
         });
 
 		update_data['id'] = $(this).attr('data-id');

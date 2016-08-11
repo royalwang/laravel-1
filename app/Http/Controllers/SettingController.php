@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
-class TableController extends Controller
+class SettingController extends Controller
 {
-    //
+    public function index(){}
 }
