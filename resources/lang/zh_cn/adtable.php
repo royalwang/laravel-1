@@ -26,6 +26,10 @@ return [
         'ad_table_style_colvalue'    => '自定义列表值',
         'ad_table_style_colsort'     => '排序',
 
+        'ad_account_style_title'     => '账户排序与显示',
+        'ad_account_show'            => '常用显示账户ID',
+        'ad_account_hidden'          => '不显示账户ID',
+
 
 
 ];

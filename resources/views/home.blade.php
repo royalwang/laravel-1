@@ -11,20 +11,21 @@
 
 
 @section('main-content')
+
+<div id="fixed-header"><div id="fixed-header-content"></div></div>
 <div class="cover">
 	<div class="cover-bg"></div>
 	<div class="cover-content">
 		<span></span>
 	</div>
 </div>	
-<div class="adtable">	
+<div class="adtable">
 	<table class="form-table">
 		<thead>
-			<td class="current_date">
-				<div id="current_date">{{ $date['year'].' / '.$date['month'] }}</div>
+			<th class="current_date" width="">
 				<input class="year" type="" name="year" value="{{ $date['year'] }}" maxlength="4"> 
 				<input class="month" type="" name="month" value="{{ $date['month'] }}" maxlength="2">
-			</td>
+			</th>
 		@foreach($table_column_name as $key=>$v)
 			<th class="db-{{ $key }}">{{ $v['name'] }}</th>
 		@endforeach
@@ -74,7 +75,8 @@ var loading_img = '<img src="{{ asset('img/loading.gif') }}">';
 var current_data = [];
 var current_switch_id = $first_load.attr('data-id');
 var current_eidt_row = -1;
-var current_date = $('#current_date').html();
+var current_date = getDate();
+var head_status = false;
 
 
 if(current_switch_id == undefined){
@@ -85,12 +87,12 @@ if(current_switch_id == undefined){
 
 	if(table_edit == 1) bindDBclick();
 	bindTab();
-	dateClick();
 }
 
+coverInit();
 
-coverInit()
 $(window).resize(coverInit);
+$(window).resize(headShow);
 
 
 function coverShow(html ='',sw = true){
@@ -122,20 +124,17 @@ function coverInit(){
 
 }
 
+$('.current_date').unbind('keyup');
+$('.current_date').bind('keyup',function(event){
+	if(event.keyCode == "13"){
+		current_date = $(this).find('input[name=year]').val() + "/" + $(this).find('input[name=month]').val();
+		getTableData();
 
+	}
+});
 
-
-
-function dateClick(){
-	$('.current_date').click(function() {
-		$(this).addClass('edit');
-		$(this).bind('keyup',function(event){
-			$('.current_date').unbind('click');
-			if(event.keyCode == "13"){
-				window.location.reload();
-			}
-		})
-	});
+function getDate(){
+	return $('.current_date').find('input[name=year]').val() + "/" + $('.current_date').find('input[name=month]').val();
 }
 
 function removeEdit(){
@@ -221,6 +220,7 @@ function getTableData(){
 		},
 		complete:function(){
 			coverShow('',false);
+			headShow();
 		}
 	});
 	
@@ -242,6 +242,7 @@ function updateTableData(obj,new_data){
 		complete: function(){
 			current_eidt_row = -1;
 			coverShow('',false);
+			headShow();
 		}
 	});
 }
@@ -301,6 +302,50 @@ function listernKeyCode(){
     	current_eidt_row = -1;    
     }
 }
+
+function headShow(){
+	$('#fixed-header-content').html('');
+	$('#fixed-header-content').css({
+		width:$('.form-table thead').outerWidth() + 'px',
+	});
+
+	$('.form-table thead tr th').each(function(index, el) {
+		var div = $(this).clone();
+		div.css({
+			width: $(this).outerWidth(),
+		});
+
+		$('#fixed-header-content').append(div);
+	});
+	$('#fixed-header-content').show();
+
+}
+
+function headHide(){
+	$('#fixed-header-content').html('').hide();
+}
+
+$(window).trigger('resize');
+
+
+$(document).bind('mousewheel DOMMouseScroll', function(event, delta) {
+
+	var top = $('.form-table thead').offset().top;
+	var stop = $(document).scrollTop();
+
+	if(stop > top ){
+		
+		if(head_status != true){
+			headShow();
+		}
+		
+	}else{
+		head_status = false;
+		headHide();	
+	}
+});
+
+
 
 </script>
 	

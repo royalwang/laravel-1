@@ -26,29 +26,29 @@ Route::get('logout', 'Auth\AuthController@logout');
 
 Route::group(['middleware' => 'auth'], function () {    
     
-	Route::get('/',                         'HomeController@index');
-    Route::get('/home',                     'HomeController@index');
-    //Route::get('/table',                    'TableController@index');
-    Route::get('/tablestyle',               'ADTableStyleController@index');
+	Route::get('/'                             ,'HomeController@index');
+    Route::get('/home'                         ,'HomeController@index');
+    Route::get('/adtablestyle'                   ,'ADTableStyleController@index');
 
     //AJAX
-    Route::post('/ajax/adtablestyle',       'Ajax\ADTableStyle@index');
-    Route::post('/ajax/adtable',            'Ajax\ADTable@index');
+    Route::post('/ajax/adtablestyle'           ,'Ajax\ADTableStyle@index');
+    Route::post('/ajax/adtable'                ,'Ajax\ADTable@index');
     
     Route::group(['middleware' => 'user_group:responsible'] ,function(){
-        Route::get('/users',                'UsersController@index');
-        Route::get('/account',              'AccountController@index');
+        Route::get('/users'                    ,'UsersController@index');
+        Route::get('/account'                  ,'AccountController@index');
         //AJAX
-        Route::post('/ajax/users',          'Ajax\Users@index');
-        Route::post('/ajax/users/add',      'Ajax\Users@add');
-        Route::post('/ajax/account',        'Ajax\ADAccount@index');
-        Route::post('/ajax/account/add',        'Ajax\ADAccount@add');
+        Route::post('/ajax/users'              ,'Ajax\Users@index');
+        Route::post('/ajax/users/add'          ,'Ajax\Users@add');
+        Route::post('/ajax/account'            ,'Ajax\ADAccount@index');
+        Route::post('/ajax/account/add'        ,'Ajax\ADAccount@add');
         
     });
 
     Route::group(['middleware' => 'user_group:advertising'] ,function(){
         //AJAX
-        Route::post('/ajax/adtable/update', 'Ajax\ADTable@update');
+        Route::get('/adaccountstyle'           ,'ADAccountStyleController@index');
+        Route::post('/ajax/adtable/update'     ,'Ajax\ADTable@update');
     });
 
     //test

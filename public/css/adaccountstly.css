@@ -1,0 +1,10 @@
+.account-status-bg{
+    float: left;
+    padding: 5px 10px;
+    margin-right: 10px;
+    border-radius: 4px;
+}	
+
+.status{
+   border-radius: 3px;
+}

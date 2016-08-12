@@ -96,3 +96,60 @@ table.form-table{
     text-align: center;
 }
 
+.status{
+    background-color: #000;
+    color: #fff;
+}
+.status.status-1{
+    background-color: #f39c12;
+}
+.status.status-2{
+    background-color: #6bbd71;
+}
+.status.status-3{
+    background-color: #999;
+}
+
+
+.page_menu{
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #bbb;
+}
+
+.page_menu ul{
+    width: 160px;
+    padding: 2px 2px 2px 2px;
+}
+
+.page_menu li{
+    float: left;
+    width: 100%;
+    padding: 0;
+}
+
+.page_menu li a{
+    line-height: 20px;
+    display: block;
+    width: 100%;
+    border: 1px solid #fff;
+    color: #000;
+}
+
+.page_menu li a:hover{
+    border: 1px solid #00c0ef;
+    border-radius: 3px;
+}
+
+.page_menu li a .img{
+    width:30px;
+    text-align: center;
+    display: inline-block;
+}
+.page_menu li a .content{
+    padding: 2px 2px 2px 5px;
+    border-left: 1px solid #ccc;
+    margin-left: 2px;
+    display: inline;
+    font-size: 14px;
+}
