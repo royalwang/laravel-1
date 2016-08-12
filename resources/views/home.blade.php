@@ -61,9 +61,22 @@
 
 <script type="text/javascript">
 
-var $cover = $('.cover');
-var $cover_bg = $('.cover-bg');
-var $cover_content = $('.cover-content');
+(function($){
+	$.fn.maskcover = function(){
+		var createMask = function(){
+
+		};
+		return this.each(function(index, el) {
+			this.insertBefore(createMask());
+		});
+	};
+	$.extend($.fn.maskcover, {
+		show:function(){},
+		hide:function(){},
+	});
+	
+})(jQuery)
+
 
 var $ajax_btn = $('.adtable-footer-header li');
 var $body = $('.adtable-content-center');
@@ -89,40 +102,8 @@ if(current_switch_id == undefined){
 	bindTab();
 }
 
-coverInit();
-
-$(window).resize(coverInit);
-$(window).resize(headShow);
 
 
-function coverShow(html ='',sw = true){
-    if(sw == true)
-        $cover.addClass('show');
-    else
-        $cover.removeClass('show');
-    $cover_content.children('span').html(html);
-}
-
-function coverInit(){
-    
-
-    var cover_width = $cover.next().outerWidth();
-    var cover_height = $cover.next().outerHeight();
-
-    var content_width = $('.cover-content').outerWidth();
-    var content_height = $('.cover-content').outerHeight();
-
-    $cover_bg.css({
-        'width':cover_width,
-        'height':cover_height,
-    });
-
-    $cover_content.css({
-        'left': (cover_width-content_width)/2 + 'px',
-        'top': (cover_height-content_height)/2-100 + 'px',
-    })
-
-}
 
 $('.current_date').unbind('keyup');
 $('.current_date').bind('keyup',function(event){
@@ -201,7 +182,6 @@ function addToTableRow(obj,d){
 }
 
 function getTableData(){
-	coverShow(loading_img);
 	clearTable();
 	removeEdit();
 
@@ -219,15 +199,12 @@ function getTableData(){
 			}
 		},
 		complete:function(){
-			coverShow('',false);
-			headShow();
 		}
 	});
 	
 }
 
 function updateTableData(obj,new_data){
-	coverShow(loading_img);
 	$.ajax({
 		url: "{{ asset('/ajax/adtable/update') }}",
 		data: new_data,
@@ -241,8 +218,6 @@ function updateTableData(obj,new_data){
 		},
 		complete: function(){
 			current_eidt_row = -1;
-			coverShow('',false);
-			headShow();
 		}
 	});
 }
@@ -258,7 +233,7 @@ function editTable(){
 	$parent.addClass('edit').siblings().removeClass('edit');
 	$parent.children('td[class^="db-"]').each(function() {
 		var width = $(this).width()-10;
-		$(this).unbind('dblclick');
+		//$(this).unbind('dblclick');
 		$(this).children('input').css({'width': width+'px'});
 		$(this).children('input').val($(this).children('div').html());
 	});
@@ -283,9 +258,6 @@ function listernKeyCode(){
         		update_data[$(this).attr('data-name')] = $(this).children('input').val();
         		status = true;
         	}
-
-        	
-         		
         	
         });
 
