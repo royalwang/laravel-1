@@ -19,10 +19,14 @@
 	</div>
 </div>	
 <div class="container">
-	
 	<div class="row">
 		<div class="col-md-12">
-			<h3> {{ trans('adtable.ad_table_style') }}</h3>
+			<h2 class="title"> {{ trans('adtable.ad_table_style_title') }}</h2>
+		</div>	
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<h4> {{ trans('adtable.ad_table_style_col') }}</h4>
 		</div>	
 
 		<div class="col-md-3">
@@ -50,8 +54,8 @@
 							<tr>
 								<td colspan="3">
 									<a class="help"><i class="fa fa fa-info"></i></a>
-									<button onclick="return colAdd();">add_new</button>
-									<button onclick="return saveForm();">save</button>
+									<button onclick="return colAdd();">{{ trans('adtable.ad_table_style_save') }}</button>
+									<button onclick="return saveForm();">{{ trans('adtable.ad_table_style_add') }}</button>
 								</td>
 							</tr>
 						</tfoot>
@@ -62,6 +66,33 @@
 		
 	</div>
 
+
+	<div class="row">
+		<div class="col-md-3">
+			<h4> {{ trans('adtable.ad_table_style_sum') }}</h4>
+		</div>	
+		<div class="col-md-9">
+			show , hidden , top , bottom
+		</div>	
+	</div>
+
+	<div class="row">
+		<div class="col-md-3">
+			<h4> {{ trans('adtable.ad_table_style_account') }}</h4>
+		</div>	
+		<div class="col-md-9">
+			show , hidden , top , bottom , left , right
+		</div>			
+	</div>
+
+	<div class="row">
+		<div class="col-md-3">
+			<h4> {{ trans('adtable.ad_table_style_sort') }}</h4>
+		</div>	
+		<div class="col-md-9">
+			asc , desc
+		</div>		
+	</div>	
 
 </div>
 

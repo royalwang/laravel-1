@@ -19,9 +19,6 @@ class ADTable extends AjaxController
         $date_start  = strtotime($date .'-1')-1;
         $date_end    = strtotime($date .'-' . $num)+1;
 
-        $id = 1; 
-        
-
         if(empty($id) || empty($date)) {
             $data['e'] = 1;
             $data['e_msg'] = 'code or month miss!';

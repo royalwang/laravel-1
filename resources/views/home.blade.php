@@ -54,7 +54,7 @@
 	
 	<ul class="adtable-footer-header clearfix">
 		@foreach ($switch_tab as $v) 
-			<li data-id="{{ $v->id }}"><a>{{ isset($v->name)?$v->name:$v->code }}</a></li>
+			<li data-id="{{ $v->id }}" class="status status-{{ $v->ad_account_status_id }}"><a>{{ isset($v->name)?$v->name:$v->code }}</a></li>
 		@endforeach
 	</ul>
 </div>	
@@ -85,7 +85,7 @@ if(current_switch_id == undefined){
 	$first_load.addClass('active');
 	getTableData();
 
-	if(table_edit == 1) bindDBclick();
+	if(table_edit == 1) $body.find('td[class^="db-"]').on('dblclick',editTable);
 	bindTab();
 }
 
@@ -142,8 +142,7 @@ function removeEdit(){
 }
 
 function bindDBclick(){
-	unbindDBclick();
-	$body.find('td[class^="db-"]').bind('dblclick',editTable);
+	
 }
 
 function unbindDBclick(){
@@ -204,7 +203,6 @@ function getTableData(){
 	coverShow(loading_img);
 	clearTable();
 	removeEdit();
-
 	$.ajax({
 		url: "{{ asset('/ajax/adtable') }}",
 		data: {'id': current_switch_id ,'date':current_date},
@@ -258,7 +256,6 @@ function editTable(){
 	$parent.addClass('edit').siblings().removeClass('edit');
 	$parent.children('td[class^="db-"]').each(function() {
 		var width = $(this).width()-10;
-		$(this).unbind('dblclick');
 		$(this).children('input').css({'width': width+'px'});
 		$(this).children('input').val($(this).children('div').html());
 	});
@@ -282,10 +279,7 @@ function listernKeyCode(){
         	if(o != n) {
         		update_data[$(this).attr('data-name')] = $(this).children('input').val();
         		status = true;
-        	}
-
-        	
-         		
+        	}	
         	
         });
 

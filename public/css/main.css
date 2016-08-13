@@ -153,3 +153,8 @@ table.form-table{
     display: inline;
     font-size: 14px;
 }
+
+.title{
+    border-bottom: 3px solid #000;
+    padding-bottom: 5px; 
+}
