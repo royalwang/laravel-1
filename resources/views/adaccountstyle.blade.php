@@ -13,48 +13,10 @@
 @section('main-content')
 	
 	
-<div class="cover">
-	<div class="cover-bg"></div>
-	<div class="cover-content">
-		<span></span>
-	</div>
-</div>	
 <div class="container">
 
-
-	<style type="text/css">
-
-		.drag-bg{
-			width: 100%;
-		    list-style-type: none;
-		    margin: 0px;
-		    padding: 0;
-		    min-height: 350px;
-		    background-color: #fff;
-		    padding: 10px;
-		}
-		#show.drag-bg{
-			border: 1px solid #71c361;
-		}
-		#hidden.drag-bg{
-			border: 1px solid #bb1f1f;
-		}		
-		.drag-bg li{ float:left; padding:5px; } 
-
-		.drag-bg li div {
-			padding: 0px 18px;
-		    height: 31px;
-		    background-color: #000;
-		    text-align: center;
-		    color: #fff;
-		    line-height: 31px;  
-		    font-size: 14px;
-    		letter-spacing: 0.5px;
-		}
-		.placeHolder div { background-color:white !important; border:dashed 1px gray !important; }
-	</style>
 	<div class="row">
-		<div class="col-md-12"><h2>{{ trans('adtable.ad_account_style_title') }}</h2></div>
+		<div class="col-md-12"><h2 class="title">{{ trans('adtable.ad_account_style_title') }}</h2></div>
 	</div>
 	<div class="row">
 		<div class="col-md-12">
@@ -67,25 +29,27 @@
 		<div class="col-md-6"><h4>{{ trans('adtable.ad_account_show') }}</h4></div>
 		<div class="col-md-6"><h4>{{ trans('adtable.ad_account_hidden') }}</h4></div>
 	</div>
-	<div class="row">
-		<div class="col-md-6">
-			<ul id="show" class="drag-bg clearfix">
-				@foreach($show_accounts as $account)
-				<li data-id="{{ $account->id }}" data-status-id="{{ $account->ad_account_status_id }}"><div class="status status-{{ $account->ad_account_status_id }}">{{ $account->code }}</div></li>
-				@endforeach
-			</ul>
+	<div class="account-style">
+		<div class="row">
+			<div class="col-md-6">
+				<ul id="show" class="drag-bg clearfix">
+					@foreach($show_accounts as $account)
+					<li data-id="{{ $account->id }}" data-status-id="{{ $account->ad_account_status_id }}"><div class="status status-{{ $account->ad_account_status_id }}">{{ $account->code }}</div></li>
+					@endforeach
+				</ul>
+			</div>
+			<div class="col-md-6">
+				<ul id="hidden" class="drag-bg clearfix">
+					@foreach($hidden_accounts as $account)
+					<li data-id="{{ $account->id }}" data-status-id="{{ $account->ad_account_status_id }}"><div class="status status-{{ $account->ad_account_status_id }}">{{ $account->code }}</div></li>
+					@endforeach
+				</ul>
+			</div>
 		</div>
-		<div class="col-md-6">
-			<ul id="hidden" class="drag-bg clearfix">
-				@foreach($hidden_accounts as $account)
-				<li data-id="{{ $account->id }}" data-status-id="{{ $account->ad_account_status_id }}"><div class="status status-{{ $account->ad_account_status_id }}">{{ $account->code }}</div></li>
-				@endforeach
-			</ul>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-			<button class="right">submit</button>
+		<div class="row">
+			<div class="col-md-12">
+				<button style="margin:20px 0;" class="btn btn-inverse right" onclick="return saveAccountStyle();">submit</button>
+			</div>
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -95,27 +59,43 @@
 			$("input[name=list1SortOrder]").val(data.join("|"));
 		};
 
-		var json;
 		function getAccountStyle() {
-			json = {};
+			var data = [];
 			$('#show li').each(function(index) {
 				var str = {
-					'id':$(this).attr('id'),
+					'id':$(this).attr('data-id'),
+					'ad_account_status_id':$(this).attr('data-status-id'),
 					'hidden':0,
 					'sort':index,
 				};
-				json.push(str);
+				data.push(str);
 			});
 			$('#hidden li').each(function(index) {
 				var str = {
-					'id':$(this).attr('id'),
+					'id':$(this).attr('data-id'),
+					'ad_account_status_id':$(this).attr('data-status-id'),
 					'hidden':1,
 				};
-				json.push(str);
+				data.push(str);
 			});
+			return {data};
 		};
 		function saveAccountStyle(){
+			$('.account-style').covermask({text:loading_img});
+			$.ajax({
+				url: '{{ asset('ajax/adaccountstyle/update') }}',
+				data : getAccountStyle() ,
+				type: "post",
+				dataType: "text",
+				headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')} ,
+				success : function(e){
+				},
+				complete:function(e){
+					$('.account-style').hidemask();
+				}
 
+			});
+			return false;
 		}
 	</script>
 
@@ -222,7 +202,7 @@ data.push(['{{ $account_statu->id }}','{{ $account_statu->name }}']);
 @endforeach
 
 
-$("#show li").contentMenu(data,function(obj,id){
+$(".drag-bg li").contentMenu(data,function(obj,id){
 	$(obj).attr('data-status-id',id);
 	$(obj).children('div').attr('class','status status-'+id);
 });

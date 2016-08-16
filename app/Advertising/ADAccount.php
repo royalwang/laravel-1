@@ -16,7 +16,9 @@ class ADAccount extends Model
         'money',
         'note',
         'users_id',
-        'ad_account_status_id'
+        'hidden',
+        'sort',
+        'ad_account_status_id',
     );
 
 	public function user(){

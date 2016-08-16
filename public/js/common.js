@@ -1,3 +1,4 @@
+//右键菜单
 ;(function($){
 	var D = $(document).data("func", {});
 	document.onclick = function(){
@@ -88,4 +89,105 @@
 		}
 	});
 	
+})(jQuery);
+
+
+//罩子
+;(function($){
+	var copyLoaction = function(obj1,obj2){
+		var mask_w = $(obj2).outerWidth(),
+			mask_h = $(obj2).outerHeight(),
+			mask_t = $(obj2).offset().top ,
+			mask_l = $(obj2).offset().left ;
+
+		obj1.css({
+			'position': 'absolute',
+			'width':  mask_w,
+			'height': mask_h,
+			'top':    mask_t,
+			'left' :  mask_l,
+		});	
+
+		var content = obj1.find('.covermask-content').eq(0);
+		content.css({
+			'position': 'absolute',
+			'top':    (mask_h - content.height() - 100) / 2,
+			'left' :  (mask_w - content.width()) / 2,
+		});
+		return obj1;
+	};
+
+	$.fn.extend({
+		covermask:function(options){
+			var defaluts = {
+				text : 'loading' ,
+				bstyle : {
+
+				},
+				cstyle : {
+					width:380,
+				},
+			};
+
+			var opt = $.extend(defaluts , options || false );
+			
+			var createMask = function(obj){
+				var container  = '<div class="covermask">';
+					container += '<div class="covermask-bg"></div>';
+					container += '<div class="covermask-content">';
+					container += '<div class="covermask-text">';
+					container +=  opt.text;
+					container += '</div>';
+					container += '</div>';
+					container += '</div>';
+
+				$mask = $(container);
+				$mask.css(opt.bstyle);
+				$mask.find('.covermask-content').css(opt.cstyle);
+
+				return copyLoaction($mask,obj);	
+
+			};
+
+			var init = function(obj){
+				return obj.each(function(index) {
+
+					var $key = $(this).attr('data-covermask-key');
+					var $mask = $('body').children('div[data-covermask-key='+$key+']');	
+					if($key!=undefined  &&  $mask && $mask != undefined) {
+						$mask.show();
+					}else{
+						$mask = createMask($(this));
+						var key = Math.random().toString().replace(".", "");
+						$(this).attr({'data-covermask-key': key});
+						$mask.attr('data-covermask-key', key);
+						$('body').append($mask);
+					}				
+				});
+			};
+
+			return init(this);
+			
+		},
+		changeMask:function(){
+			var init = function(obj){
+				return obj.each(function(index, el) {
+					var $key = $(this).attr('data-covermask-key');
+					var $mask = $('body').children('div[data-covermask-key='+$key+']');		
+					if($mask) {
+						copyLoaction($mask,$(el));
+					}	
+				});
+			};
+
+			return init(this);
+		},
+		hidemask:function(){
+			return this.each(function(index, el) {
+				var $key = $(el).attr('data-covermask-key');
+				var $mask = $('body').children('div[data-covermask-key='+$key+']');	
+				if($mask && $mask != undefined) $mask.hide();
+			});
+		},
+	});
 })(jQuery);

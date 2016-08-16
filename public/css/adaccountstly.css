@@ -8,3 +8,32 @@
 .status{
    border-radius: 3px;
 }
+
+.drag-bg{
+	width: 100%;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0;
+    min-height: 350px;
+    background-color: #fff;
+    padding: 10px;
+}
+#show.drag-bg{
+	border: 1px solid #71c361;
+}
+#hidden.drag-bg{
+	border: 1px solid #bb1f1f;
+}		
+.drag-bg li{ float:left; margin:5px; } 
+
+.drag-bg li div {
+	padding: 0px 18px;
+    height: 31px;
+    background-color: #000;
+    text-align: center;
+    color: #fff;
+    line-height: 31px;  
+    font-size: 14px;
+	letter-spacing: 0.5px;
+}
+.placeHolder div { background-color:white !important; border:dashed 1px gray !important; }

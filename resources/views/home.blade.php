@@ -13,18 +13,13 @@
 @section('main-content')
 
 <div id="fixed-header"><div id="fixed-header-content"></div></div>
-<div class="cover">
-	<div class="cover-bg"></div>
-	<div class="cover-content">
-		<span></span>
-	</div>
-</div>	
+<div id="fixed-footer"><div id="fixed-footer-content"></div></div>
 <div class="adtable">
 	<table class="form-table">
 		<thead>
 			<th class="current_date" width="">
-				<input class="year" type="" name="year" value="{{ $date['year'] }}" maxlength="4"> 
-				<input class="month" type="" name="month" value="{{ $date['month'] }}" maxlength="2">
+				<input class="year" type="text" name="year" > 
+				<input class="month" type="text" name="month" >
 			</th>
 		@foreach($table_column_name as $key=>$v)
 			<th class="db-{{ $key }}">{{ $v['name'] }}</th>
@@ -32,7 +27,7 @@
 		</thead>
 
 		<tbody class="adtable-content-center">
-		@for ($i=1;$i<=$date['num'];$i++)
+		@for ($i=1;$i<=31;$i++)
 			<tr data-date="{{ $i }}" data-id="0">
 				<td class="current_date">{{ $i }}</td>
 				@foreach($table_column_name as $key=>$v)
@@ -48,8 +43,16 @@
 			</tr>
 		@endfor
 		</tbody>
-
-		<tfoot></tfoot>
+		<tfoot class="adtable-content-foot">
+			<tr data-date="-1" data-id="-1">
+				<td class="current_date">统计</td>
+				@foreach($table_column_name as $key=>$v)
+				<td class="db-{{ $key }}" data-name="{{ $v['key'] }}" data-total="{{ $v['total'] }}">
+					<div></div>
+				</td>
+				@endforeach
+			</tr>
+		</tfoot>
 	</table>
 	
 	<ul class="adtable-footer-header clearfix">
@@ -61,9 +64,6 @@
 
 <script type="text/javascript">
 
-var $cover = $('.cover');
-var $cover_bg = $('.cover-bg');
-var $cover_content = $('.cover-content');
 
 var $ajax_btn = $('.adtable-footer-header li');
 var $body = $('.adtable-content-center');
@@ -71,16 +71,26 @@ var $foot = $('.adtable tfoot');
 var $first_load = $ajax_btn.eq(0);
 
 var table_edit = {{ $table_edit }};
-var loading_img = '<img src="{{ asset('img/loading.gif') }}">';
 var current_data = [];
 var current_switch_id = $first_load.attr('data-id');
 var current_eidt_row = -1;
-var current_date = getDate();
+
+var current_date ;
 var head_status = false;
+var tfoot_status = false;
+var time = new Date();
+
+var window_height = $(window).height();
+var th_top = $('.form-table thead').offset().top;
+var tf_top = $('.form-table tfoot').offset().top;
+var ft_top = $('.adtable-footer-header').offset().top;
+
+setDate(time.getFullYear(),time.getMonth()+1);
+getDte();
 
 
 if(current_switch_id == undefined){
-	coverShow('{{ trans('adtable.no_account') }}')
+	$('.adtable').covermask({text:'{{ trans('adtable.no_show') }}'});
 }else{
 	$first_load.addClass('active');
 	getTableData();
@@ -89,52 +99,53 @@ if(current_switch_id == undefined){
 	bindTab();
 }
 
-coverInit();
+$(window).resize(function(){
+	window_height = $(window).height();
+	headShow();
+	tfootShow();
+	footShow();
+});
 
-$(window).resize(coverInit);
-$(window).resize(headShow);
 
 
-function coverShow(html ='',sw = true){
-    if(sw == true)
-        $cover.addClass('show');
-    else
-        $cover.removeClass('show');
-    $cover_content.children('span').html(html);
-}
-
-function coverInit(){
-    
-
-    var cover_width = $cover.next().outerWidth();
-    var cover_height = $cover.next().outerHeight();
-
-    var content_width = $('.cover-content').outerWidth();
-    var content_height = $('.cover-content').outerHeight();
-
-    $cover_bg.css({
-        'width':cover_width,
-        'height':cover_height,
-    });
-
-    $cover_content.css({
-        'left': (cover_width-content_width)/2 + 'px',
-        'top': (cover_height-content_height)/2-100 + 'px',
-    })
-
-}
-
-$('.current_date').unbind('keyup');
 $('.current_date').bind('keyup',function(event){
 	if(event.keyCode == "13"){
-		current_date = $(this).find('input[name=year]').val() + "/" + $(this).find('input[name=month]').val();
-		getTableData();
+		setDate($(this).find('input[name=year]').val(),$(this).find('input[name=month]').val());
+		getDte();
 
+		var time1 = new Date(current_date);
+		var time2 = new Date();
+		if(time1.getTime() > time2.getTime()){
+			$body.covermask({text:'error time'});
+			return false;
+		}else{
+			$body.hidemask();
+			getTableData();
+			return false;
+		}		
 	}
 });
 
-function getDate(){
-	return $('.current_date').find('input[name=year]').val() + "/" + $('.current_date').find('input[name=month]').val();
+function getDays(){
+	var date = new Date(current_date);
+	var y = date.getFullYear();
+	var m = date.getMonth() + 1;
+	if(m == 2){
+		return y % 4 == 0 ? 29 : 28;
+	}else if(m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12){
+		return 31;
+	}else{
+		return 30;
+	}
+}
+
+function getDte(){
+	current_date = $('.current_date').children('input').eq(0).val() + "/" + $('.current_date').children('input').eq(1).val();
+}
+
+function setDate(year,month){
+	$('.current_date').find('input[name=year]').val(year); 
+	$('.current_date').find('input[name=month]').val(month); 
 }
 
 function removeEdit(){
@@ -161,6 +172,60 @@ function unbindTab(){
 	$ajax_btn.unbind('click');
 }
 
+function getTotal(){
+	$('.adtable-content-foot').find('td[class^="db-"]').each(function(index, el) {
+		$type = $(this).attr('data-total');
+		$key = $(this).attr('data-name');
+		if($type == undefined || !$key || !$type) return '';
+        switch ($type) {
+            case 'sum':
+            	var sum = 0;
+            	$body.find('td[data-name="'+ $key +'"]').each(function(index, el) {
+            		var v = $(this).find('div').html();
+            		if(v==undefined || !v ) v = 0;
+            		sum += parseFloat(v);
+            	});
+            	$(this).html(sum);
+                break;
+            case 'avg':
+                var sum = 0;
+                var i =0;
+            	$body.find('td[data-name="'+ $key +'"]').each(function(index, el) {
+            		var v = $(this).find('div').html();
+            		if(v==undefined || !v ) v = 0;
+            		sum += parseFloat(v);
+            		i++;
+            	});
+            	var avg = sum/i;
+            	$(this).html(avg.toFixed(4));
+                break;
+            case 'max':
+            	var max = 0;
+            	$body.find('td[data-name="'+ $key +'"]').each(function(index, el) {
+            		var v = $(this).find('div').html();
+            		if( v==undefined || !v ) v = 0;
+            		v = parseFloat(v);
+            		if(v > max) max = v;
+            	});
+                $(this).html(max);
+                break;
+            case 'min':
+                var min = 99999999;
+            	$body.find('td[data-name="'+ $key +'"]').each(function(index, el) {
+            		var v = $(this).find('div').html();
+            		if( v==undefined || !v ) v = 0;
+            		v = parseFloat(v);
+            		if(v < min) min = v;
+            	});
+                $(this).html(min);
+                break;    
+            default:
+                $(this).html('');
+                break;
+        }
+	});
+}
+
 
 function classToggle(){
 	if($(this).attr('class') == 'active') return;
@@ -173,8 +238,15 @@ function classToggle(){
 }
 
 function clearTable(){
-	$body.find('tr').attr('data-id',0);
-	$body.find('td[class^="db-"]').each(function() {
+	var num = getDays();
+	$body.find('tr').each(function(index) {
+		$(this).attr('data-id',0);
+		if(index >= num) 
+			$(this).addClass('hidden');
+		else
+			$(this).removeClass('hidden');
+	});
+	$body.find('td[class^="db-"]').each(function(index) {
 		$(this).children('div').html('');
 		$(this).children('input').val('');
 	});
@@ -200,7 +272,7 @@ function addToTableRow(obj,d){
 }
 
 function getTableData(){
-	coverShow(loading_img);
+	$('.adtable').covermask({text:loading_img});
 	clearTable();
 	removeEdit();
 	$.ajax({
@@ -213,11 +285,13 @@ function getTableData(){
 			if(e['e'] == 1 || e == undefined){
 				clearTable();
 			}else{
-				addToTable(e['d']);				
+				addToTable(e['d']);	
+				getTotal();			
 			}
 		},
 		complete:function(){
-			coverShow('',false);
+			$('.adtable').hidemask();
+			tfootShow();
 			headShow();
 		}
 	});
@@ -225,7 +299,7 @@ function getTableData(){
 }
 
 function updateTableData(obj,new_data){
-	coverShow(loading_img);
+	$('.adtable').covermask({text:loading_img});
 	$.ajax({
 		url: "{{ asset('/ajax/adtable/update') }}",
 		data: new_data,
@@ -235,11 +309,13 @@ function updateTableData(obj,new_data){
 		success: function(e){
 			if(e['e'] != 1 || e != undefined){
 				addToTableRow(obj,e['d']);
+				getTotal();
 			}
 		},
 		complete: function(){
 			current_eidt_row = -1;
-			coverShow('',false);
+			$('.adtable').hidemask();
+			tfootShow();
 			headShow();
 		}
 	});
@@ -298,6 +374,10 @@ function listernKeyCode(){
 }
 
 function headShow(){
+	var stop = $(document).scrollTop();
+	if(stop < th_top ||  head_status == true) return headHide();
+		
+
 	$('#fixed-header-content').html('');
 	$('#fixed-header-content').css({
 		width:$('.form-table thead').outerWidth() + 'px',
@@ -311,32 +391,57 @@ function headShow(){
 
 		$('#fixed-header-content').append(div);
 	});
-	$('#fixed-header-content').show();
-
+	$('#fixed-header').show();
 }
 
 function headHide(){
-	$('#fixed-header-content').html('').hide();
+	head_status = false;
+	$('#fixed-header').hide();
+}
+
+function tfootShow(){
+	var stop = $(document).scrollTop();
+	if(stop > (tf_top-window_height+20) ||  tfoot_status == true) return tfootHide	();
+		
+
+	$('#fixed-footer-content').html('');
+	$('#fixed-footer-content').css({
+		width:$('.form-table tfoot').outerWidth() + 'px',
+	});
+
+	$('.form-table tfoot tr td').each(function(index, el) {
+		var div = $(this).clone();
+		div.css({
+			width: $(this).outerWidth(),
+		});
+
+		$('#fixed-footer-content').append(div);
+	});
+	$('#fixed-footer').show();
+}
+
+function tfootHide(){
+	tfoot_status = false;
+	$('#fixed-footer').hide();
+}
+
+function footShow(){
+	var stop = $(document).scrollTop();
+	if(stop > (ft_top-window_height+20)) return footHide();
+	$('.adtable-footer-header').addClass('scroll');
+}
+
+function footHide(){
+	$('.adtable-footer-header').removeClass('scroll');
 }
 
 $(window).trigger('resize');
 
 
-$(document).bind('mousewheel DOMMouseScroll', function(event, delta) {
-
-	var top = $('.form-table thead').offset().top;
-	var stop = $(document).scrollTop();
-
-	if(stop > top ){
-		
-		if(head_status != true){
-			headShow();
-		}
-		
-	}else{
-		head_status = false;
-		headHide();	
-	}
+$(document).scroll(function() {
+	headShow();
+	tfootShow();
+	footShow();
 });
 
 

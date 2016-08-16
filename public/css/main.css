@@ -58,42 +58,14 @@ table.form-table{
     border-bottom: none;
 }
 
+.form-table tfoot{
+    background: #d4e0a4;
+}
+
 
 
 .form-table tbody tr:hover{
     background: #efefef;
-}
-
-.cover{
-    position: absolute;
-    z-index: 99;
-    display: none;
-}
-.cover.show{
-    display: block;
-}
-
-.cover-bg{
-    position: absolute;
-    background-color: #333;
-    opacity: 0.79;
-    z-index: 1;
-}
-
-.cover-content{
-    position: absolute;
-    background-color: #fff;
-    z-index: 11;
-    opacity: 1;
-    border: 1px solid #000;
-    box-shadow: 7px 10px 14px #333;
-}
-
-.cover-content span{
-    margin: 20px auto;
-    display: block;
-    width: 250px;
-    text-align: center;
 }
 
 .status{
@@ -158,3 +130,72 @@ table.form-table{
     border-bottom: 3px solid #000;
     padding-bottom: 5px; 
 }
+
+
+.covermask{
+    position: absolute;
+    z-index: 99;
+}
+
+.covermask-bg{
+    background-color: #333;
+    opacity: 0.79;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+}
+
+.covermask-content{
+    position: absolute;
+    background-color: #fff;
+    z-index: 11;
+    opacity: 1;
+    border: 1px solid #000;
+    box-shadow: 7px 10px 14px #333;
+}
+
+.covermask-content .covermask-text{
+    margin: 20px auto;
+    display: block;
+    width: 250px;
+    text-align: center;
+}
+
+.line1{
+    border-top: 1px solid #000;
+    margin: 30px 0 20px;
+    height: 1px;
+}
+
+.btn-inverse {
+    background-color: #414141;
+    background-image: -ms-linear-gradient(top,#555,#222);
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(#555),to(#222));
+    background-image: -webkit-linear-gradient(top,#555,#222);
+    background-image: -o-linear-gradient(top,#555,#222);
+    background-image: -moz-linear-gradient(top,#555,#222);
+    background-image: linear-gradient(top,#555,#222);
+    background-repeat: repeat-x;
+    border-color: #222 #222 #000;
+    border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#555555',endColorstr='#222222',GradientType=0);
+    filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+}
+
+.btn-inverse, .btn-inverse:hover , .btn-inverse:focus {
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+}
+.btn-inverse:hover {
+    background-color: #222;
+    text-decoration: none;
+    background-position: 0 -15px;
+}
+
+.btn-inverse:active, .btn-inverse.active {
+    background-color: #080808 \9;
+}
+.btn-inverse:hover, .btn-inverse:active, .btn-inverse.active, .btn-inverse.disabled, .btn-inverse[disabled] {
+    background-color: #222;
+}
+

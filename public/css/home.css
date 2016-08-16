@@ -57,6 +57,7 @@
     height: 25px;
     margin: 5px 0;
     border-radius: 2px;
+    line-height: 25px;   
 }
 .adtable tbody tr.edit td input{
     display: block;
@@ -90,49 +91,66 @@
     text-align: center;
     padding: 0 1px;
     background-color: #fff;
+    line-height: 15px;
 }
 
 input.year{
     left: 8px;
-    width: 31px; 
+    width: 33px; 
 }
 input.month{
-    width:17px;
+    width:18px;
     left:46px;
 }
 
-#fixed-header{
+#fixed-header,#fixed-footer{
     display: block;
     position: fixed;
-    top: 0px;
     left: 50px;
     z-index: 60;
-    
-    border: 1px solid #000;
     height: 30px;
 
 }
+#fixed-header{
+    top: 0;
+    border: 1px solid #000;
+}
+#fixed-footer{
+    bottom: 36px;
+    border: 1px solid #000;
+    border-bottom: 1px solid #fff;
+}
 
-#fixed-header-content{
+#fixed-header-content,#fixed-footer-content{
     position: relative;
     background-color: #000;
     height: 30px;
     display: block;
 }
-
-#fixed-header-content > *{
+#fixed-footer-content{
+    background: #d4e0a4;
+}
+#fixed-header-content > *,#fixed-footer-content > *{
     border-right: 1px solid #ccc;
     height: 30px;
     text-align: center;
     color: #fff;
     line-height: 30px;
 }
-
-#fixed-header-content > *:last-child{
-    border-right: none;  
+#fixed-footer-content > *{
+    color: #000;
+}
+#fixed-header-content > *:last-child,#fixed-footer-content > *:last-child{
+    border-right: 1px solid #000;  
 }
 
 #fixed-header-content .current_date input{
     display: none;
+}
+
+.adtable-footer-header.scroll{
+    position: fixed;
+    bottom: 0;
+    background: #000;
 }
 

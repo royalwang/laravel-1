@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\User;
 use Validator;
 
+
 class ADAccount extends AjaxController
 {
 
@@ -16,7 +17,18 @@ class ADAccount extends AjaxController
     }
 
     function update(Request $request){
+        
+        if(!isset($request->data) || count($request->data) < 1) return;
 
+        $accounts = $request->user()->adAccount()->get();
+        foreach($request->data as $value){
+            if(!isset($value['id'])) continue;
+            $account = $accounts->find($value['id']);
+            if($account == null) continue;
+            $account->fill($value);
+            $account->save();
+        }
+        
     }
 
     function add(Request $request){

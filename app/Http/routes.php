@@ -28,7 +28,7 @@ Route::group(['middleware' => 'auth'], function () {
     
 	Route::get('/'                             ,'HomeController@index');
     Route::get('/home'                         ,'HomeController@index');
-    Route::get('/adtablestyle'                   ,'ADTableStyleController@index');
+    Route::get('/adtablestyle'                 ,'ADTableStyleController@index');
 
     //AJAX
     Route::post('/ajax/adtablestyle'           ,'Ajax\ADTableStyle@index');
@@ -42,20 +42,17 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/ajax/users/add'          ,'Ajax\Users@add');
         Route::post('/ajax/account'            ,'Ajax\ADAccount@index');
         Route::post('/ajax/account/add'        ,'Ajax\ADAccount@add');
-        
     });
 
     Route::group(['middleware' => 'user_group:advertising'] ,function(){
         //AJAX
-        Route::get('/adaccountstyle'           ,'ADAccountStyleController@index');
-        Route::post('/ajax/adtable/update'     ,'Ajax\ADTable@update');
+        Route::get('/adaccountstyle'                  ,'ADAccountStyleController@index');
+        Route::post('/ajax/adtable/update'            ,'Ajax\ADTable@update');
+        Route::post('/ajax/adaccountstyle/update'     ,'Ajax\ADAccount@update');
     });
 
     //test
-    Route::get('/ajax/adtable'    ,'Ajax\ADTable@index');
-    Route::get('/ajax/users/add'  ,'Ajax\Users@add');
-    Route::get('/ajax/account'    ,'Ajax\ADAccount@index');
-    Route::get('/test'            ,'Ajax\ADTable@update');
+    Route::get('/test'            ,'Ajax\ADTableStyle@index');
 	    
 
 	

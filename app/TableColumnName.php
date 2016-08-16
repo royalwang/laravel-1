@@ -35,6 +35,7 @@ class TableColumnName{
     			$column_name[$key]['key'] = 'A'.$key;
     			$column_name[$key]['name'] = trans('adtable.'.$value);
     			$column_name[$key]['value'] = $value;
+                $column_name[$key]['total'] = '';
     			if(in_array($value , $allow_edit)){
     				$column_name[$key]['edit'] = true;
     			}else{
@@ -47,6 +48,7 @@ class TableColumnName{
     			$column_name[$key]['key'] = 'A'.$key;
     			$column_name[$key]['name'] = $value['name'];
     			$column_name[$key]['value'] = $value['value'];
+                 $column_name[$key]['total'] = isset($value['total'])?$value['total']:'';
     			if(in_array($value['value'] , $allow_edit)){
     				$column_name[$key]['edit'] = true;
     			}else{

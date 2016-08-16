@@ -20,6 +20,7 @@ class ADTableStyle extends AjaxController
 
     	$name  = isset($post['name']) ? $post['name']:  '';
     	$xxxx  = isset($post['value']) ? $post['value']:  '';
+        $yyyy  = isset($post['total']) ? $post['total']:  '';
     	$this->colError = false;
 
 
@@ -49,6 +50,7 @@ class ADTableStyle extends AjaxController
 	    		}
 
 	    		$array[$k]['name'] = $name[$k];
+                $array[$k]['total'] = $yyyy[$k];
 	    		$array[$k]['value'] = $formula->str();
 	    
 	    	}
@@ -85,6 +87,7 @@ class ADTableStyle extends AjaxController
     	foreach($array as $k=>$v){
     		$new_array[$k]['name'] = $v['name'];
     		$new_array[$k]['value'] = str_replace($this->defaultColKey,array_keys($this->defaultColKey),  $v['value']);
+            $new_array[$k]['total'] = isset($v['total']) ?  $v['total']: '';
     	}
     	return $new_array;
     }
@@ -95,6 +98,7 @@ class ADTableStyle extends AjaxController
     		foreach($this->defaultColKey as $k=>$v){
     			$array[$k]['name'] = trans('adtable.'.$v);
     			$array[$k]['value'] = $v;
+                $array[$k]['total'] = '';
     		}
     	}else{
     		$array = unserialize($adTableStyle->style);
@@ -102,6 +106,7 @@ class ADTableStyle extends AjaxController
     			foreach($this->defaultColKey as $k=>$v){
 	    			$array[$k]['name'] = trans('adtable.'.$v);
 	    			$array[$k]['value'] = $v;
+                    $array[$k]['total'] = '';
 	    		}
     		}
     	}

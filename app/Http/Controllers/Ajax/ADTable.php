@@ -52,7 +52,7 @@ class ADTable extends AjaxController
 
         $col_names = TableColumnName::getUserStyle('ad_table',$user);
         $new_array = array();
-
+        
         foreach($array as $key=>$table){
             $new_array[$key]['date'] = $table->date;
             $new_array[$key]['id']   = $table->id;
@@ -60,11 +60,29 @@ class ADTable extends AjaxController
                 $new_array[$key][$col_name['key']] = FormulaCalculator::make($col_name['value'],$table);
             }
         }
-
-     
+        
         $data['d'] = $new_array;
-
         return response()->json($data); 
+    }
+
+    private function getTotal($key,$data){
+        switch ($key) {
+            case 'sum':
+                return array_sum($data);
+                break;
+            case 'avg':
+                return ( array_sum($data) / count($data) );
+                break;
+            case 'max':
+                return max($data);
+                break;
+            case 'min':
+                return min($data);
+                break;    
+            default:
+                return '';
+                break;
+        }
     }
 
     function update(Request $request){
@@ -135,8 +153,5 @@ class ADTable extends AjaxController
     	return response()->json($data);
     }
 
-    public function test(Request $request){
-        print_r($request->all());
-    }
-    
+
 }

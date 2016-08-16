@@ -20,7 +20,7 @@ class ADAccountStyleController extends Controller
     		if($account->hidden == 0){
     			$show_accounts[] = $account;
     		}else{
-    			$hidde_accounts[] = $account;
+    			$hidden_accounts[] = $account;
     		}
     	}
 

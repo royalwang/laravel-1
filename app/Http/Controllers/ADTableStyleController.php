@@ -14,8 +14,11 @@ class ADTableStyleController extends Controller
 
     	Common::setActive('sidebar','ad_table_style');
 
+    	$total = array('sum','avg','max','min');
+
     	return view('adtablestyle',[
-    		'style' =>  TableColumnName::get('ad_table')
+    		'style' =>  TableColumnName::get('ad_table'),
+    		'total' =>  $total,
     	]);
 
     }

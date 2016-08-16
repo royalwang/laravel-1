@@ -32,4 +32,7 @@
 
     @section('style')
 
+    <script type="text/javascript">
+        var loading_img = '<img src="{{ asset('img/loading.gif') }}">';
+    </script>
 </head>

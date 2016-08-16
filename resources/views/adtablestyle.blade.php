@@ -12,12 +12,6 @@
 @section('main-content')
 	
 	
-<div class="cover">
-	<div class="cover-bg"></div>
-	<div class="cover-content">
-		<span></span>
-	</div>
-</div>	
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
@@ -29,14 +23,21 @@
 			<h4> {{ trans('adtable.ad_table_style_col') }}</h4>
 		</div>	
 
-		<div class="col-md-3">
+		<div class="col-md-2">
 			<div class="default-col">
 				@foreach($style as $k=>$v)
 				<span>{{ trans('adtable.'.$v) }}<div>A{{ $k }}:</div></span>
 				@endforeach
 			</div>
 		</div>
-		<div class="col-md-9">
+		<div class="col-md-2">
+			<div class="default-col">
+				@foreach($total as $v)
+				<span>{{ trans('adtable.ad_table_total_'.$v) }}<div>{{ $v }}:</div></span>
+				@endforeach
+			</div>
+		</div>
+		<div class="col-md-8">
 			
 			<div class="table_style">
 				<form name="col_table">
@@ -45,6 +46,7 @@
 							<tr>
 								<th>{{ trans('adtable.ad_table_style_colname') }}</th>
 								<th>{{ trans('adtable.ad_table_style_colvalue') }}</th>
+								<th>{{ trans('adtable.ad_table_style_coltotal') }}</th>
 								<th width="160">{{ trans('adtable.ad_table_style_colsort') }}</th>
 							</tr>
 						</thead>
@@ -52,10 +54,10 @@
 						</tbody>
 						<tfoot>
 							<tr>
-								<td colspan="3">
+								<td colspan="4">
 									<a class="help"><i class="fa fa fa-info"></i></a>
-									<button onclick="return colAdd();">{{ trans('adtable.ad_table_style_save') }}</button>
-									<button onclick="return saveForm();">{{ trans('adtable.ad_table_style_add') }}</button>
+									<button onclick="return saveForm();">{{ trans('adtable.ad_table_style_save') }}</button>
+									<button onclick="return colAdd();">{{ trans('adtable.ad_table_style_add') }}</button>
 								</td>
 							</tr>
 						</tfoot>
@@ -68,15 +70,53 @@
 
 
 	<div class="row">
-		<div class="col-md-3">
+		<div class="col-md-12">
+			<div class="line1"></div>
+		</div>
+
+		<div class="col-md-2">
 			<h4> {{ trans('adtable.ad_table_style_sum') }}</h4>
 		</div>	
-		<div class="col-md-9">
-			show , hidden , top , bottom
-		</div>	
+		<div class="col-md-10">
+
+			<div class="col-md-4">
+				<div class="col-md-6">
+					<label style="line-height: 41px;">是否显示</label>
+				</div>	
+				<div class="col-md-6">
+					<div class="controls">
+					<label class="radio"><input type="radio" value="True" name="show" checked="checked">
+					True</label>
+					<label class="radio"><input type="radio" value="False" name="show">False</label>
+					</div>
+				</div>	
+			</div>
+
+			<div class="col-md-4">
+				<div class="col-md-6">
+					<label style="line-height: 41px;">显示位置</label>
+				</div>	
+				<div class="col-md-6">	
+					<div class="controls">
+					<label class="checkbox"><input type="checkbox" value="Top">Top</label>
+					<label class="checkbox"><input type="checkbox" value="Bottom">Bottom</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+			<div class="control-group">
+				<label class="control-label"></label>
+				<div class="controls"><button class="btn btn-inverse">Sumbit</button></div>
+			</div>
+			</div>
+		</div>
 	</div>
 
 	<div class="row">
+		<div class="col-md-12">
+			<div class="line1"></div>
+		</div>
 		<div class="col-md-3">
 			<h4> {{ trans('adtable.ad_table_style_account') }}</h4>
 		</div>	
@@ -86,6 +126,9 @@
 	</div>
 
 	<div class="row">
+		<div class="col-md-12">
+			<div class="line1"></div>
+		</div>	
 		<div class="col-md-3">
 			<h4> {{ trans('adtable.ad_table_style_sort') }}</h4>
 		</div>	
@@ -103,6 +146,7 @@
 <tr>
 	<td><input name="name[]" value="{name}"></td>
 	<td><input name="value[]" value="{value}"></td>
+	<td><input name="total[]" value="{total}"></td>
 	<td>
 		<a class="up" onclick="colUpDown(this,'long-up')"><i class="fa fa-long-arrow-up" ></i></a>
 		<a class="up" onclick="colUpDown(this,'up')"><i class="fa fa-arrow-up"></i></a>
@@ -116,49 +160,13 @@
 
 <script type="text/javascript">
 
-var $cover = $('.cover');
-var $cover_bg = $('.cover-bg');
-var $cover_content = $('.cover-content');
+
 
 var $styleColBody = $('#style-col-body');
 var styleColhtml = $('script[name=style-form]').html();
-var loading_img = '<img src="{{ asset('img/loading.gif') }}">';
 
 getForm();
 
-
-coverInit()
-$(window).resize(coverInit);
-
-
-function coverShow(html ='',sw = true){
-    if(sw == true)
-        $cover.addClass('show');
-    else
-        $cover.removeClass('show');
-    $cover_content.children('span').html(html);
-}
-
-function coverInit(){
-    
-
-    var cover_width = $cover.next().outerWidth(true);
-    var cover_height = $cover.next().outerHeight(true);
-
-    var content_width = $('.cover-content').outerWidth();
-    var content_height = $('.cover-content').outerHeight();
-
-    $cover_bg.css({
-        'width':cover_width,
-        'height':cover_height,
-    });
-
-    $cover_content.css({
-        'left': (cover_width-content_width)/2 + 'px',
-        'top': (cover_height-content_height)/2-100 + 'px',
-    })
-
-}
 
 
 function formatTemplate(dta, tmpl) {  
@@ -229,7 +237,7 @@ function saveForm(){
 }
 
 function ajaxForm($data = ''){
-	coverShow(loading_img,true);
+	$('.table_style').covermask({text:loading_img});
 	$.ajax({
 		url: "{{ asset('/ajax/adtablestyle') }}",
 		data: $data,
@@ -241,7 +249,7 @@ function ajaxForm($data = ''){
 			fillTable(d['d'])
 		},
 		complete:function(){
-			coverShow('',false)
+			$('.table_style').hidemask();
 		}
 	});
 }
