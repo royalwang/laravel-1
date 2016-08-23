@@ -95,25 +95,43 @@
 //罩子
 ;(function($){
 	var copyLoaction = function(obj1,obj2){
-		var mask_w = $(obj2).outerWidth(),
-			mask_h = $(obj2).outerHeight(),
-			mask_t = $(obj2).offset().top ,
-			mask_l = $(obj2).offset().left ;
-
-		obj1.css({
-			'position': 'absolute',
-			'width':  mask_w,
-			'height': mask_h,
-			'top':    mask_t,
-			'left' :  mask_l,
-		});	
+		
 
 		var content = obj1.find('.covermask-content').eq(0);
-		content.css({
-			'position': 'absolute',
-			'top':    (mask_h - content.height() - 100) / 2,
-			'left' :  (mask_w - content.width()) / 2,
-		});
+		if(content.css('position') == 'fixed'){
+			var mask_w = $(window).width(),
+				mask_h = $(window).height();
+
+			obj1.css({
+				'position' : 'fixed',
+				'width':  mask_w,
+				'height': mask_h,
+				'top':    0,
+				'left' :  0,
+			});	
+			content.css({
+				'top':    (mask_h - content.height()) / 2,
+				'left' :  (mask_w - content.width()) / 2,
+			});
+		}else{
+			var mask_w = $(obj2).outerWidth(),
+				mask_h = $(obj2).outerHeight(),
+				mask_t = $(obj2).position().top ,
+				mask_l = $(obj2).position().left ;
+
+			obj1.css({
+				'position' : 'absolute',
+				'width':  mask_w,
+				'height': mask_h,
+				'top':    mask_t,
+				'left' :  mask_l,
+			});	
+			content.css({
+				'top':    (mask_h - content.height()) / 2,
+				'left' :  (mask_w - content.width()) / 2,
+			});
+		}
+		
 		return obj1;
 	};
 
@@ -122,16 +140,17 @@
 			var defaluts = {
 				text : 'loading' ,
 				bstyle : {
-
+					position:'absolute',
 				},
 				cstyle : {
 					width:380,
+					position:'absolute',
 				},
 			};
 
 			var opt = $.extend(defaluts , options || false );
 			
-			var createMask = function(obj){
+			var createMask = function(){
 				var container  = '<div class="covermask">';
 					container += '<div class="covermask-bg"></div>';
 					container += '<div class="covermask-content">';
@@ -145,7 +164,7 @@
 				$mask.css(opt.bstyle);
 				$mask.find('.covermask-content').css(opt.cstyle);
 
-				return copyLoaction($mask,obj);	
+				return $mask;
 
 			};
 
@@ -157,11 +176,25 @@
 					if($key!=undefined  &&  $mask && $mask != undefined) {
 						$mask.show();
 					}else{
-						$mask = createMask($(this));
+						$mask = createMask();
 						var key = Math.random().toString().replace(".", "");
 						$(this).attr({'data-covermask-key': key});
 						$mask.attr('data-covermask-key', key);
-						$('body').append($mask);
+						var obj = $(this);
+						if(opt.cstyle.position == 'fixed'){
+							obj = $('body');
+							$('body').append($mask);
+						}else{
+							obj = $(this);
+							$(this).before($mask);
+						}
+						copyLoaction($mask,obj);
+						$(window).resize(function(){
+							copyLoaction($mask,obj);
+						});
+						
+						
+						
 					}				
 				});
 			};
@@ -169,25 +202,54 @@
 			return init(this);
 			
 		},
-		changeMask:function(){
-			var init = function(obj){
-				return obj.each(function(index, el) {
-					var $key = $(this).attr('data-covermask-key');
-					var $mask = $('body').children('div[data-covermask-key='+$key+']');		
-					if($mask) {
-						copyLoaction($mask,$(el));
-					}	
-				});
-			};
-
-			return init(this);
-		},
 		hidemask:function(){
 			return this.each(function(index, el) {
 				var $key = $(el).attr('data-covermask-key');
-				var $mask = $('body').children('div[data-covermask-key='+$key+']');	
+				var $mask = $('body').find('div[data-covermask-key='+$key+']');	
 				if($mask && $mask != undefined) $mask.hide();
 			});
+		},
+		removemask:function(){
+			return this.each(function(index, el) {
+				var $key = $(el).attr('data-covermask-key');
+				var $mask = $('body').find('div[data-covermask-key='+$key+']');	
+				if($mask && $mask != undefined) $mask.remove();
+			});
+		},
+	});
+})(jQuery);
+
+
+//scroll fixed
+;(function($){
+
+	$.fn.extend({
+		scrollFixed:function(){
+
+			var scroll = function(obj,clone){
+				var stop = $(document).scrollTop();
+				if(stop > (ft_top-window_height+20)){
+					clone.hide();
+					obj.removeClass('scroll');
+				}else{
+					clone.show();
+					obj.addClass('scroll');
+				}
+			}
+
+			return this.each(function(index) {			
+				var this_clone = $(this).clone();
+				var that = $(this);
+				that.after(this_clone);
+				scroll(that,this_clone);
+				$(document).scroll(function() {
+					scroll(that,this_clone);
+				});		
+				$(window).resize(function(event) {
+					scroll(that,this_clone);
+				});
+			});
+			
 		},
 	});
 })(jQuery);

@@ -3,32 +3,32 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Common;
+use App\Libs\Common;
 use Auth;
 
 class CommonProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap the application services.
-     *
-     * @return void
-     */
+
     public function boot()
     {
-        //$common = new Common(Auth::user());
+        $this->bladeDirectives();
+    }
+
+
+    public function register()
+    {
         $this->app->singleton('Common', function(){
             return new Common(Auth::user());
         });
+        
     }
 
-    /**
-     * Register the application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
+    private function bladeDirectives(){
 
-        
+        \Blade::directive('activeMenu', function($expression) {
+            return "<?php echo \\Common::activeMenu{$expression}  ?>";
+        });
+
+
     }
 }

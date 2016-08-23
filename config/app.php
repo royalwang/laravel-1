@@ -156,6 +156,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\CommonProvider::class,
+        App\Providers\PermissionsProvider::class,
+
 
     ],
 
@@ -205,8 +207,8 @@ return [
         'Input' => Illuminate\Support\Facades\Input::class,
 
 
-        
         'Common' => App\Facades\CommonFacade::class,
+        'Permission' => App\Facades\PermissionsFacade::class,
 
     ],
 

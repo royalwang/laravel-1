@@ -17,6 +17,7 @@
     border-top: 1px solid #000;
     width: 100%;
     height: auto; 
+    z-index: 70;
 }
 
 .adtable-footer-header > li{
@@ -26,17 +27,18 @@
     border: 1px solid #000;
     border-top:none;
     z-index: 2;
-    background-color: #fff;
+    background-color: #8044b7;
     margin-right: -1px;
     font-size:12px;
 }
 
 .adtable-footer-header li a{
     color: #fff; 
-    font-size:12px;
+    font-size:14px;
     padding: 0 5px;
     display: block;
     letter-spacing: 0.5;
+    line-height: 35px;
 }
 
 .adtable-footer-header > li.active{
@@ -44,9 +46,9 @@
 }
 
 .adtable-footer-header > li.active a{
-    font-size: 16px;
-    color: #fff;
-    line-height: 35px
+    color: #ffe200;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 
@@ -154,3 +156,86 @@ input.month{
     background: #000;
 }
 
+.adtable-footer-header > li{
+    position: relative;
+    height: 36px;
+}
+.adtable-footer-header > li > div{
+    position: absolute;
+    width: 500px;
+    height: 240px;
+    background: #e4ac92;
+    display: none;
+    bottom: 35px;
+    border: 1px solid #000;
+    left: -1px;
+    padding: 20px;
+}
+
+.adtable-footer-header label{
+    color: #000;
+}
+
+.adtable-footer-header input{
+    width: 150px;
+    border:1px solid #000;
+    background: #fff;
+}
+
+.adtable-footer-header textarea{
+    resize: none;
+    border:1px solid #000;
+    background: #fff;
+    height: 150px;
+}
+
+.adtable-footer-header li:last-child{
+    border:none;
+    background: none;
+    
+}
+
+.adtable-footer-header li:last-child span{
+    width: 50px;
+    text-align: center;
+    display: block;
+}
+
+.adtable-footer-header li:last-child i{
+    line-height: 38px;
+    cursor: pointer;
+}
+
+.adtable-footer-header.scroll li:last-child i{
+    color:#fff;
+}
+
+    
+.add-account ul{
+    height: 200px;
+    overflow-y: scroll;
+    width: 200px;
+    float: left;
+    border:1px solid #000;
+    padding: 5px;
+    margin: 20px;
+}
+
+.add-account ul li{
+    cursor: pointer;
+    height: 20px;
+}
+
+.add-account ul li:active{
+    color: red
+}
+
+.add-account ul li.hover,.add-account ul li:hover{
+    background: #000;
+    color: #fff;
+}
+
+.add-account >div{
+    min-width: 240px;
+    float: left;
+}

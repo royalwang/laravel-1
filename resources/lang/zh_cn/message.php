@@ -128,4 +128,11 @@ return [
     'retrypepassword'         => 'Retype password',
     'fullname'                => 'Full Name',
 
+    'btn_save'                    => '保存',
+    'btn_submit'                  => '提交',
+    'btn_cancel'                  => '取消',
+    'btn_add_new_users'           => '添加新用户',
+    'btn_update_users'            => '更改用户',
+    'btn_del_all_users'           => '删除所有用户'
+
 ];

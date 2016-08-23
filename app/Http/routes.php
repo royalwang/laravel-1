@@ -24,39 +24,29 @@ Route::get('logout', 'Auth\AuthController@logout');
 //Route::post('password/reset', 'Auth\PasswordController@reset');
 
 
-Route::group(['middleware' => 'auth'], function () {    
-    
-	Route::get('/'                             ,'HomeController@index');
-    Route::get('/home'                         ,'HomeController@index');
-    Route::get('/adtablestyle'                 ,'ADTableStyleController@index');
 
-    //AJAX
-    Route::post('/ajax/adtablestyle'           ,'Ajax\ADTableStyle@index');
-    Route::post('/ajax/adtable'                ,'Ajax\ADTable@index');
-    
-    Route::group(['middleware' => 'user_group:responsible'] ,function(){
-        Route::get('/users'                    ,'UsersController@index');
-        Route::get('/account'                  ,'AccountController@index');
-        //AJAX
-        Route::post('/ajax/users'              ,'Ajax\Users@index');
-        Route::post('/ajax/users/add'          ,'Ajax\Users@add');
-        Route::post('/ajax/account'            ,'Ajax\ADAccount@index');
-        Route::post('/ajax/account/add'        ,'Ajax\ADAccount@add');
+Route::group(['middleware' => ['auth','permissions' ]], function ($route) {    
+
+    Route::resource('/'                                       , 'HomeController');
+
+    Route::group(['namespace' => 'Setting'], function () {    
+        Route::resource('/setting/users'                      , 'Users');
+        Route::resource('/setting/roles'                      , 'Roles');
+        Route::resource('/setting/permissions'                , 'Permissions');
     });
 
-    Route::group(['middleware' => 'user_group:advertising'] ,function(){
-        //AJAX
-        Route::get('/adaccountstyle'                  ,'ADAccountStyleController@index');
-        Route::post('/ajax/adtable/update'            ,'Ajax\ADTable@update');
-        Route::post('/ajax/adaccountstyle/update'     ,'Ajax\ADAccount@update');
+    Route::group(['namespace' => 'AD'], function () {    
+        Route::resource('/ad/table'                           , 'Table');
+        Route::resource('/ad/tablestyle'                      , 'TableStyle');
+        Route::resource('/ad/accounts'                        , 'Accounts');
+        Route::resource('/ad/vps'                             , 'Vps');
     });
 
-    //test
-    Route::get('/test'            ,'Ajax\ADTableStyle@index');
-	    
 
-	
+    
 });
+
+
 
 
 

@@ -13,7 +13,19 @@ class ADAccount extends AjaxController
 {
 
     function index(Request $request){
-        return \App\Advertising\ADAccount::orderBy('created_at','desc')->paginate(30);
+        $accounts = \App\Advertising\ADAccount::orderBy('created_at','desc')->paginate(30);
+
+
+        $json = $accounts->toArray();
+        $data = array();
+        foreach($accounts as $k=>$account){
+            $data[$k] = $account->toArray(); 
+            $data[$k]['users'] = $account->user->name;
+            $data[$k]['status'] = $account->status->name;
+        }
+        $json['data'] = $data;
+
+        return response()->json($json); 
     }
 
     function update(Request $request){

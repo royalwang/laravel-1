@@ -28,16 +28,21 @@
             </div>
         </form>
         <!-- /.search form -->
-
         <!-- Sidebar Menu -->
         <ul class="sidebar-menu">
             <li class="header">{{ trans('message.header') }}</li>
             <!-- Optionally, you can add icons to the links -->
-                @foreach( $common->sidebar as $key=>$value )
-                <li class="{{ ($value['active']?'active':'') }}"><a href="{{ url($value['url']) }}"><i class='fa {{ $value['icon'] }}'></i> <span>{{ trans('sidebar.' .$key ) }}</span></a></li>
+                @foreach( $sidebar_main as $value )
+                <li class="{{ (isset($value['active'])?'active':'') }}"><a href="{{ route($value['url']) }}"><i class='fa {{ $value['icon'] }}'></i> <span>{{ $value['name'] }}</span></a>
+                    @if(isset($value['child']) && is_array($value['child']))
+                    <ul class="treeview-menu">
+                        @foreach($value['child'] as $sub_menu) 
+                        <li class="{{ (isset($sub_menu['active'])?'active':'') }}"><a href="{{ route($sub_menu['url']) }}"><i class='fa {{ $sub_menu['icon'] }}'></i> <span>{{ $sub_menu['name'] }}</span></a></li>
+                        @endforeach
+                    </ul>
+                    @endif
+                </li>
                 @endforeach
-
-
         </ul><!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->

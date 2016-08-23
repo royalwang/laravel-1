@@ -57,7 +57,7 @@
 			        	</div>
 
 			            <div class="form-group">
-			                    <button id="add-user" onclick="addUser();return false;" type="submit" class="btn btn-primary btn-block btn-flat">submit</button>
+			                    <button id="add-user" onclick="addUser();return false;" type="submit" class="btn btn-inverse">{{ trans('message.btn_submit') }}</button>
 			            </div>
 			        </form>
 		        </div>
@@ -92,20 +92,19 @@
     <td>{code}</td>  
     <td>{money}</td> 
     <td>{note}</td>
-    <th>{$users.id}</th>
-    <th>{$status.id}</th>
+    <th>{users}</th>
+    <th>{status}</th>
     <td>
-    	<span><a href=""><i class="fa fa-key fa-fw"></i></a></span>
-    	<span><a href=""><i class="fa fa-table"></i></a></span>
-    	<span><a href=""><i class="fa fa-usd"></i></a></span>
+    	<span><a href=""><i class="fa fa-edit fa-fw"></i></a></span>
+
     </td>	
 </tr>  
 </script> 
 
 
 <script type="text/javascript">
-var users = <?php echo $users ?>;
-var status = <?php echo $ac_status ?>;
+var users = <?php echo $users; ?>;
+var status = <?php echo $ac_status; ?>;
 
 
 getUsers();
@@ -113,17 +112,7 @@ getUsers();
 
 function formatTemplate(dta, tmpl) {  
     var format = {  
-        users : function(key,x){
-        	for(var o in users){
-        		if(users[o].key == x)
-        		return users[o].id
-        	}
-        	return users[x];
-        },
-        status : function(x){
-        	if(status[o].id == x)
-        		return status[o].id
-        }
+
     };  
     return tmpl.replace(/{(.*)}/g, function(m1, m2) {  
 

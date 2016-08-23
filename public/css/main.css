@@ -9,7 +9,7 @@ a{
 }
 
 .left{
-	float:felt;
+	float:left;
 }
 .right{
 	float:right;
@@ -146,7 +146,6 @@ table.form-table{
 }
 
 .covermask-content{
-    position: absolute;
     background-color: #fff;
     z-index: 11;
     opacity: 1;
@@ -157,7 +156,8 @@ table.form-table{
 .covermask-content .covermask-text{
     margin: 20px auto;
     display: block;
-    width: 250px;
+    min-width: 250px;
+    max-width: 800px;
     text-align: center;
 }
 

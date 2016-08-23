@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Ajax;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\AjaxController;
 use App\Http\Requests;
-use App\TableColumnName;
+use App\Libs\TableColumnName;
 use App\Libs\FormulaCalculator;
 
 class ADTable extends AjaxController
@@ -41,7 +41,6 @@ class ADTable extends AjaxController
                             ->where('date','<',$date_end)
                             ->groupBy('date')
                             ->get();
-
         }else{
             $array = $user->adTable()
                 ->where('ad_account_id',$id)
@@ -85,7 +84,7 @@ class ADTable extends AjaxController
         }
     }
 
-    function update(Request $request){
+    function store(Request $request){
         $user = $request->user();
         if($user->is('responsible')) return response('Unauthorized.', 401);
 
@@ -102,17 +101,19 @@ class ADTable extends AjaxController
         }
 
         $adatable = '';
+        $cost  = isset($new_fill_data['advertising_cost']) ? (float)$new_fill_data['advertising_cost'] : false;
+        $recharge = isset($new_fill_data['recharge']) ? (float)$new_fill_data['recharge'] : false;
 
         //add or update
-    	if($request->id == 0){
-			$account = $user->adAccount()->find($request->ad_account_id);
+        $account = $user->adAccount()->find($fill_data['ad_account_id']);
+    	if($fill_data['id'] == 0){
 
 			if($account == null){
 				$data['e'] = 1; $data['e_msg'] = 'no account!';
 				return response()->json($data);
 			}else{
 				
-				$date = str_replace(array(' ','/'), array('','-'), $request->date);
+				$date = str_replace(array(' ','/'), array('','-'), $fill_data['date']);
                 $date = empty($date)? date('Y-m-d'): $date;
 
                 $adatable = $account->adTable()
@@ -120,27 +121,44 @@ class ADTable extends AjaxController
                     ->first();
 
                 if($adatable == null){
-                    $adatable = new \App\Advertising\ADTable($new_fill_data);
+                    $adatable = new \App\Model\ADTable($new_fill_data);
                     $adatable->date = strtotime($date);
-                    $adatable->ad_account_id = $request->ad_account_id;
+                    $adatable->ad_account_id = $fill_data['ad_account_id'];
                     $adatable->save();
-                }else{
-                    $adatable->fill($request->all())->save();
-                }
 
+                    $cost = ($cost === false)? 0 : $cost;
+                    $recharge = ($recharge === false)? 0 : $recharge;
+
+                }else{
+                    $cost = ($cost === false)? 0 : $cost - (float)$adatable->advertising_cost ;
+                    $recharge = ($recharge == false)? 0 : $recharge - (float)$adatable->recharge ;
+                    $adatable->fill($new_fill_data)->save();
+                }
 			}
 
+            if($cost != 0 || $recharge != 0){
+                $money = $account->money + $recharge - $cost;
+                $account->fill(['money'=>$money])->save();
+            }
+
     	}else{
-    		$adatable = $user->adTable()->find($request->id);
+    		$adatable = $account->adTable()->find($fill_data['id']);
 
 			if($adatable == null){
 				$data['e'] = 1; $data['e_msg'] = 'no table!';
 				return response()->json($data);
 			}
 
+            $cost = ($cost === false) ? 0 : $cost - (float)$adatable->advertising_cost ;
+            $recharge = ($recharge === false)? 0 : $recharge - (float)$adatable->recharge ;
+
+            if($cost != 0 || $recharge != 0){
+                $money = $account->money + $recharge - $cost;
+                $account->fill(['money'=>$money])->save();
+            }
 			$adatable->fill($new_fill_data)->save();
     	}
-
+   
         //success ,array to key
         $col_names = TableColumnName::getUserStyle('ad_table',$user);
         $new_array = array();
