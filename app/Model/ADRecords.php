@@ -10,7 +10,7 @@ class ADRecords extends Model
 {
 	protected $table = 'ad_records';
 	protected $fillable = array(
-		'advertising_cost',
+		'cost',
 		'click_amount',
 		'checkout',
 		'transformation_cost',
@@ -18,14 +18,13 @@ class ADRecords extends Model
 		'transaction_orders',
 		'change_proportion',
 		'recharge' ,
-		'site',
+		'ad_binds_id',
 	);
 
 	public $timestamps = false;
 
-    public function adAccount()
-    {
-        return $this->hasOne(ADAccount::class,'ad_account_id');
+    public function binds(){
+        return $this->belongsTo(ADBinds::class,'ad_binds_id');
     }
 
 }

@@ -12,7 +12,7 @@ class Roles extends Model
      * @var array
      */
     protected $fillable = [
-        'name','code'
+        'name','code','default_page'
     ];
 
     public $timestamps = false;
@@ -24,6 +24,10 @@ class Roles extends Model
 
     public function permissions(){
         return $this->belongsToMany(Permissions::class, 'permissions_roles');
+    }
+
+    public function user(){
+        return $this->belongsTo(Users::class,'users_id');
     }
 
 

@@ -24,25 +24,31 @@ class Permission{
 			$this->child = $user->child();
 			$this->roles = $user->roles()->get();
 			foreach ($this->roles as $role) {
-				$this->perms->merge($role->perms()->get());
+				$this->perms->merge($role->permissions()->get());
 			}
 		}
 	}
 
-	public function canAction(){
+	public function canCurrentAction(){
+
+		$search = array('App\Http\Controllers\\','\\','@');
+		$relace = array('','.','.');
+
+		$action = Route::current()->getAction();
+		$controller = strtolower(str_replace($search, $relace , $action['controller']));
+
+		return $this->can($controller);		
+	}
+
+	public function can($action){
 		if( $this->root ) return true;
 
-		$currentRoute = Route::currentRouteName();
 		foreach( $this->perms as $perms ){
-			if($perms->code == $currentRoute){
+			if($perms->code == $controller){
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public function can(){
-		return $this->route;
 	}
 
 	public function isRoot(){

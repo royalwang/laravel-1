@@ -3,61 +3,29 @@
 namespace App\Http\Controllers\Setting;
 
 use App\Http\Requests;
-use Permission;
 use Request;
+use Permission;
 use Validator;
+use DB;
 
 class Roles extends Controller
 {
 	//全部角色显示
-	public function index(){
-		return view( $this->path ,[
-			'roles' => Permission::getRoles(),
-			]);
-	}
-
-	//创建新角色
-	public function create(){
-		return view( $this->path ,[
-			'permissions' => Permission::getPermissions(),
-			]);
-	}
-
-	//添加新角色
-	public function store(){
-		$data = Request::all();
+	public function index(Request $request){
 		$user = Request::user();
 
-		$validator = Validator::make($data, [
-            'code' => 'required|unique:roles',
-            'name' => 'required',
-   		]);
+		$roles = $user->childRoles()->paginate($this->show);
 
-		$role = \App\Model\Roles::create($data);
-		$user->roles()->attach($role);
-		$user->save();
-
-		if(!empty($data['permissions']) && count($data['permissions'])>0 ){
-			$role->permissions()->attach($data['permissions']);
-       		$role->save();
-		}
-            
-
-		return redirect()->route('setting.roles.index');
+		return view($this->path, ['tables' => $roles]);
 	}
 
-	//指定角色显示页面
-	public function show($id){
-		return redirect()->action('Setting\Users@edit',$id)
-                        ->withInput();
+	public function create(){
+		return view( $this->path, ['permissions' => Permission::getPermissions() ]);
 	}
 
-	//指定角色修改页面
 	public function edit($id){
-		$role = Permission::getRoles()->find($id) ;
 
-		if($role == null) return redirect()->route('setting.roles.index');
-
+		$role = $this->find($id);
 		$permissions = $role->permissions()->get();
 
 		return view( $this->path ,[
@@ -67,38 +35,71 @@ class Roles extends Controller
 			]);
 	}
 
-	//角色信息保存
-	public function update($id){
-
+	public function store(Request $request){
 		$data = Request::all();
 		$user = Request::user();
-
+		//验证
 		$validator = Validator::make($data, [
             'code' => 'required|unique:roles',
             'name' => 'required',
    		]);
+   		if ($validator->fails()) {
+            return redirect()->route('setting.roles.create',0)
+                        ->withErrors($validator)
+                        ->withInput();
+        } 
+        //添加
+		$role = new \App\Model\Roles($data);
+		$user->childRoles()->save($role);
 
-		$role = Permission::getRoles()->find($id);
+		if(!empty($data['permissions']) && count($data['permissions'])>0 ){
+			$role->permissions()->attach($data['permissions']);
+       		$role->save();
+		}
+		return redirect()->route('setting.roles.index');
+	}
+
+	public function update($id){
+		$data = Request::all();
+		//验证
+		$validator = Validator::make($data, [
+            'code' => 'required|unique:roles,code,'.$id,
+            'name' => 'required',
+   		]);
+   		if ($validator->fails()) {
+            return redirect()->route('setting.roles.edit',$id)
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+        //修改
+		$role = $this->find($id);
 		$role->fill($data);
+		$role->save();
+
 		if(!empty($data['permissions']) && count($data['permissions'])>0 ){
 			$role->permissions()->detach();
 			$role->permissions()->attach($data['permissions']);
 		}
-		$role->save();
-
 		return redirect()->route('setting.roles.index');
 
 	}
 
-	//角色删除
 	public function destroy($id){
 		$role = Permission::getRoles()->find($id);
 		if($role != null){
+			$role->users()->detach();
 			$role->permissions()->detach();
 			$role->delete();
 			return response()->json(['status' => 1]);
 		}
 		return response()->json(['status' => 0]);
+	}
+
+
+	private function find($id){
+		$role = Request::user()->childRoles()->find($id) ;
+		if($role == null) return redirect()->route('setting.roles.index');
+		return $role;
 	}
 
 

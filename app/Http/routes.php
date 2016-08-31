@@ -28,20 +28,41 @@ Route::get('logout', 'Auth\AuthController@logout');
 Route::group(['middleware' => ['auth','permissions' ]], function ($route) {    
 
     Route::resource('/'                                       , 'HomeController');
-
+    
     Route::group(['namespace' => 'Setting'], function () {    
         Route::resource('/setting/users'                      , 'Users');
         Route::resource('/setting/roles'                      , 'Roles');
         Route::resource('/setting/permissions'                , 'Permissions');
     });
 
-    Route::group(['namespace' => 'AD'], function () {    
-        Route::resource('/ad/table'                           , 'Table');
-        Route::resource('/ad/tablestyle'                      , 'TableStyle');
-        Route::resource('/ad/accounts'                        , 'Accounts');
-        Route::resource('/ad/vps'                             , 'Vps');
+    Route::group(['namespace' => 'Chart'], function () {  
+        Route::group(['namespace' => 'Ad'], function () {
+            Route::resource('/chart/ad/table'                     , 'Table');
+        });  
     });
 
+    Route::group(['namespace' => 'Data'], function () {    
+        Route::group(['namespace' => 'Ad'], function () {    
+            //ajax
+            Route::get('/data/ad/accounts/ajax'                   , 'Accounts@ajax');
+            Route::get('/data/ad/vps/ajax'                        , 'Vps@ajax');
+            Route::post('/data/ad/binds/ajax/disable'             , 'Binds@ajaxDisable');  
+            //page
+            Route::resource('/data/ad/records'                    , 'Records');
+            Route::resource('/data/ad/accounts'                   , 'Accounts');
+            Route::resource('/data/ad/vps'                        , 'Vps');
+            Route::resource('/data/ad/binds'                      , 'Binds');     
+        });
+        
+        Route::group(['namespace' => 'Site'], function () {    
+            //ajax
+            Route::get('/data/site/sites/ajax'                    , 'Sites@ajax');
+            //page
+            Route::resource('/data/site/sites'                    , 'Sites');
+            Route::resource('/data/site/banners'                  , 'Banners');
+            Route::resource('/data/site/paychannel'               , 'PayChannel');
+        });    
+    });
 
     
 });

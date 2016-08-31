@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Shanghai',
 
     /*
     |--------------------------------------------------------------------------
@@ -155,7 +155,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\CommonProvider::class,
+        App\Providers\MenusProvider::class,
         App\Providers\PermissionsProvider::class,
 
 
@@ -207,7 +207,7 @@ return [
         'Input' => Illuminate\Support\Facades\Input::class,
 
 
-        'Common' => App\Facades\CommonFacade::class,
+        'Menus' => App\Facades\MenusFacade::class,
         'Permission' => App\Facades\PermissionsFacade::class,
 
     ],

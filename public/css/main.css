@@ -199,3 +199,7 @@ table.form-table{
     background-color: #222;
 }
 
+
+.table-bordered > tbody > tr > td {
+    line-height: 35px;
+}

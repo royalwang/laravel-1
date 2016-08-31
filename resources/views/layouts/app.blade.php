@@ -22,6 +22,8 @@
         </section>
     </div>
 
+    @include('layouts.partials.controlsidebar')
+        
     @include('layouts.partials.footer')
 
 </div>

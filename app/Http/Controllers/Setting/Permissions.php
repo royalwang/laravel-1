@@ -2,34 +2,18 @@
 
 namespace App\Http\Controllers\Setting;
 
-use Illuminate\Http\Request;
-use App\Http\Requests;
+use Request;
 use Permission;
+use Validator;
 
 class Permissions extends Controller
 {
 	public function index(){
-		return view( $this->path ,[
-			'permissions' => Permission::getPermissions(),
-			]);
+		$permission = \App\Model\Permissions::paginate($this->show);
+		return view( $this->path ,['tables' => $permission ]);
 	}
-
 	public function create(){
 		return view( $this->path);
-	}
-
-	//添加新角色
-	public function store(){
-		$data = Request::all();
-
-		$validator = Validator::make($data, [
-            'code' => 'required|unique:roles',
-            'name' => 'required',
-   		]);
-
-		\App\Model\Permissions::create($data);
-
-		return redirect()->route('setting.permissions.index');
 	}
 
 	public function show($id){
@@ -38,36 +22,51 @@ class Permissions extends Controller
 
 	public function edit($id){
 		$permission = Permission::getPermissions()->find($id) ;
-
 		if($permission == null) return redirect()->route('setting.permissions.index');
-
-		return view( $this->path ,[
-			'permission' => $permission,
-			]);
+		return view( $this->path ,['permission' => $permission]);
 	}
 
-	//角色信息保存
-	public function update($id){
-
+	public function store(){
 		$data = Request::all();
-
+		//验证
 		$validator = Validator::make($data, [
-            'code' => 'required|unique:roles',
+            'code' => 'required|unique:permissions',
             'name' => 'required',
    		]);
+   		if ($validator->fails()) {
+            return redirect()->route('setting.permissions.create')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+        //创建
+		\App\Model\Permissions::create($data);
+		return redirect()->route('setting.permissions.index');
+	}
 
+	public function update($id){
+		$data = Request::all();
+		//验证
+		$validator = Validator::make($data, [
+            'code' => 'required|unique:permissions,code,'.$id.',id',
+            'name' => 'required',
+   		]);
+   		if ($validator->fails()) {
+            return redirect()->route('setting.permissions.edit', $id)
+                        ->withErrors($validator)
+                        ->withInput();
+        } 
+        //更新
 		$permission = Permission::getPermissions()->find($id);
 		$permission->fill($data);
 		$permission->save();
-
-		return redirect()->route('setting.permission.index');
+		return redirect()->route('setting.permissions.index');
 
 	}
 
-	//角色删除
 	public function destroy($id){
 		$permission = Permission::getPermissions()->find($id);
 		if($permission != null){
+			$permission->roles()->detach();
 			$permission->delete();
 			return response()->json(['status' => 1]);
 		}

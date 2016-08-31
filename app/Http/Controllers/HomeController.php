@@ -9,7 +9,9 @@ use Auth;
 class HomeController extends Controller
 {
     function index(){
-        return redirect()->action(Auth::user()->default_page());
+        var_dump(Auth::user()->default_page());
+        echo Auth::user()->default_page();exit();
+        return redirect()->route(Auth::user()->default_page());
     }
     function create(){
 

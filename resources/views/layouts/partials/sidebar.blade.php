@@ -1,3 +1,34 @@
+<?php 
+
+
+function menu($data){
+    $html = '';
+    foreach($data as $value){
+        $html .= '<li class="' . (isset($value['active'])?'active':'') .'">';
+        if(isset($value['url']) && !empty($value['url'])){
+             $html .= '<a href="'. route($value['url']) .'">';
+         }else{
+             $html .= '<a>';
+         }
+       
+        $html .= '<i class="fa '.$value['icon'].'"></i>';
+        $html .= '<span>'.$value['name'].'</span>';
+
+        if(isset($value['child']) && is_array($value['child'])){
+            $html .= '<span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>';
+            $html .= '<ul class="treeview-menu">' . menu($value['child']) . '</ul>';
+        }else{
+            $html .= '</a>';
+        }
+        $html .= '</li>';
+    }
+    
+    return $html;
+}
+
+
+?>
+
 <!-- Left side column. contains the logo and sidebar -->
 <aside class="main-sidebar">
 
@@ -32,17 +63,7 @@
         <ul class="sidebar-menu">
             <li class="header">{{ trans('message.header') }}</li>
             <!-- Optionally, you can add icons to the links -->
-                @foreach( $sidebar_main as $value )
-                <li class="{{ (isset($value['active'])?'active':'') }}"><a href="{{ route($value['url']) }}"><i class='fa {{ $value['icon'] }}'></i> <span>{{ $value['name'] }}</span></a>
-                    @if(isset($value['child']) && is_array($value['child']))
-                    <ul class="treeview-menu">
-                        @foreach($value['child'] as $sub_menu) 
-                        <li class="{{ (isset($sub_menu['active'])?'active':'') }}"><a href="{{ route($sub_menu['url']) }}"><i class='fa {{ $sub_menu['icon'] }}'></i> <span>{{ $sub_menu['name'] }}</span></a></li>
-                        @endforeach
-                    </ul>
-                    @endif
-                </li>
-                @endforeach
+            <?php echo menu($sidebar_main); ?>
         </ul><!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->

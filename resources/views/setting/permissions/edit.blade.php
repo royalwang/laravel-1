@@ -1,37 +1,22 @@
-@extends('setting.app')
+@extends('layouts.app3')
 
 @section('htmlheader_title')
-	权限编辑
+    Setting User
 @endsection
 
-@section('style')
-@parent
-<link href="{{ asset('/css/user.css') }}" rel="stylesheet">
+@section('subsidebar_title')
+    用户权限管理
 @endsection
 
-@section('setting-content')
-	
-	
-<div class="row">
-	<div class="col-md-12">
-		<h4 class="left" style="display:block">编辑权限</h4>
-		<div class="right">
-			<a class="btn btn-default" href="{{ route('setting.permissions.index') }}"><i class="fa fa-reply"></i></a>
-			<button class="btn btn-danger" onclick="return update();"><i class="fa fa-save"></i></button>
-		</div>	
-	</div>
-</div>
+@section('form_title')
+    权限编辑
+@endsection
 
-
-<div class="row">
-	<div class="col-md-12">
-		<div class="line1"></div>
-	</div>
-</div>
-
-<div class="row">	
-	<div class="col-md-12">
-	<form class="form-horizontal" name="permissions" action="{{ route('setting.permissions.update', $permission->id ) }}" method="post">
+@section('form-content')
+    
+<form class="form-horizontal" name="form" action="{{ route($path.'.update', $permission->id ) }}" method="post">
+    {{ method_field('PUT') }}
+    {!! csrf_field() !!}
     {{ method_field('PUT') }}
     {!! csrf_field() !!}
     <div class="form-group">
@@ -43,19 +28,11 @@
         <label class="control-label col-sm-2" >权限ID（唯一）</label>
         <div class="col-sm-8"><input name="code" type="text" class="form-control" value="{{ $permission->code }}" autocomplete="off"></div>
     </div>
-
 </form>
-	</div>
-</div>	
-
-
-<script type="text/javascript">
-function update(){
-    swal("Good job!", "You clicked the button!", "success");
-	$('form[name=permissions]').submit();
-}
-</script>
-
+    
+    
+@endsection
 
 	
-@endsection
+	
+

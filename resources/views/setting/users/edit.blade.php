@@ -1,37 +1,20 @@
-@extends('setting.app')
+@extends('layouts.app3')
 
 @section('htmlheader_title')
-	Setting User
+    Setting User
 @endsection
 
-@section('style')
-@parent
-<link href="{{ asset('/css/user.css') }}" rel="stylesheet">
+@section('subsidebar_title')
+    用户权限管理
 @endsection
 
-@section('setting-content')
-	
-	
-<div class="row">
-	<div class="col-md-12">
-		<h4 class="left" style="display:block">编辑用户</h4>
-		<div class="right">
-			<a class="btn btn-default" href="{{ route('setting.users.index') }}"><i class="fa fa-reply"></i></a>
-			<button class="btn btn-danger" onclick="return update();"><i class="fa fa-save"></i></button>
-		</div>	
-	</div>
-</div>
+@section('form_title')
+    用户编辑
+@endsection
 
-
-<div class="row">
-	<div class="col-md-12">
-		<div class="line1"></div>
-	</div>
-</div>
-
-<div class="row">	
-	<div class="col-md-12">
-	<form class="form-horizontal" name="users" action="{{ route('setting.users.update', $user->id ) }}" method="post">
+@section('form-content')
+    
+<form class="form-horizontal" name="form" action="{{ route($path.'.update', $user->id ) }}" method="post">
     {{ method_field('PUT') }}
     {!! csrf_field() !!}
     <div class="form-group">
@@ -64,17 +47,11 @@
         </div>
     </div>
 </form>
-	</div>
-</div>	
+    
 
 
-<script type="text/javascript">
-function update(){
-    swal("Good job!", "You clicked the button!", "success");
-	$('form[name=users]').submit();
-}
-</script>
-
+    
+@endsection
 
 	
-@endsection
+	

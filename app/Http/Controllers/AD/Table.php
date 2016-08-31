@@ -51,7 +51,7 @@ class Table extends Controller
 			if(false){ // $this->user->is('responsible')
 				$switch_tab = $this->user->child;
 			}else{
-				$switch_tab = $this->user->adAccount()->orderBy('sort')->where('hidden',0)->get();
+				$switch_tab = $this->user->adTable()->get();
 			}
 			if($switch_tab == null) return array();
 

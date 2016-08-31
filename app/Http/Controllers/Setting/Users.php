@@ -2,32 +2,39 @@
 
 namespace App\Http\Controllers\Setting;
 
-use App\Http\Requests;
 use Request;
 use Permission;
 use Validator;
 
 class Users extends Controller
 {
-	//全部用户显示
 	public function index(){
-
-		return view( $this->path ,[
-			'users' => Permission::getChild(),
-			]);
+		$users = Request::user()->child()->with('selfRoles')->paginate($this->show);
+		return view( $this->path, ['tables' => $users] );
 	}
 
-	//创建新用户
 	public function create(){
+		$roles = Request::user()->childRoles()->get();
+		return view( $this->path , ['roles' => $roles ] );
+	}
+
+	public function show($id){
+		return redirect()->route('setting.users.edit',$id)
+                        ->withInput();
+	}
+
+	public function edit($id){
+		$user = $this->find($id);
 		return view( $this->path ,[
-			'roles' => Permission::getRoles(),
+			'user'  => $user ,
+			'roles' => Request::user()->childRoles()->get(),
+			'current_roles' => $user->selfRoles()->get(),
 			]);
 	}
 
-	//用户批量处理
 	public function store(){
 		$data = Request::all();
-
+		//验证
 		$validator = Validator::make($data, [
             'name' => 'required|unique:users',
             'password' => 'required|min:6|confirmed',
@@ -38,42 +45,16 @@ class Users extends Controller
                         ->withErrors($validator)
                         ->withInput();
         } 
-
+        //添加
    	    $user = new \App\Model\Users;
     	$user->password = bcrypt($data['password']);
     	$user->name = $data['name'];
-    	$user->save();
+    	Request::user()->child()->save($user);
     	if(!empty($data['roles']) && count($data['roles'])>0 ) 
-    		$user->roles()->attach($data['roles']);
-    	$user->save();
-
+    		$user->selfRoles()->attach($data['roles']);
     	return redirect()->route('setting.users.index');
 	}
 
-	//指定用户显示页面
-	public function show($id){
-		return redirect()->route('setting.users.edit',$id)
-                        ->withInput();
-	}
-
-	//指定用户修改页面
-	public function edit($id){
-		$user = Permission::getChild()->find($id) ;
-
-		if($user == null){
-			return redirect()->route('setting.users.index');
-		}
-
-		$current_roles = $user->roles()->get();
-
-		return view( $this->path ,[
-			'user'  => $user ,
-			'roles' => Permission::getRoles(),
-			'current_roles' => $current_roles,
-			]);
-	}
-
-	//用户信息修改
 	public function update($id){
 
 		$data = Request::all();
@@ -104,16 +85,14 @@ class Users extends Controller
                         ->withInput();
         } 
 
-        $users = Permission::getChild();
-        $user = $users->find($data['id']);
+        $user = $this->find($data['id']);
         
         if($user != null){
         	if($password_update == true) $user->password = bcrypt($data['password']);
         	$user->name = $data['name'];
-            $user->roles()->detach();
+            $user->selfRoles()->detach();
             if(!empty($data['roles']) && count($data['roles'])>0 ) 
-            	$user->roles()->attach($data['roles']);
-            $user->save();
+            	$user->selfRoles()->attach($data['roles']);
         }
 
         return redirect()->route('setting.users.index');
@@ -122,14 +101,20 @@ class Users extends Controller
 
 	//用户删除
 	public function destroy($id){
-		$users = Permission::getChild();
-		$user = $users->find($id);
+		$user = Request::user()->child()->find($id) ;
 		if($user != null){
-			$user->roles()->detach();
+			$user->selfRoles()->detach();
 			$user->delete();
 			return response()->json(['status' => 1]);
 		}
 		return response()->json(['status' => 0]);
+	}
+
+
+	private function find($id){
+		$user = Request::user()->child()->find($id) ;
+		if($user == null) return redirect()->route('setting.users.index');
+		return $user;
 	}
 
 }

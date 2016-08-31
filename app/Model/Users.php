@@ -37,27 +37,43 @@ class Users extends Authenticatable
     }
 
     public function adTable(){
-        return $this->hasManyThrough(ADTable::class,ADAccount::class,'users_id','ad_account_id');
+        return $this->hasMany(ADTable::class,'users_id');
     }
    
     public function adTableStyle(){
         return $this->hasOne(ADTableStyle::class,'users_id','id');
     }
 
-    public function roles(){
+    public function vps(){
+        return $this->hasMany(ADVps::class);
+    }
+
+    public function binds(){
+        return $this->hasMany(ADBinds::class);
+    }
+
+    public function adBinds(){
+        return $this->hasMany(ADBinds::class);
+    }
+
+    public function adRecords(){
+        return $this->hasManyThrough(ADRecords::class,ADBinds::class,'users_id','ad_binds_id');
+    }     
+
+    public function selfRoles(){
         return $this->belongsToMany(Roles::class,'roles_users');
     }
 
-    public function permissions(){
-        return $this->hasManyThrough(Roles::class,Permissions::class,'users_id','roles_id');
+    public function childRoles(){
+        return $this->hasMany(Roles::class);
     }
 
     public function default_page(){
-        $roles = $this->roles();
+        $roles = $this->roles()->first();
         if($roles == null){
             return '/';
         }else{
-            return $roles->first()->default_page;
+            return $roles->default_page;
         }
     }
 
@@ -66,7 +82,7 @@ class Users extends Authenticatable
     }
 
     public function hasRole($code){
-        $roles = $this->roles();
+        $roles = $this->selfRoles()->get();
         foreach ($roles as $role) {
             if($role->code == $code){
                 return true;

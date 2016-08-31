@@ -9,6 +9,9 @@ class Permissions extends Model
 
 
     public $timestamps = false;
+    public $fillable = [
+    	'name','code'
+    ];
 
 
     public function roles(){
