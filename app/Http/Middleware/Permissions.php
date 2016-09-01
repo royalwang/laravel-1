@@ -17,7 +17,7 @@ class Permissions
     public function handle($request, Closure $next)
     {
         if(!Permission::canCurrentAction()){
-            return redirect()->route($request->user()->default_page());
+            //return redirect()->route($request->user()->default_page());
         }
         return $next($request);
     }

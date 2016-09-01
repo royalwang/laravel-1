@@ -8,11 +8,14 @@ class MenuItem{
     private $icon;
     private $name;
     private $active;
+    private $visable;
     
     public function __construct($array){
-        $this->url  = isset($array['url'])?$array['url']:'';
-        $this->icon = isset($array['icon'])?$array['icon']:'';
-        $this->name = isset($array['name'])?$array['name']:'';;
+        $this->url      = isset($array['url'])?$array['url']:'';
+        $this->icon     = isset($array['icon'])?$array['icon']:'';
+        $this->name     = isset($array['name'])?$array['name']:'';
+        $this->visable  = isset($array['visable'])?$array['visable']:'';
+        
         if(isset($array['child']) && is_array($array['child'])){
             $this->setChild($array['child']);
         }
@@ -23,17 +26,24 @@ class MenuItem{
             'icon' => $this->icon,
             'name' => $this->name,
             'active' => $this->active,
+            'visable' => $this->visable,
         );
         if($this->child instanceof Menus){
             $array['child'] = $this->child->toArray();
         }
         return $array;
     }
+
     public function setChild($array){
         $this->child = new Menus($array);
     }
+
     public function setActive(){
         $this->active = 'active';
+    }
+
+    public function setVisable(){
+        $this->visable = 'visable';
     }
     
     public function addMenu($key,$array){
@@ -116,6 +126,22 @@ class Menus{
         }     
 
         return $this;
-
     }
+
+    public function setVisable($key){
+        $keys = explode('.', $key,2);
+        $code = array_shift($keys);
+
+        if(!isset($this->items[$code])) return $this;
+
+        $this->items[$code]->setVisable();
+        
+        if(is_array($keys) && !empty($keys) ){
+            $child_menu = $this->items[$code]->getMenu();
+            if($child_menu instanceof Menus) $child_menu->setVisable($keys[0]);
+        }     
+
+        return $this;
+    }
+    
 }

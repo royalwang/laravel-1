@@ -5,29 +5,26 @@ namespace App\Libs;
 use Route;
 
 class Permission{
-	private $action = array();
-	private $root = false;
-	private $child;
-	private $roles;
+	private $user;
 	private $perms;
+	private $page;
 	
 	public function __construct($user){
-
-		$this->perms = collect();
-
-		if($user->id == 1){
-			$this->root = true;
-			$this->child = \App\Model\Users::all();
-			$this->perms = \App\Model\Permissions::all();
-			$this->roles = \App\Model\Roles::all();
-		}else{
-			$this->child = $user->child();
-			$this->roles = $user->roles()->get();
-			foreach ($this->roles as $role) {
-				$this->perms->merge($role->permissions()->get());
-			}
+	
+		//权限获取
+		$page  = '';
+		$perms = collect();
+		$roles = $user->selfRoles()->with('permissions')->get();
+		foreach ($roles as $role) {
+			if(!empty($role->default_page) && empty($page)) $page = $role->default_page;
+			if($role->permissions == null) continue;
+			$perms = $perms->merge($role->permissions);
 		}
-	}
+
+		$this->user  = $user;
+		$this->perms = $perms->unique();
+		$this->page  = $page;
+ 	}
 
 	public function canCurrentAction(){
 
@@ -41,25 +38,29 @@ class Permission{
 	}
 
 	public function can($action){
-		if( $this->root ) return true;
+		if( $this->isRoot() ) return true;
 
 		foreach( $this->perms as $perms ){
-			if($perms->code == $controller){
+			if($perms->code == $action){
 				return true;
 			}
 		}
 		return false;
 	}
 
+	public function defaultPage(){
+		return $this->page;
+	}
+
 	public function isRoot(){
-		return $this->root;
+		return ($this->user->id == 1);
 	}
 
 	public function getChild(){
 		return $this->child;
 	}
 
-	public function getPermissions(){
+	public function getPerms(){
 		return $this->perms;
 	}
 

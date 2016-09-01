@@ -34,6 +34,7 @@
 		<td>{{ $bind->site->host }}</td>
 		<td>
 			<div class="btn-group">
+			<a class="btn btn-default" href="{{ route($path.'.show' , $bind->id) }}"><i class="fa fa-eye"></i></a>
 			<a class="btn btn-default" href="{{ route($path.'.edit' , $bind->id) }}"><i class="fa fa-ban"></i></a>
 			<a class="btn btn-default" href="{{ route($path.'.edit' , $bind->id) }}"><i class="fa fa-edit"></i></a>
 			</div>

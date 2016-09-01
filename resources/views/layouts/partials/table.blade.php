@@ -1,6 +1,6 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('css/dataTables.bootstrap.css') }}">
 <div class="col-md-10">
-    <div class="box">
+    <div class="box box-primary">
         <div class="box-header">
             <h3 class="box-title">@yield('table_title')</h3>
             <div class="box-tools pull-right">

@@ -14,17 +14,8 @@
 
 @section('form-content')
 	
-<form class="form-horizontal" name="users" action="{{ route($path .'.store') }}" method="post">
+<form class="form-horizontal" name="form" action="{{ route($path .'.store') }}" method="post">
     {!! csrf_field() !!}
-    <div class="form-group">
-        <label class="control-label col-sm-2" >编号</label>
-        <div class="col-sm-8"><input name="code" type="text" placeholder="编号" class="form-control" autocomplete="off"></div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-sm-2" >日期</label>
-        <div class="col-sm-8"><input name="date" type="text" placeholder="日期" class="form-control" autocomplete="off"></div>
-    </div>
 
     <div class="form-group">
         <label class="control-label col-sm-2" >网址</label>
@@ -37,18 +28,6 @@
         	<select name="banners_id" class="form-control">
         		@foreach($banners as $banner)
         			<option value="{{ $banner->id }}">{{ $banner->name }}</option>
-        		@endforeach
-        	</select>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-sm-2" >程序员</label>
-        <div class="col-sm-8">
-        	<select name="users_id" class="form-control">
-        		@foreach($users as $user)
-        			<?php if(!$user->hasRole('site.admin')) continue; ?>
-        			<option value="{{ $user->id }}">{{ $user->name }}</option>
         		@endforeach
         	</select>
         </div>

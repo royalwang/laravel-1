@@ -22,6 +22,7 @@
 		<th>IP</th>
 		<th>账号</th>
 		<th>密码</th>
+		<th>状态</th>
 		<th width="100">操作</th>
 	</tr>
 </thead>
@@ -32,10 +33,13 @@
 		<td>{{ $vps->ip }}</td>
 		<td>{{ $vps->username }}</td>
 		<td>{{ $vps->password }}</td>
+		<td>{{ ($vps->binded?'已使用':'空闲') }}</td>
 		<td>
 			<div class="btn-group">
 			<a class="btn btn-default" href="{{ route($path.'.edit' , $vps->id) }}"><i class="fa fa-edit"></i></a>
+			@if($vps->binded == 0)
 			<button class="btn btn-danger table-delete" data-href="{{ route($path.'.destroy' , $vps->id ) }}"><i class="fa fa-trash"></i></button>
+			@endif
 			</div>
 		</td>
 	</tr>

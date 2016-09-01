@@ -19,7 +19,6 @@
 <thead>
 	<tr>
 		<th width="35"><input type="checkbox" /></th>
-		<th>编号</th>
 		<th>日期</th>
 		<th>网址</th>
 		<th>品牌</th>
@@ -32,8 +31,7 @@
 	@foreach($tables as $site)
 	<tr>
 		<td width="35"><input type="checkbox" /></td>
-		<td>{{ $site->code }}</td>
-		<td>{{ $site->date }}</td>
+		<td>{{ $site->created_at }}</td>
 		<td>{{ $site->host }}</td>
 		<td>{{ isset($site->banner->name) ? $site->banner->name : 'null'  }}</td>
 		<td>{{ isset($site->user->name) ? $site->user->name : 'null' }}</td>
@@ -41,7 +39,7 @@
 		<td>
 			<div class="btn-group">
 			<a class="btn btn-default" href="{{ route($path.'.edit' , $site->id) }}"><i class="fa fa-edit"></i></a>
-			<button class="btn btn-danger user-delete" data-href="{{ route($path.'.destroy' , $site->id ) }}"><i class="fa fa-trash"></i></button>
+			<button class="btn btn-danger table-delete" data-href="{{ route($path.'.destroy' , $site->id ) }}"><i class="fa fa-trash"></i></button>
 			</div>
 		</td>
 	</tr>

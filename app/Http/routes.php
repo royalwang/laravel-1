@@ -44,9 +44,10 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
     Route::group(['namespace' => 'Data'], function () {    
         Route::group(['namespace' => 'Ad'], function () {    
             //ajax
-            Route::get('/data/ad/accounts/ajax'                   , 'Accounts@ajax');
-            Route::get('/data/ad/vps/ajax'                        , 'Vps@ajax');
-            Route::post('/data/ad/binds/ajax/disable'             , 'Binds@ajaxDisable');  
+            Route::resource('/data/ad/accounts/ajax'              , 'AccountsAjax');
+            Route::resource('/data/ad/vps/ajax'                   , 'VpsAjax');
+            Route::resource('/data/ad/binds/ajax'                 , 'BindsAjax');
+            Route::resource('/data/ad/records/ajax'               , 'RecordsAjax');  
             //page
             Route::resource('/data/ad/records'                    , 'Records');
             Route::resource('/data/ad/accounts'                   , 'Accounts');
@@ -56,11 +57,11 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
         
         Route::group(['namespace' => 'Site'], function () {    
             //ajax
-            Route::get('/data/site/sites/ajax'                    , 'Sites@ajax');
+            Route::resource('/data/site/sites/ajax'               , 'SitesAjax');
             //page
             Route::resource('/data/site/sites'                    , 'Sites');
             Route::resource('/data/site/banners'                  , 'Banners');
-            Route::resource('/data/site/paychannel'               , 'PayChannel');
+            Route::resource('/data/site/paychannels'              , 'PayChannels');
         });    
     });
 

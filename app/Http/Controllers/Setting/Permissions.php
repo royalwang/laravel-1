@@ -21,7 +21,7 @@ class Permissions extends Controller
 	}
 
 	public function edit($id){
-		$permission = Permission::getPermissions()->find($id) ;
+		$permission = \App\Model\Permissions::find($id) ;
 		if($permission == null) return redirect()->route('setting.permissions.index');
 		return view( $this->path ,['permission' => $permission]);
 	}
@@ -39,7 +39,8 @@ class Permissions extends Controller
                         ->withInput();
         }
         //创建
-		\App\Model\Permissions::create($data);
+		$prem = \App\Model\Permissions::create($data);
+		Request::user()->selfRoles()->find(1)->permissions()->attach($prem);
 		return redirect()->route('setting.permissions.index');
 	}
 
@@ -56,7 +57,7 @@ class Permissions extends Controller
                         ->withInput();
         } 
         //更新
-		$permission = Permission::getPermissions()->find($id);
+		$permission = \App\Model\Permissions::find($id);
 		$permission->fill($data);
 		$permission->save();
 		return redirect()->route('setting.permissions.index');
@@ -64,9 +65,9 @@ class Permissions extends Controller
 	}
 
 	public function destroy($id){
-		$permission = Permission::getPermissions()->find($id);
+		$permission = \App\Model\Permissions::find($id);
 		if($permission != null){
-			$permission->roles()->detach();
+			Request::user()->selfRoles()->find(1)->permissions()->detach($permission);
 			$permission->delete();
 			return response()->json(['status' => 1]);
 		}

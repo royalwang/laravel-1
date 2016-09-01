@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Data\Ad;
 
 use Request;
+use Validator;
 
 class Vps extends Controller
 {
@@ -10,7 +11,7 @@ class Vps extends Controller
 		parent::__construct();
 
 		$this->user = Request::user();
-		$this->vps = $this->user->vps();
+		$this->vps = $this->user->adVps();
 	}
 
 	public function index(){
@@ -39,6 +40,15 @@ class Vps extends Controller
 
 	public function store(){
 
+		$validator = Validator::make(Request::all(), [
+            'ip' => 'required|ip|unique:ad_vps',
+            'username' => 'required|min:4',
+   		]);
+   		if ($validator->fails()) {
+            return redirect()->route('data.ad.vps.create')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
 
 		$vps = new \App\Model\ADVps(Request::all());
 		$vps->users_id = $this->user->id;
@@ -48,8 +58,7 @@ class Vps extends Controller
 	}
 
 	public function edit($id){
-		$vps = $this->vps->find($id);
-		if($vps == null) return redirect()->route('data.ad.vps.index');
+		$vps = $this->find($id);
 
 		return view($this->path,[
 			'vps' => $vps ,
@@ -57,7 +66,19 @@ class Vps extends Controller
 	}
 
 	public function update($id){
-		$vps = $this->vps->find($id);
+		$vps = $this->find($id);
+
+		$validator = Validator::make(Request::all(), [
+            'ip' => 'required|ip|unique:ad_vps,ip,'.$id,
+            'username' => 'required|min:4',
+   		]);
+   		if ($validator->fails()) {
+            return redirect()->route('data.ad.vps.edit',$id)
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
+
 		$vps->fill(Request::all());
 		$vps->save();
 
@@ -65,12 +86,18 @@ class Vps extends Controller
 	}
 
 	public function destroy($id){
-		$vps = $this->vps->find($id);
-		if($vps != null){
-			$vps->delete();
-			return response()->json(['status' => 1]);
-		}
-		return response()->json(['status' => 0]);
+		$vps = $this->find($id);
+		$vps->delete();
+		return response()->json(['status' => 1]);
+
 	}
+
+	private function find($id){
+		$vps = $this->vps->find($id);
+		if($vps == null){
+			return redirect()->route('data.ad.vps.index');
+		}
+		return $vps;
+	} 
 }
 

@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Data\Site;
 
 use Request;
+use Validator;
 
 class Sites extends Controller
 {
 	public function index(){
 		
-		$sites = \App\Model\Sites::paginate($this->show);
+		$sites = Request::user()->sites()->paginate($this->show);
 
 		return view($this->path,[
 			'tables' => $sites ,
@@ -27,26 +28,51 @@ class Sites extends Controller
 		return response()->json($json);
 	}
 
+	public function create(){
+
+		return view($this->path,[
+			'banners' => \App\Model\Banners::all() ,
+			'pay_channel' => \App\Model\PayChannel::all() ,
+			]);
+	}
+
 	public function store(){
-		$site = \App\Model\Sites::create(Request::all());
+		$validator = Validator::make(Request::all(), [
+            'host' => 'required|active_url|unique:sites',
+   		]);
+   		if ($validator->fails()) {
+            return redirect()->route('data.site.sites.create')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
+		$site = new \App\Model\Sites(Request::all());
+		Request::user()->sites()->save($site);
 		return redirect()->route('data.site.sites.index');
 	}
 
 	public function edit($id){
-		$site = \App\Model\Sites::find($id);
-		if($site == null) return redirect()->route('data.site.sites.index');
-
+		$site = $this->find($id);
 
 		return view($this->path,[
 			'site' => $site ,
 			'banners' => \App\Model\Banners::all() ,
 			'pay_channel' => \App\Model\PayChannel::all() ,
-			'users' => \App\Model\Users::all() ,
 			]);
 	}
 
 	public function update($id){
-		$site = \App\Model\Sites::find($id);
+		$site = $this->find($id);
+
+		$validator = Validator::make(Request::all(), [
+            'host' => 'required|active_url|unique:sites,host,'.$id,
+   		]);
+   		if ($validator->fails()) {
+            return redirect()->route('setting.site.sites.edit',$id)
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
 		$site->fill(Request::all());
 		$site->save();
 
@@ -54,12 +80,14 @@ class Sites extends Controller
 	}
 
 	public function destory($id){
-		$site = \App\Model\Sites::find($id);
-		if($site != null){
-			$site->delete();
-			return response()->json(['status' => 1]);
-		}
-		return response()->json(['status' => 0]);
+		$site = $this->find($id);
+		return response()->json(['status' => 1]);
+	}
+
+	private function find($id){
+		$site = Request::user()->sites()->find($id) ;
+		if($site == null) return redirect()->route('setting.site.sites.index');
+		return $site;
 	}
 }
 

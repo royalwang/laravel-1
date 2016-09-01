@@ -29,8 +29,8 @@
 			<td>{{ $channel->name }}</td>
 			<td>
 				<div class='btn-group'>
-				<a class="btn btn-default" href="{{ route('data.site.paychannel.edit' , $channel->id) }}"><i class="fa fa-edit"></i></a>
-				<button class="btn btn-danger user-delete" data-href="{{ route('data.site.paychannel.destroy' , $channel->id ) }}"><i class="fa fa-trash"></i></button>
+				<a class="btn btn-default" href="{{ route($path . '.edit' , $channel->id) }}"><i class="fa fa-edit"></i></a>
+				<button class="btn btn-danger user-delete" data-href="{{ route($path . '.destroy' , $channel->id ) }}"><i class="fa fa-trash"></i></button>
 				</div>
 			</td>
 		</tr>

@@ -9,7 +9,7 @@
 @endsection
 
 @section('form_title')
-    新建广告VPS
+    绑定新账号
 @endsection
 
 @section('style')
@@ -58,7 +58,7 @@ $.fn.select2.defaults.set("ajax--cache", false);
 
 $(".ajax-select-vps").select2({
     ajax: {
-        url: '{{ url('data/ad/vps/ajax') }}',
+        url: '{{ route('data.ad.vps.ajax.index') }}',
         processResults: function (data) {
             return {
                 results: data
@@ -69,7 +69,7 @@ $(".ajax-select-vps").select2({
 
 $('.ajax-select-accounts').select2({
   ajax: {
-    url: '{{ url('data/ad/accounts/ajax') }}',
+    url: '{{ route('data.ad.accounts.ajax.index') }}',
     processResults: function (data) {
       return {
         results: data
@@ -80,7 +80,7 @@ $('.ajax-select-accounts').select2({
 
 $('.ajax-select-sites').select2({
   ajax: {
-    url: '{{ url('data/site/sites/ajax') }}',
+    url: '{{ route('data.site.sites.ajax.index') }}',
     processResults: function (data) {
       return {
         results: data

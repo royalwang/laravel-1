@@ -5,6 +5,7 @@ namespace App\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
 
+use Permission;
 
 class Users extends Authenticatable
 {
@@ -14,7 +15,7 @@ class Users extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'password' 
+        'name', 'username', 'password' 
     ];
 
     protected $table = 'users';
@@ -28,10 +29,6 @@ class Users extends Authenticatable
         'password', 'remember_token', 
     ];
 
-    public function child(){
-        return $this->hasMany($this,'parent_id','id');
-    }
-
     public function adAccount(){
         return $this->hasMany(ADAccounts::class,'users_id','id');
     }
@@ -44,12 +41,8 @@ class Users extends Authenticatable
         return $this->hasOne(ADTableStyle::class,'users_id','id');
     }
 
-    public function vps(){
+    public function adVps(){
         return $this->hasMany(ADVps::class);
-    }
-
-    public function binds(){
-        return $this->hasMany(ADBinds::class);
     }
 
     public function adBinds(){
@@ -60,6 +53,14 @@ class Users extends Authenticatable
         return $this->hasManyThrough(ADRecords::class,ADBinds::class,'users_id','ad_binds_id');
     }     
 
+    public function sites(){
+        return $this->hasMany(Sites::class);
+    }
+
+    public function child(){
+        return $this->hasMany($this,'parent_id','id');
+    }
+
     public function selfRoles(){
         return $this->belongsToMany(Roles::class,'roles_users');
     }
@@ -69,17 +70,14 @@ class Users extends Authenticatable
     }
 
     public function default_page(){
-        $roles = $this->roles()->first();
-        if($roles == null){
-            return '/';
-        }else{
-            return $roles->default_page;
-        }
+        return Permission::defaultPage();
     }
 
     public function canAction($action){
-        return Permissions::canAction($action);
+        return Permission::can($action);
     }
+
+   
 
     public function hasRole($code){
         $roles = $this->selfRoles()->get();

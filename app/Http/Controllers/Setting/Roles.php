@@ -20,7 +20,7 @@ class Roles extends Controller
 	}
 
 	public function create(){
-		return view( $this->path, ['permissions' => Permission::getPermissions() ]);
+		return view( $this->path, ['permissions' => Permission::getPerms() ]);
 	}
 
 	public function edit($id){
@@ -30,7 +30,7 @@ class Roles extends Controller
 
 		return view( $this->path ,[
 			'role'  => $role ,
-			'permissions' => Permission::getPermissions(),
+			'permissions' => Permission::getPerms(),
 			'current_permissions' => $permissions,
 			]);
 	}
@@ -77,8 +77,7 @@ class Roles extends Controller
 		$role->save();
 
 		if(!empty($data['permissions']) && count($data['permissions'])>0 ){
-			$role->permissions()->detach();
-			$role->permissions()->attach($data['permissions']);
+			$role->permissions()->sync($data['permissions']);
 		}
 		return redirect()->route('setting.roles.index');
 

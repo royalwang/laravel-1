@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Route;
 use Request;
 use Menus;
+use Permission;
 
 class Controller extends BaseController
 {
@@ -27,7 +28,8 @@ class Controller extends BaseController
             'home' => [
                 'icon' => 'fa-home' ,
                 'name' => '首页',
-                'url' => 'index'
+                'url' => 'index',
+                'visable' => 'visable',
             ], 
             'chart' => [
                 'icon' => 'fa-pie-chart' ,
@@ -111,8 +113,8 @@ class Controller extends BaseController
                 'icon' => 'fa-database',
                 'name' => '品牌信息',
             ], 
-            'paychannel' => [ 
-                'url'  => 'data.site.paychannel.index', 
+            'paychannels' => [ 
+                'url'  => 'data.site.paychannels.index', 
                 'icon' => 'fa-database',
                 'name' => '通道信息',
             ],
@@ -133,9 +135,17 @@ class Controller extends BaseController
              ->addMenu('setting',$sidebar_setting)
              ->addMenu('chart',$sidebar_chart)
              ->setActive($this->path);
-    	
+
+    	$routes = Permission::getPerms()->toArray();
+        foreach($routes as $route){
+            if(ends_with($route['code'],'.index')){
+                Menus::setVisable(substr($route['code'], 0 ,-6));
+            }
+        }  
+
         $request = Request::all();     
-        $this->show = isset($request['show']) ? $request['show'] :'20';      
+        $this->show = isset($request['show']) ? $request['show'] :'20';   
+
 
     	view()->share('sidebar_main', Menus::toArray());
         view()->share('path', substr($this->path,0,strripos($this->path,'.')));

@@ -9,11 +9,10 @@
 @endsection
 
 @section('form_title')
-    Vps编辑
+    Vps添加
 @endsection
 
 @section('form-content')
-	
 
 <form class="form-horizontal" name="form" action="{{ route($path.'.store') }}" method="post">
     {!! csrf_field() !!}
@@ -32,5 +31,12 @@
         <div class="col-sm-8"><input name="password" type="text" placeholder="输入密码" class="form-control" autocomplete="off"></div>
     </div>
 </form>
+
+<script src="{{ asset('plugins/input-mask/jquery.inputmask.js')}}"></script>
+<script src="{{ asset('plugins/input-mask/jquery.inputmask.date.extensions.js')}}"></script>
+<script src="{{ asset('plugins/input-mask/jquery.inputmask.extensions.js')}}"></script>
+<script type="text/javascript">
+$("input[name=ip]").inputmask();
+</script>
 
 @endsection

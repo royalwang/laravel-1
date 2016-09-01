@@ -5,7 +5,7 @@
 @endsection
 
 @section('subsidebar_title')
-	用户权限管理
+	子用户权限管理
 @endsection
 
 @section('table_title')

@@ -15,6 +15,7 @@ class Users extends Controller
 
 	public function create(){
 		$roles = Request::user()->childRoles()->get();
+		$roles = $roles->merge(Request::user()->selfRoles()->get());
 		return view( $this->path , ['roles' => $roles ] );
 	}
 
@@ -36,7 +37,8 @@ class Users extends Controller
 		$data = Request::all();
 		//验证
 		$validator = Validator::make($data, [
-            'name' => 'required|unique:users',
+            'name' => 'required|max:255|min:2',
+            'username' => 'required|min:6|max:128|unique:users',
             'password' => 'required|min:6|confirmed',
        	]);
 
@@ -47,8 +49,10 @@ class Users extends Controller
         } 
         //添加
    	    $user = new \App\Model\Users;
+   	    $user->username = $data['username'];
     	$user->password = bcrypt($data['password']);
     	$user->name = $data['name'];
+
     	Request::user()->child()->save($user);
     	if(!empty($data['roles']) && count($data['roles'])>0 ) 
     		$user->selfRoles()->attach($data['roles']);
@@ -56,44 +60,41 @@ class Users extends Controller
 	}
 
 	public function update($id){
-
 		$data = Request::all();
-		$data['id'] = $id;
+
+		$user = $this->find($id);
 		
-		if($id == 0){
-			$this->add($data);
-		}
 		$password_update = false;
 		if($data['password'] == '********' && $data['password_confirmation'] == '********' ){
 			$validator = Validator::make($data, [
-	            'id' => 'required',
-	            'name' => 'required',
+	            'name' => 'required|max:255|min:2',
+	            'username' => 'required|min:6|max:128|unique:users,username,' . $id ,
        		]);
 		}else{
 			$password_update = true;
 			$validator = Validator::make($data, [
-	            'id' => 'required',
-	            'name' => 'required',
+	            'name' => 'required|max:255|min:2',
+	            'username' => 'required|min:6|max:128|unique:users,username,' . $id ,
 	            'password' => 'required|min:6|confirmed',
        		]);
 		}
         
         if ($validator->fails()) {
-        	var_dump($validator);
             return redirect()->route('setting.users.edit',$id)
                         ->withErrors($validator)
                         ->withInput();
         } 
-
-        $user = $this->find($data['id']);
         
-        if($user != null){
-        	if($password_update == true) $user->password = bcrypt($data['password']);
-        	$user->name = $data['name'];
-            $user->selfRoles()->detach();
-            if(!empty($data['roles']) && count($data['roles'])>0 ) 
-            	$user->selfRoles()->attach($data['roles']);
-        }
+
+    	if($password_update == true) $user->password = bcrypt($data['password']);
+
+    	$user->name = $data['name'];
+    	$user->username = $data['username'];
+    	$user->save();
+
+        if(!empty($data['roles']) && count($data['roles'])>0 ) 
+        	$user->selfRoles()->sync($data['roles']);
+
 
         return redirect()->route('setting.users.index');
 
@@ -101,15 +102,12 @@ class Users extends Controller
 
 	//用户删除
 	public function destroy($id){
-		$user = Request::user()->child()->find($id) ;
-		if($user != null){
-			$user->selfRoles()->detach();
-			$user->delete();
-			return response()->json(['status' => 1]);
-		}
-		return response()->json(['status' => 0]);
-	}
+		$user = $this->find($id) ;		
+		$user->selfRoles()->detach();
+		$user->delete();
+		return response()->json(['status' => 1]);
 
+	}
 
 	private function find($id){
 		$user = Request::user()->child()->find($id) ;

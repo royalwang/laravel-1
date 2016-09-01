@@ -18,6 +18,15 @@ class Binds extends Controller
 			]);
 	}
 
+	public function show($id){
+		$bind = Request::user()->adBinds()->find($id);
+		if($bind == null) return redirect()->route('data.ad.binds.index');
+
+		return view($this->path,[
+			'bind' => $bind ,
+			]);	
+	}
+
 	public function create(){
 		return view($this->path);
 	}

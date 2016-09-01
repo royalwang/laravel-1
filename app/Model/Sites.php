@@ -12,11 +12,9 @@ class Sites extends Model
      * @var array
      */
     protected $fillable = [
-        'host','banners_id','users_id','pay_channel_id','date','code'
+        'host','banners_id','pay_channel_id',
     ];
-
-    public $timestamps = false;
-
+    
     public function banner(){
         return $this->belongsTo(Banners::class,'banners_id');
     }

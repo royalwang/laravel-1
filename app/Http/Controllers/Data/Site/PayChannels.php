@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Data\Site;
 
 use Request;
 
-class PayChannel extends Controller
+class PayChannels extends Controller
 {
 	public function index(){
 		$paychannel = \App\Model\PayChannel::paginate($this->show);

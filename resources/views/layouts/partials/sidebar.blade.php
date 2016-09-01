@@ -4,6 +4,7 @@
 function menu($data){
     $html = '';
     foreach($data as $value){
+        if(!isset($value['visable']) || empty($value['visable'])) continue; 
         $html .= '<li class="' . (isset($value['active'])?'active':'') .'">';
         if(isset($value['url']) && !empty($value['url'])){
              $html .= '<a href="'. route($value['url']) .'">';

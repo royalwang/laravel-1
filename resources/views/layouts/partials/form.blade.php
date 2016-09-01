@@ -38,6 +38,12 @@
 </div>
 
 <script type="text/javascript">
+
+$('form[name="form"]').bind('keyup', function(event) {
+    if(event.keyCode == 13)
+        update();
+});
+
 function update(){
     swal("Good job!", "You clicked the button!", "success");
     $('form[name=form]').submit();
