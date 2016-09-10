@@ -12,6 +12,7 @@ class ADBinds extends Model
         'accounts_id',
         'vps_id',
         'sites_id',
+        'status' ,
     );
 
 	public function user(){
@@ -20,6 +21,10 @@ class ADBinds extends Model
 
     public function account(){
         return $this->belongsTo(ADAccounts::class,'accounts_id');
+    }
+
+    public function records(){
+        return $this->hasMany(ADRecords::class,'ad_binds_id');
     }  
 
     public function vps(){

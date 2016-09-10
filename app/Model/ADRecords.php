@@ -11,14 +11,10 @@ class ADRecords extends Model
 	protected $table = 'ad_records';
 	protected $fillable = array(
 		'cost',
-		'click_amount',
-		'checkout',
-		'transformation_cost',
-		'trade_money',
-		'transaction_orders',
-		'change_proportion',
 		'recharge' ,
-		'ad_binds_id',
+		'click_amount',
+		'orders_amount',
+		'orders_money',
 	);
 
 	public $timestamps = false;

@@ -10,6 +10,8 @@ class ADAccounts extends Model
 	protected $table = 'ad_accounts';
     protected $fillable = array(
         'idkey',
+        'code' ,
+        'birthday' ,
         'money',
         'username',
         'password',

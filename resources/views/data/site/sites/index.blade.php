@@ -24,7 +24,7 @@
 		<th>品牌</th>
 		<th>程序员</th>
 		<th>通道</th>
-		<th width="100">操作</th>
+		<th width="156">操作</th>
 	</tr>
 </thead>
 <tbody class="user-form">
@@ -38,8 +38,12 @@
 		<td>{{ isset($site->pay_channel->name) ? $site->pay_channel->name : 'null' }}</td>
 		<td>
 			<div class="btn-group">
-			<a class="btn btn-default" href="{{ route($path.'.edit' , $site->id) }}"><i class="fa fa-edit"></i></a>
-			<button class="btn btn-danger table-delete" data-href="{{ route($path.'.destroy' , $site->id ) }}"><i class="fa fa-trash"></i></button>
+			@pcan($path . '.edit')
+			<a class="btn btn-default" href="{{ route($path . '.edit' , $site->id) }}"><i class="fa fa-edit"></i></a>
+			@endpcan
+			@pcan($path . '.destroy')
+			<button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $site->id ) }}"><i class="fa fa-trash"></i></button>
+			@endpcan
 			</div>
 		</td>
 	</tr>

@@ -36,12 +36,14 @@
 			<td>{{ $account->money }}</td>
 			<td>{{ ($account->binded)?'已使用':'未使用' }}</td>
 			<td>{{ $account->created_at }}</td>
-			<td>
+			<td width="156">
 				<div class="btn-group">
-				@if(!$account->binded)
+				@pcan($path . '.edit')
 				<a class="btn btn-default" href="{{ route($path . '.edit' , $account->id) }}"><i class="fa fa-edit"></i></a>
-				<button class="btn btn-danger table-delete" data-href="{{ route($path .'.destroy' , $account->id ) }}"><i class="fa fa-trash"></i></button>
-				@endif
+				@endpcan
+				@pcan($path . '.destroy')
+				<button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $account->id ) }}"><i class="fa fa-trash"></i></button>
+				@endpcan
 				</div>
 			</td>
 		</tr>

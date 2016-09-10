@@ -583,7 +583,7 @@ function _init() {
     remove: function (element) {
       //Find the box parent
       var box = element.parents(".box").first();
-      box.slideUp(this.animationSpeed);
+      box.remove();
     }
   };
 }

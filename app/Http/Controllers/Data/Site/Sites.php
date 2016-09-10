@@ -89,5 +89,27 @@ class Sites extends Controller
 		if($site == null) return redirect()->route('setting.site.sites.index');
 		return $site;
 	}
+
+	public function upload(){
+		$datas = parent::upLoadCsv();
+		$json = array();	
+		foreach($datas as $data){
+			if(empty($data)) continue;
+			try{
+				Request::user()->sites()->updateOrCreate(['id'=>$data['id']] , $data);
+			}catch (\Exception $e) {
+			    $json['error_msg'][] = 'Caught exception: ' .  $e->getMessage() ."\n";
+			}
+		}
+		return response()->json($json);
+	}
+
+	public function download(){
+		$data = Request::user()->sites()->get()->toArray();
+		if(empty($data)){
+			$data[] = ['id'=>'','host'=>'','banners_id'=>'','pay_channel_id'=>''];
+		}
+		parent::downLoadCsv('sites.csv',$data);
+	}
 }
 

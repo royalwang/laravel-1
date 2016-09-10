@@ -21,7 +21,7 @@
 		<th class="sorting" class="sorting">角色名称</th>
 		<th class="sorting">角色ID</th>
 		<th class="sorting">默认页面</th>
-		<th width="100">操作</th>
+		<th width="156">操作</th>
 	</tr>
 </thead>
 <tbody class="user-form">
@@ -33,8 +33,12 @@
 		<td>{{ $table->default_page }}</td>
 		<td>
 			<div class="btn-group">
+			@pcan($path . '.edit')
 			<a class="btn btn-default" href="{{ route($path . '.edit' , $table->id) }}"><i class="fa fa-edit"></i></a>
+			@endpcan
+			@pcan($path . '.destroy')
 			<button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $table->id ) }}"><i class="fa fa-trash"></i></button>
+			@endpcan
 			</div>
 		</td>
 	</tr>

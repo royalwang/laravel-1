@@ -24,19 +24,19 @@
     {!! csrf_field() !!}
     <div class="form-group">
         <label class="control-label col-sm-2">广告账号</label>
-        <div class="col-sm-8"><select class="form-control ajax-select-accounts" name="accounts_id">
+        <div class="col-sm-8"><select class="form-control ajax-select-accounts" name="accounts_id" data-ajax--url="{{ route('data.ad.accounts.ajax.index') }}">
             <option value="-1" selected="selected">账号ID</option>
         </select></div>
     </div>
     <div class="form-group">
         <label class="control-label col-sm-2">广告VPS</label>
-        <div class="col-sm-8"><select class="form-control ajax-select-vps" name="vps_id">
+        <div class="col-sm-8"><select class="form-control ajax-select-vps" name="vps_id" data-ajax--url="{{ route('data.ad.vps.ajax.index') }}">
             <option value="-1" selected="selected">VPS-IP</option>
         </select></div>
     </div>
     <div class="form-group">
         <label class="control-label col-sm-2">网站</label>
-        <div class="col-sm-8"><select class="form-control ajax-select-sites" name="sites_id">
+        <div class="col-sm-8"><select class="form-control ajax-select-sites" name="sites_id" data-ajax--url="{{ route('data.site.sites.ajax.index') }}">
             <option value="-1" selected="selected">Url</option>
         </select></div>
     </div>
@@ -44,8 +44,9 @@
         <label class="control-label col-sm-2">状态</label>
         <div class="col-sm-8">
             <select class="form-control disable" name="status" disabled="disable">
-                <option value="1" selected="selected">可用</option>
-                <option value="0">已封</option>
+                <option value='0' selected="select">未投放</option>
+                <option value='1'>已投放</option>
+                <option value='-1'>已封</option>
             </select>
         </div>
     </div>
@@ -56,38 +57,34 @@
 <script type="text/javascript">
 $.fn.select2.defaults.set("ajax--cache", false);
 
-$(".ajax-select-vps").select2({
+var defalut_value =  {
     ajax: {
-        url: '{{ route('data.ad.vps.ajax.index') }}',
+        data: function (params) {
+            if(params != undefined){
+                if(params.term == undefined){
+                    return {page: params.page};
+                }else{
+                    return {
+                        q: params.term, 
+                        page: params.page
+                    };
+                }
+            }
+        },
         processResults: function (data) {
             return {
-                results: data
+                results: data.item,
+                pagination: {
+                  more: data.more
+                }
             };
         }
     }
-});
+};
 
-$('.ajax-select-accounts').select2({
-  ajax: {
-    url: '{{ route('data.ad.accounts.ajax.index') }}',
-    processResults: function (data) {
-      return {
-        results: data
-      };
-    }
-  }
-});
-
-$('.ajax-select-sites').select2({
-  ajax: {
-    url: '{{ route('data.site.sites.ajax.index') }}',
-    processResults: function (data) {
-      return {
-        results: data
-      };
-    }
-  }
-});
+$(".ajax-select-vps").select2(defalut_value);
+$('.ajax-select-accounts').select2(defalut_value);
+$('.ajax-select-sites').select2(defalut_value);
 
 
 </script>

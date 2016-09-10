@@ -21,19 +21,6 @@ class Vps extends Controller
 			]);
 	}
 
-	public function ajax(){
-		$vps = $this->vps->where('binded','0')->get();
-
-		$json = array();
-		foreach($vps as $value){
-			$json[] = array(
-				'id'=>$value->id,
-				'text' => $value->ip,
-				) ;
-		}
-		return response()->json($json);
-	}
-
 	public function create(){
 		return view($this->path);
 	}
@@ -99,5 +86,27 @@ class Vps extends Controller
 		}
 		return $vps;
 	} 
+
+	public function upload(){
+		$datas = parent::upLoadCsv();
+		$json = array();	
+		foreach($datas as $data){
+			if(empty($data)) continue;
+			try{
+				Request::user()->adVps()->updateOrCreate(['id'=>$data['id']] , $data);
+			}catch (\Exception $e) {
+			    $json['error_msg'][] = 'Caught exception: ' .  $e->getMessage() ."\n";
+			}
+		}
+		return response()->json($json);
+	}
+
+	public function download(){
+		$data = Request::user()->adVps()->get()->toArray();
+		if(empty($data)){
+			$data[] = ['id'=>'','ip'=>'','username'=>'','password'=>''];
+		}
+		parent::downLoadCsv('vps.csv',$data);
+	}
 }
 

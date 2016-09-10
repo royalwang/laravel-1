@@ -17,7 +17,12 @@ class Permissions
     public function handle($request, Closure $next)
     {
         if(!Permission::canCurrentAction()){
-            //return redirect()->route($request->user()->default_page());
+            $urls = parse_url(redirect()->getUrlGenerator()->previous());
+            if(in_array($urls['path'] , ['/login','/logout']) ){
+                return redirect()->route(Permission::defaultPage());
+            }else{
+                return back();
+            }
         }
         return $next($request);
     }

@@ -80,7 +80,7 @@
 }
 
 .adtable thead .current_date{
-    position: absolute;
+    position: relative;
 }
 .adtable thead .current_date input{
     padding: 0;
@@ -118,7 +118,7 @@ input.month{
     border: 1px solid #000;
 }
 #fixed-footer{
-    bottom: 36px;
+    bottom: 34px;
     border: 1px solid #000;
     border-bottom: 1px solid #fff;
 }

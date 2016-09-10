@@ -32,6 +32,7 @@ class Permission{
 		$relace = array('','.','.');
 
 		$action = Route::current()->getAction();
+		
 		$controller = strtolower(str_replace($search, $relace , $action['controller']));
 
 		return $this->can($controller);		

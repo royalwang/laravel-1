@@ -8,11 +8,12 @@ use Validator;
 class VpsAjax extends \App\Http\Controllers\AjaxController
 {
 	public function index(){
-		$vps = Request::user()->adVps()->where('binded','0')->get();
 
+		$vps = \App\Model\ADVps::where('binded','0')->paginate(30);
 		$json = array();
+		$json['more'] = $vps->hasMorePages();
 		foreach($vps as $value){
-			$json[] = array(
+			$json['item'][] = array(
 				'id'=>$value->id,
 				'text' => $value->ip,
 				) ;

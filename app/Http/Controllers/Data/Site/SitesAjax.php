@@ -9,12 +9,13 @@ class SitesAjax extends \App\Http\Controllers\AjaxController
 {
 
 	public function index(){
-		$accounts = \App\Model\Sites::where('binded','0')->get();
+		$sites = \App\Model\Sites::where('binded','0')->orderBy('banners_id')->paginate(30);
 		$json = array();
-		foreach($accounts as $value){
-			$json[] = array(
+		$json['more'] = $sites->hasMorePages();
+		foreach($sites as $value){
+			$json['item'][] = array(
 				'id'=>$value->id,
-				'text' => $value->host,
+				'text' => $value->banner->name,
 				) ;
 		}
 		return response()->json($json);

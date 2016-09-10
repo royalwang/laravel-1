@@ -9,12 +9,18 @@ use DB;
 class Binds extends Controller
 {
 	public function index(){
-		$user = Request::user();
-
-		$binds = $user->adBinds()->paginate($this->show);
+		$request = request();
+		$user = $request->user();
+		$status = isset($request->status) ? $request->status : '';
+		if(!empty($request->status) && in_array($status, [-1,0,1])){
+			$binds = $user->adBinds()->where('status',$status)->paginate($this->show);
+		}else{
+			$binds = $user->adBinds()->paginate($this->show);
+		}
 
 		return view($this->path,[
 			'tables' => $binds ,
+			'status' => $status,
 			]);
 	}
 
@@ -49,11 +55,6 @@ class Binds extends Controller
 		$bind = new \App\Model\ADBinds($data);
 		Request::user()->adBinds()->save($bind);
 
-
-		DB::statement('update ad_accounts set binded = 1 where id = ?',[$data['accounts_id']]);
-		DB::statement('update ad_vps set binded = 1 where id = ?',[$data['vps_id']]);
-		DB::statement('update sites set binded = 1 where id = ?',[$data['sites_id']]);
-
 		return redirect()->route('data.ad.binds.index');
 	}
 
@@ -67,9 +68,11 @@ class Binds extends Controller
 	}
 
 	public function update($id){
-		$account = \App\Model\ADAccounts::find($id);
-		$account->fill(Request::all());
-		$account->save();
+		$bind = Request::user()->adBinds()->find($id);
+		if($bind == null) return redirect()->route('data.ad.binds.index');
+		
+		$bind->fill(Request::all());
+		$bind->save();
 
 		return redirect()->route('data.ad.binds.index');
 	}
@@ -81,6 +84,30 @@ class Binds extends Controller
 			return response()->json(['status' => 1]);
 		}
 		return response()->json(['status' => 0]);
+	}
+
+	public function upload(){
+		$datas = parent::upLoadCsv();
+		$json = array();	
+		foreach($datas as $data){
+			if(empty($data)) continue;
+			try{
+				Request::user()->adBinds()->updateOrCreate(['id'=>$data['id']] , $data);
+			}catch (\Exception $e) {
+			    $json['error_msg'][] = 'Caught exception: ' .  $e->getMessage() ."\n";
+			}
+		}
+		return response()->json($json);
+	}
+
+	public function download(){
+		$data = Request::user()->adBinds()->get()->toArray();
+		if(empty($data)){
+			$data[] = [
+			'id'=>'','accounts_id'=>'','vps_id'=>'','users_id'=>'','sites_id'=>'','status'=>'','money'=>''
+			];
+		}
+		parent::downLoadCsv('binds.csv',$data);
 	}
 }
 

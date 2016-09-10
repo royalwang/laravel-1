@@ -14,7 +14,7 @@
 
 @section('form-content')
 	
-<form class="form-horizontal" name="users" action="{{ route($path .'.store') }}" method="post">
+<form class="form-horizontal" name="form" action="{{ route($path .'.store') }}" method="post">
     {!! csrf_field() !!}
     <div class="form-group">
         <label class="control-label col-sm-2" >名称</label>

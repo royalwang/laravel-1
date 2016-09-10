@@ -102,8 +102,7 @@ class Users extends Controller
 
 	//用户删除
 	public function destroy($id){
-		$user = $this->find($id) ;		
-		$user->selfRoles()->detach();
+		$user = $this->find($id) ;
 		$user->delete();
 		return response()->json(['status' => 1]);
 

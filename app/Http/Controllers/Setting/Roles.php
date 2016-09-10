@@ -86,8 +86,6 @@ class Roles extends Controller
 	public function destroy($id){
 		$role = Permission::getRoles()->find($id);
 		if($role != null){
-			$role->users()->detach();
-			$role->permissions()->detach();
 			$role->delete();
 			return response()->json(['status' => 1]);
 		}

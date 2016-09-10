@@ -21,7 +21,7 @@
 		<th>权限名称</th>
 		<th>权限ID</th>
 		<th>权限类型</th>
-		<th width="100">操作</th>
+		<th width="156">操作</th>
 	</tr>
 </thead>
 <tbody class="user-form">
@@ -33,8 +33,12 @@
 		<td>{{ ($table->type?'数据库表':'网页页面') }}</td>
 		<td>
 			<div class="btn-group">
-			<a class="btn btn-default" href="{{ route($path.'.edit' , $table->id) }}"><i class="fa fa-edit"></i></a>
-			<button class="btn btn-danger table-delete" data-href="{{ route($path.'.destroy' , $table->id ) }}"><i class="fa fa-trash"></i></button>
+			@pcan($path . '.edit')
+			<a class="btn btn-default" href="{{ route($path . '.edit' , $table->id) }}"><i class="fa fa-edit"></i></a>
+			@endpcan
+			@pcan($path . '.destroy')
+			<button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $table->id ) }}"><i class="fa fa-trash"></i></button>
+			@endpcan
 			</div>
 		</td>
 	</tr>

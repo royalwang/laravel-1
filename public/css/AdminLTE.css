@@ -4864,6 +4864,7 @@ table.text-center th {
   background: #f4f4f4;
   border: 1px dashed #ddd;
   margin-bottom: 10px;
+  min-height:200px;
 }
 .full-opacity-hover {
   opacity: 0.65;

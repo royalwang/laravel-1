@@ -55,7 +55,6 @@ table.form-table{
 
 .form-table tr:last-child{
     padding-bottom: 1px;
-    border-bottom: none;
 }
 
 .form-table tfoot{
@@ -202,4 +201,22 @@ table.form-table{
 
 .table-bordered > tbody > tr > td {
     line-height: 35px;
+}
+
+.dropdown-menu{
+    border: 1px solid #cccccc;
+}
+
+.status.dropdown-menu{
+    left:auto;
+    right:-1px;
+    background: #efefef;
+}
+.btn.dropdown{
+    padding: 0;
+}
+
+.btn.dropdown > span{
+    display: block;
+    padding: 6px 12px;
 }

@@ -33,7 +33,7 @@ class Controller extends BaseController
             ], 
             'chart' => [
                 'icon' => 'fa-pie-chart' ,
-                'name' => '数据报表',
+                'name' => '数据统计',
             ],
             'data' => [
                 'icon' => 'fa-database' ,
@@ -44,7 +44,7 @@ class Controller extends BaseController
                 'name' => '样式设定',
             ],
             'setting'=> [
-                'icon' => 'fa-pencil' ,
+                'icon' => 'fa-user-secret' ,
                 'name' => '用户管理' ,
             ],
     	];
@@ -58,6 +58,14 @@ class Controller extends BaseController
                 'icon' => 'fa-database' ,
                 'name' => '网站数据' ,
                 'url'  => 'data.site.sites.index'
+            ],
+            'money'=>[
+                'icon' => 'fa-database' ,
+                'name' => '财务数据',
+            ],
+            'logistics'=>[
+                'icon' => 'fa-database' ,
+                'name' => '后勤数据',
             ]
         ];
 
@@ -122,9 +130,39 @@ class Controller extends BaseController
 
         $sidebar_chart = [
             'ad' => [
-                'url' => 'chart.ad.table.index',
+                'icon' => 'fa-pie-chart',
+                'name' => '广告数据统计',
+                'url' => 'chart.ad.records.table.index',
+            ],
+            'money' => [
+                'icon' => 'fa-pie-chart',
+                'name' => '财务报表'
+            ]
+        ];
+
+        $sidebar_chart_ad = [
+            'records.table' => [
                 'icon' => 'fa-table',
-                'name' => '广告报表'
+                'name' => '广告记录报表',
+                'url' => 'chart.ad.records.table.index',
+            ],
+            'lines' => [
+                'icon' => 'fa fa-line-chart',
+                'name' => '广告走势图',
+                'url' => 'chart.ad.lines.index',
+            ],
+			'bars' => [
+                'icon' => 'fa fa-bar-chart',
+                'name' => '广告总统计图',
+                'url' => 'chart.ad.bars.index',				
+			],
+        ];
+
+        $sidebar_style = [
+            'ad.records.table' => [
+                'icon' => 'fa-table',
+                'name' => '广告记录报表',
+                'url' => 'style.ad.records.table.index',
             ]
         ];
 
@@ -134,6 +172,8 @@ class Controller extends BaseController
              ->addMenu('data.site',$sidebar_data_site)
              ->addMenu('setting',$sidebar_setting)
              ->addMenu('chart',$sidebar_chart)
+             ->addMenu('chart.ad',$sidebar_chart_ad)
+             ->addMenu('style',$sidebar_style)
              ->setActive($this->path);
 
     	$routes = Permission::getPerms()->toArray();
@@ -151,6 +191,41 @@ class Controller extends BaseController
         view()->share('path', substr($this->path,0,strripos($this->path,'.')));
         view()->share('show', $this->show);
 
+    }
+
+    protected function upLoadCsv(){
+        $csv = array();
+        if(empty($_FILES['files'])) return $csv;
+
+        foreach($_FILES['files']['tmp_name'] as $key=>$file){
+            $name = $_FILES['files']['name'][$key];
+            if (ends_with($name , '.csv')) {
+                $csv = array_map('str_getcsv', file($file));
+                array_walk($csv, function(&$a) use ($csv) {
+                    $a = @array_combine($csv[0], $a);
+                });
+                array_shift($csv);
+            }
+        }
+        return $csv;
+    }
+
+    protected function downLoadCsv($name,$data){
+        header( "Pragma: public"); 
+        header( "Expires: 0"); 
+        header( "Content-Type: application/force-download");   
+        header( "Cache-Control: must-revalidate, post-check=0, pre-check=0"); 
+        Header( "Content-type:  application/octet-stream "); 
+        header( "Content-Disposition:  attachment;  filename= $name"); 
+
+        $keys = array_keys($data[0]);
+        $outstream = fopen("php://output", 'w');
+        fputcsv($outstream, $keys, ',', '"');
+        foreach($data as $value){
+            fputcsv($outstream, $value, ',', '"');
+        }
+        fclose($outstream);
+ 
     }
 
 

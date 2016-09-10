@@ -15,7 +15,7 @@ class BindsAjax extends \App\Http\Controllers\AjaxController
 		foreach($binds as $value){
 			$json[] = array(
 				'id'=>$value->id,
-				'text' => $value->code,
+				'text' => $value->account->code . ' - ' . $value->vps->ip . ' - ' . $value->site->host,
 				) ;
 		}
 		return response()->json($json);

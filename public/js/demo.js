@@ -337,4 +337,5 @@
     }
 
   }
+  AdminLTE.options.controlSidebarOptions.slide = false;
 })(jQuery, $.AdminLTE);

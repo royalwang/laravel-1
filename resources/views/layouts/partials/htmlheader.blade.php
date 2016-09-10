@@ -8,7 +8,7 @@
 
     @yield('style')
     
-    <link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
     <link href="{{ asset('/css/bootstrap.css') }}" rel="stylesheet" type="text/css" />
     <!-- Font Awesome Icons -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
@@ -30,7 +30,7 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+    <script src="{{ asset('/plugins/jQuery/jquery-2.2.3.min.js') }}"></script>
     <script src="{{ asset('/js/common.js') }}"></script>
     <link href="{{ asset('/css/main.css') }}" rel="stylesheet">
 

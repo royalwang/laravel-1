@@ -23,6 +23,7 @@
 	padding: 5px 5px 5px 50px;
 	background-color: #fff; 
 	position: relative;
+	z-index: 5;
 }
 .default-col > span > div{
 	position: absolute;
@@ -45,14 +46,15 @@
 #style-col-body input{
 	padding: 2px 5px 2px 10px;
 	margin: 0;
-	height: 35px;
+	height: 30px;
 	width: 100%;
 	border: none;
 }
 
 .form-table td{
-	height: 35px;
-	padding: 0;
+	height: 35px!important;
+	overflow:hidden;
+	padding: 1px!important;
 }
 
 .form-table tfoot td{

@@ -50,5 +50,28 @@ class Banners extends Controller
 		}
 		return response()->json(['status' => 0]);
 	}
+
+	public function upload(){
+		$datas = parent::upLoadCsv();
+		$json = array();	
+		if(empty($datas)) return response()->json($json);
+		foreach($datas as $data){
+			if(empty($data)) continue;
+			try{
+				$prem = \App\Model\Banners::updateOrCreate(['id'=>$data['id']] , $data);
+			}catch (Exception $e) {
+			    $json['error_msg'][] = 'Caught exception: ' .  $e->getMessage() ."\n";
+			}
+		}
+		return response()->json($json);
+	}
+
+	public function download(){
+		$data = \App\Model\Banners::all()->toArray();
+		if(empty($data)){
+			$data[] = ['id'=>'','name'=>'','code'=>''];
+		}
+		parent::downLoadCsv('banners.csv',$data);
+	}
 }
 

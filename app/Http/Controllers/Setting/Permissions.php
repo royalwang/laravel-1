@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Setting;
 use Request;
 use Permission;
 use Validator;
+use DB;
 
 class Permissions extends Controller
 {
@@ -67,10 +68,34 @@ class Permissions extends Controller
 	public function destroy($id){
 		$permission = \App\Model\Permissions::find($id);
 		if($permission != null){
-			Request::user()->selfRoles()->find(1)->permissions()->detach($permission);
 			$permission->delete();
 			return response()->json(['status' => 1]);
 		}
 		return response()->json(['status' => 0]);
+	}
+
+	public function upload(){
+		$datas = parent::upLoadCsv();
+		$json = array();	
+		if(empty($datas)) return response()->json($json);
+		foreach($datas as $data){
+			if(empty($data)) continue;
+			try{
+				$id = isset($data['id']) ? $data['id']:0 ;
+				$prem = \App\Model\Permissions::updateOrCreate(['id'=>$id] , $data);
+			}catch (Exception $e) {
+			    $json['error_msg'][] = 'Caught exception: ' .  $e->getMessage() ."\n";
+			}
+		}
+		Request::user()->selfRoles()->find(1)->permissions()->attach(\App\Model\Permissions::all());
+		return response()->json($json);
+	}
+
+	public function download(){
+		$data = \App\Model\Permissions::all()->toArray();
+		if(empty($data)){
+			$data[] = ['id'=>'','name'=>'','code'=>''];
+		}
+		parent::downLoadCsv('permissions.csv',$data);
 	}
 }

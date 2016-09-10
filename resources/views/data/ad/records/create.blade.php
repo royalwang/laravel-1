@@ -24,11 +24,11 @@
     {!! csrf_field() !!}
     
     <div class="form-group">
-        <label class="control-label col-sm-2">广告账号</label>
+        <label class="control-label col-sm-2">绑定账号</label>
         <div class="col-sm-8">
-            <select class="form-control ajax-select-vps" name="vps_id">
+            <select class="form-control ajax-select-vps" name="ad_binds_id">
             @foreach($binds as $bind)
-                <option value="{{ $bind->id }}">{{ $bind->account->code }}</option>
+                <option value="{{ $bind->id }}">{{ $bind->account->code }} - {{ $bind->vps->ip }} - {{ $bind->site->host }}</option>
             @endforeach
             </select>
         </div>
@@ -70,7 +70,6 @@
 <script type="text/javascript" src="{{ asset('plugins/datepicker/bootstrap-datepicker.js')}}"></script>
 <script type="text/javascript">
 
-var currentTime = new Date();
 $( "#datepicker" ).datepicker({
     format: 'yyyy/mm/dd',
 });

@@ -20,6 +20,7 @@
 @section('form-content')
 	
 <form class="form-horizontal" name="form" action="{{ route($path.'.update' , $bind->id) }}" method="post">
+    {{ method_field('PUT') }}
     {!! csrf_field() !!}
     <div class="form-group">
         <label class="control-label col-sm-2">广告账号</label>
@@ -45,13 +46,9 @@
         <label class="control-label col-sm-2">状态</label>
         <div class="col-sm-8">
             <select class="form-control disable" name="status">
-                @if($bind->status == 0){
-                    <option value="1">可用</option>
-                    <option value="0" selected="selected">已封</option>
-                @else
-                    <option value="1" selected="selected">可用</option>
-                    <option value="0">已封</option>
-                @endif    
+                <option value='1' {{ (($bind->status == 1)?'selected':'' ) }}>已投放</option>
+                <option value='0' {{ (($bind->status == 0)?'selected':'' ) }}>未投放</option>
+                <option value='-1' {{ (($bind->status == -1)?'selected':'' ) }}>已封</option>   
             </select>
         </div>
     </div>
@@ -65,6 +62,12 @@ $.fn.select2.defaults.set("ajax--cache", false);
 $(".ajax-select-vps").select2({
     ajax: {
         url: '{{ route('data.ad.vps.ajax.index') }}',
+        data: function (params) {
+            return {
+                q: params.term, // search term
+                page: params.page
+            };
+        },
         processResults: function (data) {
             return {
                 results: data
@@ -76,6 +79,12 @@ $(".ajax-select-vps").select2({
 $('.ajax-select-sites').select2({
   ajax: {
     url: '{{ route('data.site.sites.ajax.index') }}',
+    data: function (params) {
+            return {
+                q: params.term, // search term
+                page: params.page
+            };
+        },
     processResults: function (data) {
       return {
         results: data

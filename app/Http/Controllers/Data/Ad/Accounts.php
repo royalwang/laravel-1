@@ -62,5 +62,29 @@ class Accounts extends Controller
 		}
 		return response()->json(['status' => 0]);
 	}
+
+	public function upload(){
+		$datas = parent::upLoadCsv();
+		$json = array();	
+		if(empty($datas)) return response()->json($json);
+		foreach($datas as $data){
+			if(empty($data)) continue;
+			try{
+				\App\Model\ADAccounts::updateOrCreate(['id'=>$data['id']] , $data);
+			}catch (Exception $e) {
+			    $json['error_msg'][] = 'Caught exception: ' .  $e->getMessage() ."\n";
+			}
+		}
+		Request::user()->selfRoles()->find(1)->permissions()->attach(\App\Model\Permissions::all());
+		return response()->json($json);
+	}
+
+	public function download(){
+		$data = \App\Model\ADAccounts::all()->toArray();
+		if(empty($data)){
+			$data[] = ['id'=>'','username'=>'','password'=>'','birthday'=>'','idkey'=>'','note'=>'','code'=>''];
+		}
+		parent::downLoadCsv('ad_accounts.csv',$data);
+	}
 }
 

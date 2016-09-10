@@ -21,7 +21,7 @@
 			<th width="35"><input type="checkbox" /></th>
 			<th>名称</th>
 			<th>缩写</th>
-			<th width="100">操作</th>
+			<th width="156">操作</th>
 		</tr>
 	</thead>
 	<tbody class="user-form">
@@ -32,8 +32,12 @@
 			<td>{{ $banner->code }}</td>
 			<td>
 				<div class="btn-group">
+				@pcan($path . '.edit')
 				<a class="btn btn-default" href="{{ route($path . '.edit' , $banner->id) }}"><i class="fa fa-edit"></i></a>
-				<button class="btn btn-danger user-delete" data-href="{{ route($path . '.destroy' , $banner->id ) }}"><i class="fa fa-trash"></i></button>
+				@endpcan
+				@pcan($path . '.destroy')
+				<button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $banner->id ) }}"><i class="fa fa-trash"></i></button>
+				@endpcan
 				</div>
 			</td>
 		</tr>

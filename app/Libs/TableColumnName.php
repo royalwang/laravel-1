@@ -7,16 +7,11 @@ namespace App\Libs;
 class TableColumnName{
 	private static $data = array(
 		'ad_table' => array(
-			'date',
-			'advertising_cost',
+			'cost',
 			'click_amount',
-			'checkout',
-			'transformation_cost',
-			'trade_money',
-			'transaction_orders',
-			'change_proportion',
+			'orders_amount',
+			'orders_money',
 			'recharge',
-			'site',
 		),
 	);
 
@@ -26,7 +21,7 @@ class TableColumnName{
 
 
 	public static function getUserStyle($table,$user){
-		$allow_edit = array('advertising_cost','click_amount','checkout','transformation_cost','trade_money','transaction_orders','change_proportion','recharge','site');
+		$allow_edit = self::$data['ad_table'];
 
 		$column_name = array();
 		$adTableStyle = $user->adTableStyle()->first();

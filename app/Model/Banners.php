@@ -8,7 +8,7 @@ class Banners extends Model
 {
 
     protected $fillable = [
-        'name','code'
+        'name'
     ];
 
     public $timestamps = false;

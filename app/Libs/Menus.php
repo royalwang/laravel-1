@@ -98,6 +98,10 @@ class Menus{
     }
     
     public function getMenu($key = ''){
+        if(isset($this->items[$key])){
+            return $this->items[$key]->getMenu();
+        }
+
         $keys = explode('.', $key,2);
         $code = array_shift($keys);
 
@@ -113,6 +117,11 @@ class Menus{
     }
     
     public function setActive($key){
+        if(isset($this->items[$key])){
+            $this->items[$key]->setVisable();
+            return $this;
+        }
+
         $keys = explode('.', $key,2);
         $code = array_shift($keys);
 
@@ -129,6 +138,12 @@ class Menus{
     }
 
     public function setVisable($key){
+
+        if(isset($this->items[$key])){
+            $this->items[$key]->setVisable();
+            return $this;
+        }
+
         $keys = explode('.', $key,2);
         $code = array_shift($keys);
 

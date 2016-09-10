@@ -25,27 +25,27 @@ class PermissionsProvider extends ServiceProvider
     private function bladeDirectives(){
 
         \Blade::directive('role', function($expression) {
-            return "<?php if (\\Permissions::hasRole{$expression}) : ?>";
+            return "<?php if (\\Permission::hasRole{$expression}) : ?>";
         });
 
         \Blade::directive('endrole', function($expression) {
-            return "<?php endif; // Permissions::hasRole ?>";
+            return "<?php endif; // Permission::hasRole ?>";
         });
 
-        \Blade::directive('permission', function($expression) {
-            return "<?php if (\\Permissions::can{$expression}) : ?>";
+        \Blade::directive('pcan', function($expression) {
+            return "<?php if (\\Permission::can{$expression}) : ?>";
         });
 
-        \Blade::directive('endpermission', function($expression) {
-            return "<?php endif; // Permissions::can ?>";
+        \Blade::directive('endpcan', function($expression) {
+            return "<?php endif; // Permission::can ?>";
         });
 
         \Blade::directive('ability', function($expression) {
-            return "<?php if (\\Permissions::ability{$expression}) : ?>";
+            return "<?php if (\\Permission::ability{$expression}) : ?>";
         });
 
         \Blade::directive('endability', function($expression) {
-            return "<?php endif; // Permissions::ability ?>";
+            return "<?php endif; // Permission::ability ?>";
         });
     }
 }

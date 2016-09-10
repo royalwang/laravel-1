@@ -12,8 +12,23 @@
 	已绑定账号列表
 @endsection
 
+
+@section('select_status')
+	<label>&nbsp;状态&nbsp;&nbsp;
+		<select name="status" class="url-parameter">
+			<option value=''>全部</option>
+			<option value='1' {{ (($status == 1)?'selected':'' ) }}>已投放</option>
+			<option value='0' {{ (($status !='' && $status == 0)?'selected':'' ) }}>未投放</option>
+			<option value='-1' {{ (($status == -1)?'selected':'' ) }}>已封</option>
+		</select>
+	</label>
+@endsection	
+
+
+
 @section('table-content')
 	
+
 
 <table class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
 <thead>
@@ -32,16 +47,28 @@
 		<td>{{ $bind->account->code }}</td>
 		<td>{{ $bind->vps->ip }}</td>
 		<td>{{ $bind->site->host }}</td>
-		<td>
+		<td width="156">
 			<div class="btn-group">
 			<a class="btn btn-default" href="{{ route($path.'.show' , $bind->id) }}"><i class="fa fa-eye"></i></a>
-			<a class="btn btn-default" href="{{ route($path.'.edit' , $bind->id) }}"><i class="fa fa-ban"></i></a>
-			<a class="btn btn-default" href="{{ route($path.'.edit' , $bind->id) }}"><i class="fa fa-edit"></i></a>
+
+			<div class="dropdown btn btn-default">
+				<span data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><i class="fa fa-reorder"></i></span>
+				<ul class="dropdown-menu status" role="menu" aria-labelledby="dLabel">
+					<li class="{{ (($bind->status == 0)?'active':'' ) }}"><a data-value="0">未投放</a></li>
+					<li class="{{ (($bind->status == 1)?'active':'' ) }}"><a data-value="1">已投放</a></li>
+					<li class="{{ (($bind->status == -1)?'active':'' ) }}"><a data-value="-1">已被封</a></li>
+				</ul>
+			</div>
+			@pcan($path . '.edit')
+			<a class="btn btn-default" href="{{ route($path . '.edit' , $bind->id) }}"><i class="fa fa-edit"></i></a>
+			@endpcan
 			</div>
 		</td>
 	</tr>
 	@endforeach
 </tbody>
 </table>
+
+
 
 @endsection

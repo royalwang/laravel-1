@@ -16,11 +16,12 @@
 
 
 <form class="form-horizontal" name="form" action="{{ route($path.'.update' , $record->id) }}" method="post">
+    {{ method_field('PUT') }}
     {!! csrf_field() !!}
     
     <div class="form-group">
-        <label class="control-label col-sm-2">广告账号</label>
-        <div class="col-sm-8"><input name="ad_binds_id" value="{{ $record->binds->account->code }}" class="form-control disable" disabled="disable"></div>
+        <label class="control-label col-sm-2">绑定账号</label>
+        <div class="col-sm-8"><input name="ad_binds_id" value="{{ $record->binds->account->code .' - ' . $record->binds->vps->ip .' - ' . $record->binds->site->host }}" class="form-control disable" disabled="disable"></div>
     </div>
 
     <div class="form-group">

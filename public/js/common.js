@@ -172,9 +172,9 @@
 				return obj.each(function(index) {
 
 					var $key = $(this).attr('data-covermask-key');
-					var $mask = $('body').children('div[data-covermask-key='+$key+']');	
-					if($key!=undefined  &&  $mask && $mask != undefined) {
-						$mask.show();
+					var $mask = $('body').find('div.covermask[data-covermask-key='+$key+']');	
+					if($key!=undefined && $mask && $mask != undefined) {
+						$mask.css('display','block');
 					}else{
 						$mask = createMask();
 						var key = Math.random().toString().replace(".", "");
@@ -192,9 +192,6 @@
 						$(window).resize(function(){
 							copyLoaction($mask,obj);
 						});
-						
-						
-						
 					}				
 				});
 			};
@@ -205,14 +202,14 @@
 		hidemask:function(){
 			return this.each(function(index, el) {
 				var $key = $(el).attr('data-covermask-key');
-				var $mask = $('body').find('div[data-covermask-key='+$key+']');	
+				var $mask = $('body').find('div.covermask[data-covermask-key='+$key+']').eq(0);	
 				if($mask && $mask != undefined) $mask.hide();
 			});
 		},
 		removemask:function(){
 			return this.each(function(index, el) {
 				var $key = $(el).attr('data-covermask-key');
-				var $mask = $('body').find('div[data-covermask-key='+$key+']');	
+				var $mask = $('body').find('div[data-covermask-key='+$key+']').eq(0);	
 				if($mask && $mask != undefined) $mask.remove();
 			});
 		},
@@ -224,27 +221,43 @@
 ;(function($){
 
 	$.fn.extend({
-		scrollFixed:function(){
+		scrollFixed:function(bottom,addclass){
 
 			var scroll = function(obj,clone){
+				clone.css({
+					width: obj.outerWidth(),
+					left: obj.offset().left,
+				});
 				var stop = $(document).scrollTop();
-				if(stop > (ft_top-window_height+20)){
-					clone.hide();
-					obj.removeClass('scroll');
+				if(stop > (obj.offset().top - window_height + obj.height() )){
+					clone.css({display:'none'});
 				}else{
-					clone.show();
-					obj.addClass('scroll');
+					clone.css({display:'block'});
 				}
 			}
 
 			return this.each(function(index) {			
+				
 				var this_clone = $(this).clone();
+				this_clone.addClass(addclass);
+				this_clone.css({
+					width: $(this).outerWidth(),
+					height: $(this).height(),
+					left: $(this).offset().left,
+					position : 'fixed',
+					display:'none',
+					zIndex : '999' ,
+					bottom: bottom,
+				});
+
 				var that = $(this);
-				that.after(this_clone);
+				$(this).after(this_clone);
+
 				scroll(that,this_clone);
 				$(document).scroll(function() {
 					scroll(that,this_clone);
 				});		
+
 				$(window).resize(function(event) {
 					scroll(that,this_clone);
 				});

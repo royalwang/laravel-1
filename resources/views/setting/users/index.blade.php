@@ -22,7 +22,7 @@
 		<th class="sorting">用户名</th>
 		<th class="sorting">对应角色</th>
 		<th class="sorting">创建时间</th>
-		<th width="100">操作</th>
+		<th width="156">操作</th>
 	</tr>
 </thead>
 <tbody class="user-form">
@@ -38,8 +38,12 @@
 		<td>{{ $user->created_at }}</td>
 		<td>
 			<div class="btn-group">
-				<a class="btn btn-default" href="{{ route( $path.'.edit' , $user->id) }}"><i class="fa fa-edit"></i></a>
-				<button class="btn btn-danger table-delete" data-href="{{ route($path.'.destroy' , $user->id ) }}"><i class="fa fa-trash"></i></button>
+			@pcan($path . '.edit')
+			<a class="btn btn-default" href="{{ route($path . '.edit' , $user->id) }}"><i class="fa fa-edit"></i></a>
+			@endpcan
+			@pcan($path . '.destroy')
+			<button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $user->id ) }}"><i class="fa fa-trash"></i></button>
+			@endpcan
 			</div>
 		</td>
 	</tr>
