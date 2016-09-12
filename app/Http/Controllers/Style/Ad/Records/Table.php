@@ -87,7 +87,7 @@ class Table extends Controller
         if($this->colError == true){
             $array = $this->getAdtableStyle( $request->user() );
         }else{
-            $adTableStyle = $request->user()->adTableStyle();
+            $adTableStyle = \App\Model\ADTableStyle::first();
             $style = new \App\Model\AdTableStyle(['style' =>serialize($array)]);
 
             $thisStyle = $adTableStyle->first();
@@ -117,7 +117,7 @@ class Table extends Controller
     }
 
     function getAdtableStyle($user){
-    	$adTableStyle = $user->adTableStyle()->first();
+    	$adTableStyle = \App\Model\ADTableStyle::first();
     	if($adTableStyle == null){
     		foreach($this->defaultColKey as $k=>$v){
     			$array[$k]['name'] = trans('adtable.'.$v);

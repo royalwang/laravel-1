@@ -126,6 +126,11 @@ class Controller extends BaseController
                 'icon' => 'fa-database',
                 'name' => '通道信息',
             ],
+            'orders' =>[
+                'url' => 'data.site.orders.index',
+                'icon' => 'fa-cloud-download',
+                'name' => '订单管理',
+            ]
         ];
 
         $sidebar_chart = [

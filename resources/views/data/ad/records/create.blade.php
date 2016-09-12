@@ -61,7 +61,7 @@
 
     <div class="form-group">
         <label class="control-label col-sm-2">成交金额</label>
-        <div class="col-sm-8"><input name="orders_money" placeholder="$ 00.00" type="text" class="form-control" id="datepicker"></div>
+        <div class="col-sm-8"><input name="orders_money" placeholder="￥ 00.00" type="text" class="form-control" id="datepicker"></div>
     </div>
 
 </form>

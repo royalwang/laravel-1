@@ -81,13 +81,16 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
             Route::post('/data/site/sites/upload'                 , 'Sites@upload')->name('data.site.sites.upload');
             Route::post('/data/site/banners/upload'               , 'Banners@upload')->name('data.site.banners.upload');
             Route::post('/data/site/paychannels/upload'           , 'PayChannels@upload')->name('data.site.paychannels.upload');  
+            Route::post('/data/site/orders/upload'                , 'Orders@upload')->name('data.site.orders.upload'); 
             Route::get('/data/site/sites/download'                , 'Sites@download')->name('data.site.sites.download');
             Route::get('/data/site/banners/download'              , 'Banners@download')->name('data.site.banners.download');
             Route::get('/data/site/paychannels/download'          , 'PayChannels@download')->name('data.site.paychannels.download');
+            Route::get('/data/site/orders/download'               , 'Orders@download')->name('data.site.orders.download'); 
             //page
             Route::resource('/data/site/sites'                    , 'Sites');
             Route::resource('/data/site/banners'                  , 'Banners');
             Route::resource('/data/site/paychannels'              , 'PayChannels');
+			Route::resource('/data/site/orders'                   , 'Orders');
         });    
     });
 

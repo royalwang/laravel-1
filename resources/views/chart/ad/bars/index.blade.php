@@ -82,12 +82,24 @@
 			<div id="collapse1" class="panel-collapse collapse">
 			<div class="box-body">
 				<div class="form-group">
-					<label>Date range:</label>
-					<div class="input-group">
-						<div class="input-group-addon"><i class="fa fa-calendar"></i></div>
-						<input type="text" name="x1" class="form-control pull-right" id="reservation">
+					<div class="form-group">
+						<label>
+							<input type="radio" name="x1" class="minimal" checked value="day" data-name="最近四周">
+							按天统计
+						</label>
 					</div>
-					<!-- /.input group -->
+					<div class="form-group">
+						<label>
+							<input type="radio" name="x1" class="minimal" value="week" data-name="最近四个月">
+							按周统计
+						</label>
+					</div>
+					<div class="form-group">
+						<label>
+							<input type="radio" name="x1" class="minimal" value="month" data-name="最近四个月">
+							按月统计
+						</label>
+					</div>
 				 </div>
 			</div>
 			</div>
@@ -191,7 +203,7 @@
 <script type="text/template">
 	<div class="box box-info">
         <div class="box-header nav-tabs">
-          <i class="fa fa-line-chart"></i><h3 class="box-title">{$title}走势图</h3>
+          <i class="fa fa-bar-chart"></i><h3 class="box-title">{$title}统计图</h3>
           <div class="box-tools pull-right">
             <button type="button" class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
             </button>
@@ -253,8 +265,6 @@ $('.chart-add > i').click(function(event) {
 	$(this).parent('.chart-add').before(html);
 	$(this).parent('.chart-add').remove();
 
-	console.log($('.line-chart-bg').eq(0).children().length);
-	console.log($('.line-chart-bg').eq(1).children().length);
 	if($('.line-chart-bg').eq(0).children().length <= $('.line-chart-bg').eq(1).children().length){
 		$('.line-chart-bg').eq(0).append(addObj)
 	}else{
@@ -265,12 +275,14 @@ $('.chart-add > i').click(function(event) {
 	var x = $('input:radio[name=x1]:checked').val();
 	var y = $('input:radio[name=y1]:checked').val();
 	var line_data = [];
+	
 	switch ($('input[name=t1]:checked').val()) {
 		case 'total':
 			for(var i in data){
 				var row_data = {};
 				row_data['date'] = i;
 				var total = 0;
+
 				for(var o in data[i]){
 					if($.inArray(o, _binds) ){
 						total += parseFloat(data[i][o][y]);
@@ -279,6 +291,7 @@ $('.chart-add > i').click(function(event) {
 				row_data.total = total;
 				line_data.push(row_data);
 			}
+			
 			ykeys.push('total');
 			labels.push('总计');
 			html.html(html.html().replace('{$title}','总'+$('input:radio[name=y1]:checked').attr('data-name')));
@@ -290,9 +303,9 @@ $('.chart-add > i').click(function(event) {
 				var total = 0;
 				for(var c in _users){
 					var total = 0;
-					for(var o in data[i]){	
-						if(inArray(o, _users[c].binds_id) ){
-							total += parseFloat(data[i][o][y]);
+					for(var o in data[i]){
+						if(inArray(parseInt(o), _users[c].binds_id) ){
+							total = total + parseFloat(data[i][o][y]);
 						}
 					}
 					row_data[_users[c].id] = total;
@@ -331,7 +344,22 @@ $('.chart-add > i').click(function(event) {
 			break;
 	}
 
-	Morris.Line({
+	console.log(line_data);
+
+	switch(x){
+		case 'day':
+		line_data = totalByDay(line_data);
+		break;
+		case 'week':
+		line_data = totalByWeek(line_data);
+		break;
+		case 'month':
+		line_data = totalByMonth(line_data);
+		break;
+	}
+
+
+	Morris.Bar({
 		element: id,
 		data: line_data,
 		xkey: 'date',
@@ -342,6 +370,91 @@ $('.chart-add > i').click(function(event) {
 	});	
 
 });
+
+function totalByDay(data){
+	for(var o in data){
+		data[o].date = setDate(data[o].date);
+	}
+	return data;
+}
+
+function totalByMonth(data){
+	var new_data = [];
+	var i= data.length-1;
+	var row_data = {};
+	var current_month = '';
+	while (i >= 0 ) {
+
+		var t = new Date(data[i].date*1000);
+		
+
+		if( current_month == t.getMonth()){
+			for(var o in data[i]){
+				if(o == 'date') continue;
+				if(row_data[o] != undefined){
+					row_data[o] = parseFloat(row_data[o]) + parseFloat(data[i][o]); 
+				}else{
+					row_data[o] = parseFloat(data[i][o]); 
+				}	
+			}
+			if(i == 0){
+				row_data['date'] = parseInt(current_month+1) +'月';
+				new_data.push(row_data);
+			}
+			i--;
+		}else{
+			current_month = t.getMonth();
+			if(i == data.length-1) continue;
+
+			row_data['date'] = parseInt(current_month+2) +'月';
+			new_data.push(row_data);
+			var row_data = {};
+		}
+		
+	}
+	return new_data;
+}
+
+function totalByWeek(data){
+	var new_data = [];
+	var i= data.length-1;
+	var row_data = {};
+
+	var current_time = <?php echo strtotime(date('Y-m-d',time())); ?>;
+	while (i >= 0 ) {
+		if( data[i].date >= current_time) {i--;continue;}
+		if( data[i].date >= (current_time - 60*60*24*7) ){
+			for(var o in data[i]){
+				if(o == 'date') continue;
+				if(row_data[o] != undefined){
+					row_data[o] = parseFloat(row_data[o]) + parseFloat(data[i][o]); 
+				}else{
+					row_data[o] = parseFloat(data[i][o]); 
+				}	
+			}
+			if(i == 0){
+				row_data['date'] = setDate(current_time - 60*60*24*7+1) + ' - ' + setDate(current_time - 1 );
+				new_data.push(row_data);
+			}
+			i--;
+		}else{
+			row_data['date'] = setDate(current_time - 60*60*24*7+1) + ' - ' + setDate(current_time - 1 );
+			new_data.push(row_data);
+			var row_data = {};
+			current_time = current_time - 60*60*24*7;
+		}
+		
+	}
+	return new_data;
+}
+
+function setDate(time1){
+	var t = new Date(time1*1000);
+	var y = t.getFullYear();
+	var m = t.getMonth()+1;
+	var d = t.getDate();
+	return y+'/'+m+'/'+d;
+}
 
 $('.line-chart-bg').sortable({
 	connectWith: ".line-chart-bg",
