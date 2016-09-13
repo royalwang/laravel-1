@@ -7,8 +7,8 @@ return [
         'cost'                 => '广告消费(USD)',
         'click_amount'         => '点击量',
         'checkout'             => 'checkout',
-        'orders_money'         => '交易金额（RMB）',
-        'orders_amount'        => 'IP成单',
+        'orders_money'         => '成交金额（RMB）',
+        'orders_amount'        => '单量',
         'recharge'             => '充值',
         'no_show'              => '没有数据',
 

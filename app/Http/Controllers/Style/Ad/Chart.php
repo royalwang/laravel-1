@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Style\Ad\Records;
+namespace App\Http\Controllers\Style\Ad;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -10,7 +10,7 @@ use App\Libs\FormulaReplace;
 
 
 
-class Table extends Controller
+class Chart extends Controller
 {
 	private $colError;
 
@@ -19,7 +19,7 @@ class Table extends Controller
     	$total = array('sum','avg','max','min');
 
     	return view($this->path,[
-    		'style' => TableColumnName::get('ad_table'),
+    		'style' => TableColumnName::get('ad'),
     		'total' =>  $total,
     	]);
 
@@ -30,6 +30,7 @@ class Table extends Controller
  		$array = array();
  		$data  = array('e'=>'0');
  		$post  = $request->all(); 
+        $type = $request->table;
 
     	$name  = isset($post['name']) ? $post['name']:  '';
     	$xxxx  = isset($post['value']) ? $post['value']:  '';
@@ -39,12 +40,12 @@ class Table extends Controller
 
 
     	$defaultColKey = array();
-    	foreach(TableColumnName::get('ad_table') as $k=>$v){
+    	foreach(TableColumnName::get('ad') as $k=>$v){
     		$defaultColKey['A'.$k] = $v;
     	}
     	$this->defaultColKey = $defaultColKey;
 
-    	$array = $this->getAdtableStyle( $request->user() );
+    	$array = TableColumnName::getStyle($type);
    
     	$data['d'] = $this->keyReplace($array);
 	    return response()->json($data);	
@@ -60,10 +61,11 @@ class Table extends Controller
         $name  = isset($post['name']) ? $post['name']:  '';
         $xxxx  = isset($post['value']) ? $post['value']:  '';
         $yyyy  = isset($post['total']) ? $post['total']:  '';
+        $type  = isset($post['type']) ? $post['type']:  '';
         $this->colError = false;
 
         $defaultColKey = array();
-        foreach(TableColumnName::get('ad_table') as $k=>$v){
+        foreach(TableColumnName::get('ad') as $k=>$v){
             $defaultColKey['A'.$k] = $v;
         }
         $this->defaultColKey = $defaultColKey;
@@ -72,7 +74,6 @@ class Table extends Controller
 
         for($k=0;$k<count($name);$k++){
             $formula->make($xxxx[$k] , $this->defaultColKey);
-
             if($formula->faild() == true){
                 $this->colError = true;
                 break;
@@ -82,21 +83,21 @@ class Table extends Controller
             $array[$k]['total'] = $yyyy[$k];
             $array[$k]['value'] = $formula->str();
     
-        }
+        };
 
         if($this->colError == true){
-            $array = $this->getAdtableStyle( $request->user() );
+            $array = TableColumnName::getStyle($type);
         }else{
-            $adTableStyle = \App\Model\ADTableStyle::first();
-            $style = new \App\Model\AdTableStyle(['style' =>serialize($array)]);
+            $style = \App\Model\Style::where('type',$type)->first();
 
-            $thisStyle = $adTableStyle->first();
 
-            if($thisStyle == null){
-                $adTableStyle->save($style);
+            if($style == null){
+                $style = new \App\Model\Style($post);
+                $style->style = serialize($array);
+                $style->save();
             }else{
-                $thisStyle->style = serialize($array);
-                $thisStyle->save();
+                $style->style = serialize($array);
+                $style->save();
             }
             
         }

@@ -152,22 +152,22 @@ class Controller extends BaseController
                 'url' => 'chart.ad.records.table.index',
             ],
             'lines' => [
-                'icon' => 'fa fa-line-chart',
+                'icon' => 'fa-line-chart',
                 'name' => '广告走势图',
                 'url' => 'chart.ad.lines.index',
             ],
 			'bars' => [
-                'icon' => 'fa fa-bar-chart',
+                'icon' => 'fa-bar-chart',
                 'name' => '广告总统计图',
                 'url' => 'chart.ad.bars.index',				
 			],
         ];
 
         $sidebar_style = [
-            'ad.records.table' => [
-                'icon' => 'fa-table',
-                'name' => '广告记录报表',
-                'url' => 'style.ad.records.table.index',
+            'ad.chart' => [
+                'icon' => 'fa-circle-o',
+                'name' => '自定义广告表',
+                'url' => 'style.ad.chart.index',
             ]
         ];
 

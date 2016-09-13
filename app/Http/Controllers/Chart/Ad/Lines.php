@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Chart\Ad;
 
 use Request;
 use DB;
+use App\Libs\TableColumnName;
+use App\Libs\FormulaCalculator;
 
 class Lines extends \App\Http\Controllers\Controller
 {
@@ -34,16 +36,17 @@ class Lines extends \App\Http\Controllers\Controller
 		}
 
 
-		$records = \App\Model\ADRecords::all();
+		$records = \App\Model\ADRecords::orderBy('date')->get();
 
-		foreach($records as $record){
-			$temp['date'] = Date('Y-m-d',$record->date);
-			$temp['orders_amount'] = $record->orders_amount;
-			$temp['orders_money'] = $record->orders_money;
-			$temp['cost'] = $record->cost;
-
-			$json[$temp['date']][$record->ad_binds_id] = $temp;
-		}
+		$col_names = TableColumnName::getStyle('ad.lines');
+        
+        foreach($records as $record){
+            $temp = array();
+            foreach($col_names as $col_name){
+                $temp[$col_name['key']] = FormulaCalculator::make($col_name['value'],$record);
+            }
+            $json[date('Y/m/d',$record->date)][$record->ad_binds_id] = $temp;
+        }
 
 		$binds = \App\Model\ADBinds::all();
 
@@ -51,43 +54,11 @@ class Lines extends \App\Http\Controllers\Controller
 			'users' => $users,
 			'banners' => $banners,
 			'dataJson' => $json,
+			'y1' => $col_names,
 		]);
 	}
 
-	public function show($id){
-		$users = \App\Model\ADBinds::with('user')->groupBy('users_id')->get();
-		$banners  = \App\Model\Banners::all();
 
-		$records  = \App\Model\ADRecords::selectRaw('
-						sum(orders_amount) as orders_amount , 
-						sum(orders_money) as orders_money ,
-						sum(cost) as cost ,
-						date')->groupBy('date');
-
-		$rand_date = isset($request->date) ? $request->date : '';
-		if(!empty($rand_date) && strpos($rand_date,'-') > 1){
-			list($start,$end) = explode('-', $rand_date , 2);
-
-			$records = $records->where('date', '>' , strtotime($start)-1)
-							   ->where('date', '<' , strtotime($end)+1);
-		}
-
-		switch ($request->t1) {
-			case 'totals':
-				$data[0] = $records;
-				break;
-			case 'users':
-
-				break;
-			case 'banners':
-				# code...
-				break;	
-			default:
-				# code...
-				break;
-		}
-		
-	}
 
 
 

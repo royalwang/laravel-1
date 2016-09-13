@@ -31,7 +31,7 @@ class Table extends \App\Http\Controllers\Controller
 		return $date;
 	}
 	private function getThead(){
-		return TableColumnName::getUserStyle('ad_table',$this->user);
+		return TableColumnName::getStyle('ad.table');
 	}
 
 	private function getSwitchTab(){

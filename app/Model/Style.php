@@ -4,12 +4,13 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ADTableStyle extends Model
+class Style extends Model
 {
-    protected $table = "ad_table_style";
+    protected $table = "style";
 	protected $fillable = array(
 		'name',
 		'style',
+		'type',
 	);
 	public $timestamps = false;
 

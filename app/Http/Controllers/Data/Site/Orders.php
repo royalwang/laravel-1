@@ -7,10 +7,11 @@ use Request;
 class Orders extends Controller
 {
 	public function index(){
-		$banners = \App\Model\Banners::paginate($this->show);
+		$orders = \App\Model\Orders::paginate($this->show);
 
 		return view($this->path,[
-			'tables' => $banners ,
+			'tables' => $orders ,
+			'status' => '',
 			]);
 	}
 

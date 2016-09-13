@@ -1,1 +1,1 @@
-{"files":{"name":["license-english.txt"],"type":["text\/plain"],"tmp_name":["D:\\wamp\\tmp\\php8061.tmp"],"error":[0],"size":[8156]}}
+{"type":"ad.bars","name":["\u5e7f\u544a\u6d88\u8d39(USD)","\u70b9\u51fb\u91cf","IP\u6210\u5355","\u4ea4\u6613\u91d1\u989d\uff08RMB\uff09"],"value":["A0","A1","A2","A3"],"total":["","","",""]}

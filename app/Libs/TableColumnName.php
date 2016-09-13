@@ -6,7 +6,7 @@ namespace App\Libs;
 
 class TableColumnName{
 	private static $data = array(
-		'ad_table' => array(
+		'ad' => array(
 			'cost',
 			'click_amount',
 			'orders_amount',
@@ -20,13 +20,13 @@ class TableColumnName{
 	}
 
 
-	public static function getUserStyle($table,$user){
-		$allow_edit = self::$data['ad_table'];
+	public static function getStyle($table){
+		$allow_edit = self::$data['ad'];
 
 		$column_name = array();
-		$adTableStyle = $user->adTableStyle()->first();
-    	if($adTableStyle == null){
-    		foreach(TableColumnName::get('ad_table') as $key=>$value){
+		$style = \App\Model\Style::where('type',$table)->first();
+    	if($style == null){
+    		foreach($allow_edit as $key=>$value){
     			$column_name[$key]['key'] = 'A'.$key;
     			$column_name[$key]['name'] = trans('adtable.'.$value);
     			$column_name[$key]['value'] = $value;
@@ -38,7 +38,7 @@ class TableColumnName{
     			}
     		}
     	}else{
-    		$array = unserialize($adTableStyle->style);
+    		$array = unserialize($style->style);
     		foreach($array as $key=>$value){
     			$column_name[$key]['key'] = 'A'.$key;
     			$column_name[$key]['name'] = $value['name'];
@@ -54,15 +54,15 @@ class TableColumnName{
     	return $column_name;
 	}
 
-	public static function getUserStyleByKeyValue($table,$user){
+	public static function getStyleByKeyValue($table){
 		$column_name = array();
-		$adTableStyle = $user->adTableStyle()->first();
-    	if($adTableStyle == null){
-    		foreach(TableColumnName::get('ad_table') as $key=>$value){
+		$style = \App\Model\Style::where('type',$table)->first();
+    	if($style == null){
+    		foreach(TableColumnName::get('ad') as $key=>$value){
     			$column_name['A'.$key] = $value;
     		}
     	}else{
-    		$array = unserialize($adTableStyle->style);
+    		$array = unserialize($style->style);
     		foreach($array as $key=>$value){
     			$column_name['A'.$key] = $value['value'];
     		}

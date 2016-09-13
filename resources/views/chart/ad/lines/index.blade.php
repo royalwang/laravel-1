@@ -98,29 +98,16 @@
 			</div>
 			<div id="collapse2" class="panel-collapse collapse">
 			<div class="box-body">
+				@foreach($y1 as $key=>$y)
 				<div class="form-group">
 					<label>
-						<input type="radio" name="y1" class="minimal" checked value="orders_amount" data-name="出单量">
-						出单量
+						<input <?php echo ($key==0)?'checked ':''; ?>type="radio" name="y1" class="minimal" value="{{$y['key']}}" data-key="{{$y['key']}}" data-value="{{$y['value']}}" data-total="{{$y['total']}}" data-name="{{ $y['name'] }}">
+						{{ $y['name'] }}
 					</label>
 				</div>
+				@endforeach
 				<div class="form-group">
-					<label>
-						<input type="radio" name="y1" class="minimal" value="orders_money" data-name="出单金额">
-						出单金额
-					</label>
-				</div>
-				<div class="form-group">
-					<label>
-						<input type="radio" name="y1" class="minimal" value="cost" data-name="广告消费">
-						广告消费
-					</label>
-				</div>
-				<div class="form-group">
-					<label>
-						<input type="radio" name="y1" class="minimal" value="customize" data-name="自定义">
-						自定义
-					</label>
+					<label><a href="{{ route('style.ad.chart.index') }}">自定义</a></label>
 				</div>
 			</div>
 			</div>
@@ -253,8 +240,6 @@ $('.chart-add > i').click(function(event) {
 	$(this).parent('.chart-add').before(html);
 	$(this).parent('.chart-add').remove();
 
-	console.log($('.line-chart-bg').eq(0).children().length);
-	console.log($('.line-chart-bg').eq(1).children().length);
 	if($('.line-chart-bg').eq(0).children().length <= $('.line-chart-bg').eq(1).children().length){
 		$('.line-chart-bg').eq(0).append(addObj)
 	}else{
@@ -264,16 +249,17 @@ $('.chart-add > i').click(function(event) {
 
 	var x = $('input:radio[name=x1]:checked').val();
 	var y = $('input:radio[name=y1]:checked').val();
+	var t = $('input:radio[name=y1]:checked').attr('data-total');
 	var line_data = [];
 	switch ($('input[name=t1]:checked').val()) {
 		case 'total':
 			for(var i in data){
 				var row_data = {};
 				row_data['date'] = i;
-				var total = 0;
+				var total = '';
 				for(var o in data[i]){
 					if($.inArray(o, _binds) ){
-						total += parseFloat(data[i][o][y]);
+						total = getTotal(total,data[i][o][y],t);
 					}
 				}
 				row_data.total = total;
@@ -287,12 +273,11 @@ $('.chart-add > i').click(function(event) {
 			for(var i in data){
 				var row_data = {};
 				row_data['date'] = i;
-				var total = 0;
 				for(var c in _users){
-					var total = 0;
+					var total = '';
 					for(var o in data[i]){	
 						if(inArray(o, _users[c].binds_id) ){
-							total += parseFloat(data[i][o][y]);
+							total = getTotal(total,data[i][o][y],t);
 						}
 					}
 					row_data[_users[c].id] = total;
@@ -309,12 +294,11 @@ $('.chart-add > i').click(function(event) {
 			for(var i in data){
 				var row_data = {};
 				row_data['date'] = i;
-				var total = 0;
 				for(var c in _banners){
-					var total = 0;
+					var total = '';
 					for(var o in data[i]){
 						if( inArray(parseInt(o), _banners[c].binds_id) ){
-							total += parseFloat(data[i][o][y]);
+							total = getTotal(total,data[i][o][y],t);
 						}
 					}
 					row_data[_banners[c].id] = total;
@@ -350,6 +334,32 @@ $('.line-chart-bg').sortable({
     placeholder: "sort-highlight",
 });
 
+function getTotal(data1,data2,t){
+	if(data1 == '') return data2;
+	console.log(data1 + ':' + data2);
+	switch (t) {
+		case 'avg':
+			return (parseFloat(data1*100000) + parseFloat(data2*100000)) / 200000;
+			break;
+		case 'max':
+			if(data1 > data2){
+				return data1;
+			}else{
+				return data2;
+			}
+			break;
+		case 'min':
+			if(data1 > data2){
+				return data2;
+			}else{
+				return data1;
+			}
+			break;
+		default:
+			return (parseFloat(data1*100000) +  parseFloat(data2*100000)) / 100000;
+			break;
+	}
+}
 
 function getRanNum(){
     result = [];

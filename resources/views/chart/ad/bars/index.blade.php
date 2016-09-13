@@ -110,29 +110,16 @@
 			</div>
 			<div id="collapse2" class="panel-collapse collapse">
 			<div class="box-body">
+				@foreach($y1 as $key=>$y)
 				<div class="form-group">
 					<label>
-						<input type="radio" name="y1" class="minimal" checked value="orders_amount" data-name="出单量">
-						出单量
+						<input <?php echo ($key==0)?'checked ':''; ?>type="radio" name="y1" class="minimal" value="{{$y['key']}}" data-key="{{$y['key']}}" data-value="{{$y['value']}}" data-total="{{$y['total']}}" data-name="{{ $y['name'] }}">
+						{{ $y['name'] }}
 					</label>
 				</div>
+				@endforeach
 				<div class="form-group">
-					<label>
-						<input type="radio" name="y1" class="minimal" value="orders_money" data-name="出单金额">
-						出单金额
-					</label>
-				</div>
-				<div class="form-group">
-					<label>
-						<input type="radio" name="y1" class="minimal" value="cost" data-name="广告消费">
-						广告消费
-					</label>
-				</div>
-				<div class="form-group">
-					<label>
-						<input type="radio" name="y1" class="minimal" value="customize" data-name="自定义">
-						自定义
-					</label>
+					<label><a href="{{ route('style.ad.chart.index') }}">自定义</a></label>
 				</div>
 			</div>
 			</div>
@@ -274,6 +261,7 @@ $('.chart-add > i').click(function(event) {
 
 	var x = $('input:radio[name=x1]:checked').val();
 	var y = $('input:radio[name=y1]:checked').val();
+	var t = $('input:radio[name=y1]:checked').attr('data-total');
 	var line_data = [];
 	
 	switch ($('input[name=t1]:checked').val()) {
@@ -285,7 +273,7 @@ $('.chart-add > i').click(function(event) {
 
 				for(var o in data[i]){
 					if($.inArray(o, _binds) ){
-						total += parseFloat(data[i][o][y]);
+						total = getTotal(total,data[i][o][y],t);
 					}
 				}
 				row_data.total = total;
@@ -305,7 +293,7 @@ $('.chart-add > i').click(function(event) {
 					var total = 0;
 					for(var o in data[i]){
 						if(inArray(parseInt(o), _users[c].binds_id) ){
-							total = total + parseFloat(data[i][o][y]);
+							total = getTotal(total,data[i][o][y],t);
 						}
 					}
 					row_data[_users[c].id] = total;
@@ -327,7 +315,7 @@ $('.chart-add > i').click(function(event) {
 					var total = 0;
 					for(var o in data[i]){
 						if( inArray(parseInt(o), _banners[c].binds_id) ){
-							total += parseFloat(data[i][o][y]);
+							total = getTotal(total,data[i][o][y],t);
 						}
 					}
 					row_data[_banners[c].id] = total;
@@ -351,10 +339,10 @@ $('.chart-add > i').click(function(event) {
 		line_data = totalByDay(line_data);
 		break;
 		case 'week':
-		line_data = totalByWeek(line_data);
+		line_data = totalByWeek(line_data,t);
 		break;
 		case 'month':
-		line_data = totalByMonth(line_data);
+		line_data = totalByMonth(line_data,t);
 		break;
 	}
 
@@ -371,6 +359,34 @@ $('.chart-add > i').click(function(event) {
 
 });
 
+function getTotal(data1,data2,t){
+	if(data1 == '') return data2;
+	console.log(data1 + ':' + data2);
+	switch (t) {
+		case 'avg':
+			return (parseFloat(data1*100000) + parseFloat(data2*100000)) / 200000;
+			break;
+		case 'max':
+			if(data1 > data2){
+				return data1;
+			}else{
+				return data2;
+			}
+			break;
+		case 'min':
+			if(data1 > data2){
+				return data2;
+			}else{
+				return data1;
+			}
+			break;
+		default:
+			return (parseFloat(data1*100000) +  parseFloat(data2*100000)) / 100000;
+			break;
+	}
+}
+
+
 function totalByDay(data){
 	for(var o in data){
 		data[o].date = setDate(data[o].date);
@@ -378,7 +394,7 @@ function totalByDay(data){
 	return data;
 }
 
-function totalByMonth(data){
+function totalByMonth(data,t){
 	var new_data = [];
 	var i= data.length-1;
 	var row_data = {};
@@ -392,7 +408,7 @@ function totalByMonth(data){
 			for(var o in data[i]){
 				if(o == 'date') continue;
 				if(row_data[o] != undefined){
-					row_data[o] = parseFloat(row_data[o]) + parseFloat(data[i][o]); 
+					row_data[o] = getTotal(row_data[o],data[i][o],t);
 				}else{
 					row_data[o] = parseFloat(data[i][o]); 
 				}	
@@ -415,7 +431,7 @@ function totalByMonth(data){
 	return new_data;
 }
 
-function totalByWeek(data){
+function totalByWeek(data,t){
 	var new_data = [];
 	var i= data.length-1;
 	var row_data = {};
@@ -427,7 +443,7 @@ function totalByWeek(data){
 			for(var o in data[i]){
 				if(o == 'date') continue;
 				if(row_data[o] != undefined){
-					row_data[o] = parseFloat(row_data[o]) + parseFloat(data[i][o]); 
+					row_data[o] = getTotal(row_data[o],data[i][o],t);
 				}else{
 					row_data[o] = parseFloat(data[i][o]); 
 				}	

@@ -1,5 +1,5 @@
 
-#style-col-body a{
+.style-col-body a{
 	width: 25px;
 	height:25px;
 	display: inline-block;
@@ -7,8 +7,8 @@
 	color: #000;
 }
 
-#style-col-body tr:first-child a.up,
-#style-col-body tr:last-child a.down
+.style-col-body tr:first-child a.up,
+.style-col-body tr:last-child a.down
 {
 	color:grey;
 	cursor: default;
@@ -43,7 +43,7 @@
 	text-align: center;
 }
 
-#style-col-body input{
+.style-col-body input{
 	padding: 2px 5px 2px 10px;
 	margin: 0;
 	height: 30px;

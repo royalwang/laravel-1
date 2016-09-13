@@ -96,7 +96,7 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
 
     Route::group(['namespace' => 'Style'], function () {  
         Route::group(['namespace' => 'Ad'], function () {
-            Route::resource('/style/ad/records/table'             , 'Records\Table');
+            Route::resource('/style/ad/chart'                     , 'Chart');
         });  
     });
     

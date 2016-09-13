@@ -33,7 +33,7 @@ class RecordsAjax extends \App\Http\Controllers\AjaxController
             ->get();    
 
 
-        $col_names = TableColumnName::getUserStyle('ad_table',$user);
+        $col_names = TableColumnName::getStyle('ad.table');
         $new_array = array();
 
         foreach($array as $key=>$table){
@@ -81,7 +81,7 @@ class RecordsAjax extends \App\Http\Controllers\AjaxController
 
         // data change key To array
         $new_fill_data = array();
-        $col_names     = TableColumnName::getUserStyleByKeyValue('ad_table',$user);
+        $col_names     = TableColumnName::getStyleByKeyValue('ad.table');
         $fill_data     = $request->all();
         
         foreach($fill_data as $key=>$value){
@@ -128,7 +128,7 @@ class RecordsAjax extends \App\Http\Controllers\AjaxController
     	}
    
         //success ,array to key
-        $col_names = TableColumnName::getUserStyle('ad_table',$user);
+        $col_names = TableColumnName::getStyle('ad.table');
         $new_array = array();
         foreach($col_names as $col_name){
             $new_array['date'] = $record->date;
