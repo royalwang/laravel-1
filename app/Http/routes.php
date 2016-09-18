@@ -90,8 +90,15 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
             Route::resource('/data/site/sites'                    , 'Sites');
             Route::resource('/data/site/banners'                  , 'Banners');
             Route::resource('/data/site/paychannels'              , 'PayChannels');
-			Route::resource('/data/site/orders'                   , 'Orders');
+			Route::resource('/data/order/orders'                  , 'Orders');
         });    
+
+        Route::group(['namespace' => 'Logistics'], function () {    
+            //data upload download
+            Route::post('/data/logistics/orders/sync'             , 'Orders@sync')->name('data.logistics.orders.sync');
+            //page
+            Route::resource('/data/logistics/orders'              , 'Orders');
+        });   
     });
 
     Route::group(['namespace' => 'Style'], function () {  

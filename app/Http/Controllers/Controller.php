@@ -125,13 +125,21 @@ class Controller extends BaseController
                 'url'  => 'data.site.paychannels.index', 
                 'icon' => 'fa-database',
                 'name' => '通道信息',
-            ],
-            'orders' =>[
-                'url' => 'data.site.orders.index',
-                'icon' => 'fa-cloud-download',
-                'name' => '订单管理',
             ]
         ];
+		
+		$sidebar_data_logistics = [
+            'orders' =>[
+                'url' => 'data.logistics.orders.index',
+                'icon' => 'fa-cloud-download',
+                'name' => '订单管理',
+            ],
+			'truck' =>[
+                'url' => 'data.logistics.truck.index',
+                'icon' => 'fa fa-truck',
+                'name' => '物流管理',
+            ],
+		];
 
         $sidebar_chart = [
             'ad' => [
@@ -175,6 +183,7 @@ class Controller extends BaseController
              ->addMenu('data',$sidebar_data)
              ->addMenu('data.ad',$sidebar_data_ad)
              ->addMenu('data.site',$sidebar_data_site)
+			 ->addMenu('data.logistics',$sidebar_data_logistics)
              ->addMenu('setting',$sidebar_setting)
              ->addMenu('chart',$sidebar_chart)
              ->addMenu('chart.ad',$sidebar_chart_ad)
@@ -214,6 +223,24 @@ class Controller extends BaseController
         }
         return $csv;
     }
+
+    protected function upLoadCsv(){
+        $csv = array();
+        if(empty($_FILES['files'])) return $csv;
+
+        foreach($_FILES['files']['tmp_name'] as $key=>$file){
+            $name = $_FILES['files']['name'][$key];
+            if (ends_with($name , '.xls')) {
+                $csv = array_map('str_getcsv', file($file));
+                array_walk($csv, function(&$a) use ($csv) {
+                    $a = @array_combine($csv[0], $a);
+                });
+                array_shift($csv);
+            }
+        }
+        return $csv;
+    }
+
 
     protected function downLoadCsv($name,$data){
         header( "Pragma: public"); 
