@@ -158,6 +158,7 @@ return [
         App\Providers\MenusProvider::class,
         App\Providers\PermissionsProvider::class,
 
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
     ],
 
@@ -209,6 +210,8 @@ return [
 
         'Menus' => App\Facades\MenusFacade::class,
         'Permission' => App\Facades\PermissionsFacade::class,
+
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
     ],
 

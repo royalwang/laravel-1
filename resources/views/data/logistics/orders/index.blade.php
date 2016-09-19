@@ -85,33 +85,29 @@
 									<th>订单号</th>
 									<th>网站</th>
 									<th>收货人邮箱</th>
+									<th>状态</th>
 									<th width="156">操作</th>
 								</tr>
 							</thead>
 							<tbody class="user-form">
-								@foreach($tables as $order)
+    
+								@foreach($tables as $key=>$order)
 								<tr>
 									<td width="35"><input type="checkbox" /></td>
-									<td>{{ $order->info['date'] }}</td>
-									<td>{{ $order->site->paychannel->name }}</td>
-									<td>{{ $order->info['order_id'] }}</td>
-									<td>{{ $order->site->name }}</td>
-									<td>{{ $order->info['email'] }}</td>
+									<td>{{ $order->trade_date }}</td>
+									<td>{{ $order->pay_id }}</td>
+									<td>{{ $order->order_id }}</td>
+									<td>{{ $order->host }}</td>
+									<td>{{ $order->email }}</td>
+									<td>{{ ($order->status == 1)?'已处理':'未处理' }}</td>
 									<td>
 										<div class="btn-group">
 										@pcan($path . '.show')
-										<a class="btn btn-default" href="{{ route($path . '.show' , $banner->id) }}"><i class="fa fa-eye"></i></a>
+										<a class="btn btn-default" href="{{ route($path . '.show' , $order->id) }}"><i class="fa fa-eye"></i></a>
 										@endpcan
-										<div class="dropdown btn btn-default">
-										<span data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><i class="fa fa-reorder"></i></span>
-										<ul class="dropdown-menu status" role="menu" aria-labelledby="dLabel">
-											<li class="{{ (($bind->status == 0)?'active':'' ) }}"><a data-value="0">未投放</a></li>
-											<li class="{{ (($bind->status == 1)?'active':'' ) }}"><a data-value="1">已投放</a></li>
-											<li class="{{ (($bind->status == -1)?'active':'' ) }}"><a data-value="-1">已被封</a></li>
-										</ul>
-										</div>
+
 										@pcan($path . '.destroy')
-										<button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $banner->id ) }}"><i class="fa fa-trash"></i></button>
+										<button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $order->id ) }}"><i class="fa fa-trash"></i></button>
 										@endpcan
 										</div>
 									</td>
@@ -205,6 +201,8 @@ $(function () {
         dataType: 'json',
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')} ,
         done: function (e, data) {
+        	console.log(data.result.msg);
+        	window.location.reload();
             if(data.result.error_msg && data.result.error_msg.length > 0)
                 console.log(data.result.error_msg);
         },

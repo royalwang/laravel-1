@@ -11,6 +11,7 @@ use Route;
 use Request;
 use Menus;
 use Permission;
+use Excel;
 
 class Controller extends BaseController
 {
@@ -60,6 +61,7 @@ class Controller extends BaseController
                 'url'  => 'data.site.sites.index'
             ],
             'money'=>[
+				'url' => 'data.money.bills.index',
                 'icon' => 'fa-database' ,
                 'name' => '财务数据',
             ],
@@ -214,23 +216,6 @@ class Controller extends BaseController
         foreach($_FILES['files']['tmp_name'] as $key=>$file){
             $name = $_FILES['files']['name'][$key];
             if (ends_with($name , '.csv')) {
-                $csv = array_map('str_getcsv', file($file));
-                array_walk($csv, function(&$a) use ($csv) {
-                    $a = @array_combine($csv[0], $a);
-                });
-                array_shift($csv);
-            }
-        }
-        return $csv;
-    }
-
-    protected function upLoadCsv(){
-        $csv = array();
-        if(empty($_FILES['files'])) return $csv;
-
-        foreach($_FILES['files']['tmp_name'] as $key=>$file){
-            $name = $_FILES['files']['name'][$key];
-            if (ends_with($name , '.xls')) {
                 $csv = array_map('str_getcsv', file($file));
                 array_walk($csv, function(&$a) use ($csv) {
                     $a = @array_combine($csv[0], $a);

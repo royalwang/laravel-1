@@ -16,7 +16,7 @@
     <div class="content-wrapper">
 
 
-        <section class="content">
+        <section class="content clearfix">
 
             @yield('main-content')
         </section>

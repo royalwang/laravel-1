@@ -99,6 +99,12 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
             //page
             Route::resource('/data/logistics/orders'              , 'Orders');
         });   
+
+        Route::group(['namespace' => 'Money'], function () {    
+            //data upload download
+            Route::resource('/data/money/bills'                   , 'Bills');
+
+        });  
     });
 
     Route::group(['namespace' => 'Style'], function () {  
