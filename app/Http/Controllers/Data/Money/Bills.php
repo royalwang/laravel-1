@@ -7,10 +7,27 @@ use Request;
 class Bills extends \App\Http\Controllers\Controller
 {
 	public function index(){
-		$banners = \App\Model\Banners::paginate($this->show);
+		$accounts  = \App\Model\MoneyAccounts::all();
+
+		$money_use = \App\Model\MoneyType::where('parent_id',2)->orWhere('id',2)->get();
+		$money_rev = \App\Model\MoneyType::where('parent_id',1)->orWhere('id',1)->get();
+
+		$count = \App\Model\MoneyRecords::selectRaw('count(*) as count,money_type_id')->groupBy('money_type_id')->get();
+
+		// $money_rev = \App\Model\MoneyType::selectRaw('count(money_records.money_type_id) as num,money_type.id,money_type.name')
+		// 		->where('money_type.parent_id',1)
+		// 		->join('money_records','money_type.id','=','money_records.money_type_id')
+		// 		->groupBy('money_records.money_type_id');
+
+		$count = $count->keyBy(function ($item){
+			return $item->money_type_id;
+		});
 
 		return view($this->path,[
-			'tables' => $banners ,
+			'accounts'    => $accounts ,
+			'money_use'   => $money_use,
+			'money_rev'   => $money_rev,
+			'type_count'  => $count,
 			]);
 	}
 
@@ -42,7 +59,7 @@ class Bills extends \App\Http\Controllers\Controller
 		return redirect()->route('data.site.banners.index');
 	}
 
-	public function destory($id){
+	public function destroy($id){
 		$banner = \App\Model\Banners::find($id);
 		if($banner != null){
 			$banner->delete();

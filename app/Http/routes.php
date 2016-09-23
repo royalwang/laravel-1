@@ -103,7 +103,9 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
         Route::group(['namespace' => 'Money'], function () {    
             //data upload download
             Route::resource('/data/money/bills'                   , 'Bills');
-
+            Route::resource('/data/money/accounts'                , 'Accounts');
+            Route::resource('/data/money/type'                    , 'Type');
+            Route::resource('/data/money/records'                 , 'Records');
         });  
     });
 

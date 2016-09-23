@@ -40,7 +40,7 @@ class PayChannels extends Controller
 		return redirect()->route('data.site.paychannels.index');
 	}
 
-	public function destory($id){
+	public function destroy($id){
 		$paychannel = \App\Model\PayChannel::find($id);
 		if($paychannel != null){
 			$paychannel->delete();

@@ -6,243 +6,863 @@
 
 
 @section('main-content')
-<link rel="stylesheet" href="{{ asset('/plugins/fullcalendar/fullcalendar.min.css') }}">	
+<link rel="stylesheet" href="{{ asset('/plugins/datepicker/datepicker3.css') }}">
+<link rel="stylesheet" href="{{ asset('/plugins/fullcalendar/fullcalendar.min.css') }}">
+
+<style>
+	.external-event{
+		cursor: default;
+		background: #d4deaa;
+		color: #422828;
+	}
+	.external-event > span{
+		line-height: 30px;
+	}
+	.form-horizontal .form-group{
+		margin-right: 0;
+		margin-left: 0;
+	}
+	.input-group .input-group-addon{
+		background-color:#d4deaa;
+		border-color:#d4deaa;
+		
+	}
+	.input-group-addon i{
+		min-width: 15px;
+	}
+	.datepicker{
+		padding: 6px 12px;
+	}
+	textarea{
+		resize: none;
+		min-height: 100px;
+	}
+	.fc-view-container *{
+		-webkit-box-sizing:border-box;
+		box-sizing:border-box;
+	}
+</style>
 
 <div class="row">
-    <div class="col-md-2">
-      <div class="box box-solid">
-        <div class="box-header with-border">
-          <h4 class="box-title">Draggable Events</h4>
-        </div>
-        <div class="box-body">
-          <!-- the events -->
-          <div id="external-events">
-          	@foreach($accounts as $account)
-            <div class="external-event bg-green">{{ $account->name }}</div>
-            @endforeach
-          </div>
-        </div>
-        <!-- /.box-body -->
-      </div>
-      <!-- /. box -->
-      <div class="box box-solid">
-        <div class="box-header with-border">
-          <h3 class="box-title">Create Event</h3>
-        </div>
-        <div class="box-body">
-          <div class="btn-group" style="width: 100%; margin-bottom: 10px;">
-            <!--<button type="button" id="color-chooser-btn" class="btn btn-info btn-block dropdown-toggle" data-toggle="dropdown">Color <span class="caret"></span></button>-->
-            <ul class="fc-color-picker" id="color-chooser">
-              <li><a class="text-aqua" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-blue" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-light-blue" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-teal" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-yellow" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-orange" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-green" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-lime" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-red" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-purple" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-fuchsia" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-muted" href="#"><i class="fa fa-square"></i></a></li>
-              <li><a class="text-navy" href="#"><i class="fa fa-square"></i></a></li>
+	<div class="col-md-3">
+		<div class="box box-solid">
+			<div class="box-header with-border">
+				<div class="pull-right box-tools">
+	                <a class="btn btn-primary btn-sm pull-right" id="add_account">新增账户</a>
+	             </div>
+				<h4 class="box-title">我的账户</h4>
+			</div>
+			<div class="box-body">
+				<div id="external-events">
+				</div>
+			</div>
+		</div>
+
+
+
+		<div class="box box-solid">
+			<div class="box-header with-border">
+				<div class="pull-right box-tools">
+	                <a class="btn btn-primary btn-sm pull-right" id="add_rev_type">新增类别</a>
+	             </div>
+				<h4 class="box-title">收入来源</h4>
+			</div>
+			<div class="box-body">
+				<div id="external-events1">
+				</div>
+			</div>
+		</div>
+
+		<div class="box box-solid">
+			<div class="box-header with-border">
+				<div class="pull-right box-tools">
+	                <a class="btn btn-primary btn-sm pull-right" id="add_use_type">新增类别</a>
+	             </div>
+				<h4 class="box-title">支出用途</h4>
+			</div>
+			<div class="box-body">
+				<div id="external-events2">
+				</div>
+			</div>
+		</div>
+    </div>
+
+    <div class="col-md-6">
+		<div class="box box-solid">
+			<div class="box-header with-border">
+				<h4 class="box-title">我的账单</h4>
+			</div>
+			<div class="box-body">
+				<div id="calendar"></div>
+			</div>
+		</div>
+
+    </div>
+
+    <div class="col-md-3">
+		<div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              	<li class="active col-md-3"><a href="#tab_1" data-toggle="tab">收入</a></li>
+              	<li class="col-md-3"><a href="#tab_2" data-toggle="tab">支出</a></li>
+              	<li class="col-md-4"><a href="#tab_3" data-toggle="tab">转账/提现</a></li>
             </ul>
-          </div>
-          <!-- /btn-group -->
-          <div class="input-group">
-            <input id="new-event" type="text" class="form-control" placeholder="Event Title">
+            <div class="tab-content">
+              	<div class="tab-pane active" id="tab_1">
+              		<form class="form-horizontal">
+              			<input type="hidden" name="type" value="1">
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">金额</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-money"></i>
+				                </div>
+              					<input name="value" value="0" class="form-control" placeholder="0">
+              				</div>
+              			</div>
 
-            <div class="input-group-btn">
-              <button id="add-new-event" type="button" class="btn btn-primary btn-flat">Add</button>
-            </div>
-            <!-- /btn-group -->
-          </div>
-          <!-- /input-group -->
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">时间</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-calendar"></i>
+				                </div>
+              					<input name="date" value="{{ date('Y/m/d') }}" class="form-control datepicker" placeholder="">
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">账户</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-credit-card"></i>
+				                </div>
+              					<select class="money_accounts_select form-control" name="money_accounts_id"></select>
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">收入来源</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-suitcase"></i>
+				                </div>
+              					<select class="money_rev_select form-control" name="money_type_id"></select>
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">说明</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-file-text"></i>
+				                </div>
+              					<textarea name="note" class="form-control"></textarea>
+              				</div>
+              			</div>
+              			<div class="form-group">
+							<button class="btn btn-default pull-right record-submit">提交</button>
+              			</div>
+              		</form>
+              	</div>
+	            <div class="tab-pane" id="tab_2">
+              		<form class="form-horizontal">
+              			<input type="hidden" name="type" value="-1">
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">金额</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-money"></i>
+				                </div>
+              					<input name="value" value="0" class="form-control" placeholder="0">
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">时间</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-calendar"></i>
+				                </div>
+              					<input name="date" value="{{ date('Y/m/d') }}" class="form-control datepicker" placeholder="">
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">账户</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-credit-card"></i>
+				                </div>
+              					<select class="money_accounts_select form-control" name="money_accounts_id"></select>
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">支出用途</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-suitcase"></i>
+				                </div>
+              					<select class="money_use_select form-control" name="money_type_id"></select>
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">说明</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-file-text"></i>
+				                </div>
+              					<textarea name="note" class="form-control"></textarea>
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+							<button class="btn btn-default pull-right record-submit">提交</button>
+              			</div>
+              		</form>
+	            </div>
+				<div class="tab-pane" id="tab_3">
+              		<form class="form-horizontal">
+              			<input type="hidden" name="type" value="0">
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">金额</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-money"></i>
+				                </div>
+              					<input name="value" value="0" class="form-control" placeholder="0">
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">时间</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-calendar"></i>
+				                </div>
+              					<input name="date" value="{{ date('Y/m/d') }}" class="form-control datepicker" placeholder="">
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">转出账户</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-credit-card"></i>
+				                </div>
+              					<select class="money_accounts_select form-control" name="money_accounts_id"></select>
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+              				<label class="col-sm-3 control-label">转入账户</label>
+              				<div class="col-sm-9 input-group">
+              					<div class="input-group-addon">
+				                    <i class="fa fa-credit-card"></i>
+				                </div>
+              					<select class="money_accounts_select form-control" name="money_accounts_to_id"></select>
+              				</div>
+              			</div>
+
+              			<div class="form-group">
+							<button class="btn btn-default pull-right record-submit">提交</button>
+              			</div>
+              		</form>
+				</div>
+			</div>	
         </div>
-      </div>
     </div>
-    <!-- /.col -->
-    <div class="col-md-10">
-      <div class="box box-primary">
-      	<div class="box-header">
-      		<div class="btn-group">
-              <button type="button" class="btn btn-default">Left</button>
-              <button type="button" class="btn btn-default">Middle</button>
-              <button type="button" class="btn btn-default">Right</button>
-            </div>
-      	</div>
-        <div class="box-body no-padding">
-          <!-- THE CALENDAR -->
-          <div id="calendar"></div>
-        </div>
-        <!-- /.box-body -->
-      </div>
-      <!-- /. box -->
-    </div>
-    <!-- /.col -->
 </div>
-<!-- /.row -->
 
-<script src="{{ asset('/plugins/jquery-ui-1.12.0/jquery-ui.min.js') }}"></script>
-<script src="{{ asset('/plugins/daterangepicker/moment.js') }}"></script>
-<script src="{{ asset('/plugins/fullcalendar/fullcalendar.min.js') }}"></script>
-<!-- Page specific script -->
-<script>
-  $(function () {
 
-    /* initialize the external events
-     -----------------------------------------------------------------*/
-    function ini_events(ele) {
-      ele.each(function () {
+<script type="text/template" name="account-form">
+	<form class="form-horizontal" name="add-account">
+		<div class="form-group">
+			<label class="col-sm-3 control-label" style="font-size:12px;">账户名称</label>
+			<div class="col-sm-9">
+				<input name="name" class="form-control" placeholder="我的钱包" value="{name}">
+			</div>
+		</div>
 
-        // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
-        // it doesn't need to have a start or end
-        var eventObject = {
-          title: $.trim($(this).text()) // use the element's text as the event title
-        };
+		<div class="form-group">
+			<label class="col-sm-3 control-label" style="font-size:12px;">初始金额</label>
+			<div class="col-sm-9">
+				<input name="money" class="form-control" placeholder="数值" value="{money}">
+			</div>
+		</div>
 
-        // store the Event Object in the DOM element so we can get to it later
-        $(this).data('eventObject', eventObject);
+		<div class="form-group">
+			<label class="col-sm-3 control-label" style="font-size:12px;">说&nbsp;&nbsp;明</label>
+			<div class="col-sm-9">
+				<input name="note" class="form-control" placeholder="备注" value="{note}">
+			</div>
+		</div>
+	</form>
+</script>
 
-        // make the event draggable using jQuery UI
-        $(this).draggable({
-          zIndex: 1070,
-          revert: true, // will cause the event to go back to its
-          revertDuration: 0  //  original position after the drag
+<script type="text/template" name="account-list">
+	<div class="external-event">
+		<span><input type="checkbox" name="account" value="{id}">&nbsp;&nbsp;{name}
+		<div class="pull-right btn-group">
+			<div class="pull-left btn-sm"><i class="fa fa-rmb"></i><span class="account_money">{money}</span></div>
+            <a class="btn btn-danger btn-sm delete" data-toggle="tooltip" data-href="{{ route('data.money.accounts.index') }}/{id}" title="删除"><i class="fa fa-trash-o"></i></a>
+            <a class="btn btn-primary btn-sm bill" data-toggle="tooltip" title="对账"><i class="fa fa-paste"></i></a>
+            <a class="btn btn-primary btn-sm edit" data-toggle="tooltip" title="编辑"><i class="fa fa-pencil-square-o"></i></a>
+         </div>
+        </span>
+	</div>
+</script>
+
+
+<script type="text/template" name="money-type-form">
+	<form class="form-horizontal" name="add-type">
+		<div class="form-group">
+			<label class="col-sm-3 control-label" style="font-size:12px;">列别名称</label>
+			<div class="col-sm-9">
+				<input name="name" class="form-control" placeholder="名称" value="{name}">
+				<input name="parent_id" tpye="hidden" value="{parent_id}" style="display:none">
+			</div>
+		</div>
+	</form>
+</script>
+
+<script type="text/template" name="money-type-list">
+	<div class="external-event">
+		<span><input type="checkbox" name="type" value="{id}">&nbsp;&nbsp;{name}
+		<div class="pull-right btn-group">
+			<div class="pull-left btn-sm">(<span class="records_type_count">0</span>) 笔</div>
+            <a class="btn btn-danger btn-sm delete" data-toggle="tooltip" data-href="{{ route('data.money.type.index') }}/{id}" title="删除"><i class="fa fa-trash-o"></i></a>
+            <a class="btn btn-primary btn-sm edit" data-toggle="tooltip" title="编辑"><i class="fa fa-pencil-square-o"></i></a>
+         </div>
+        </span>
+	</div>
+</script>
+
+<script type="text/template" name="records-form">
+	<form class="form-horizontal" name="records">
+		<input name="type" value="{type}" type="hidde" style="display:none;" >
+		<div class="form-group">
+			<label class="col-sm-3 control-label" style="font-size:12px;">账号</label>
+			<div class="col-sm-9">
+				<input name="" disabled class="form-control" placeholder="我的钱包" value="{account_name}">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label" style="font-size:12px;">收支类型</label>
+			<div class="col-sm-9">
+				<select name="money_type_id" class="form-control money_type_select">{type_html}</select>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label" style="font-size:12px;">金额</label>
+			<div class="col-sm-9">
+				<input name="money" class="form-control" placeholder="数值" value="{value}">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label" style="font-size:12px;">说&nbsp;&nbsp;明</label>
+			<div class="col-sm-9">
+				<input name="note" class="form-control" placeholder="备注" value="{note}">
+			</div>
+		</div>
+
+	</form>
+</script>
+
+
+<script src="{{ asset('plugins/datepicker/bootstrap-datepicker.js') }}"></script>
+<script src="{{ asset('js/ajax.js') }}"></script>
+<script type="text/javascript">
+
+var accounts  = <?php echo $accounts->toJson() ?>;
+var money_use = <?php echo $money_use->toJson() ?>;
+var money_rev = <?php echo $money_rev->toJson() ?>;
+
+
+function formatTemplate(dta, tmpl) {  
+    return tmpl.replace(/{(\w+)}/g, function(m1, m2) {  
+        return dta[m2];  
+    });  
+}
+
+if(accounts.length > 0){
+	for(var i in accounts){
+		addAccount(accounts[i]);
+	}
+	updateAccountSelect();
+}
+
+if(money_rev.length > 0){
+	for(var i in money_rev){
+		addMoneyRev(money_rev[i],1);
+	}
+	updateMoneyRevSelect();
+}
+
+if(money_use.length > 0){
+	for(var i in money_use){
+		addMoneyUse(money_use[i],2);
+	}
+	updateMoneyUseSelect();
+}
+
+
+function accountEvent(data){
+	var obj = $(formatTemplate(data,$('script[name="account-list"]').html()));
+	obj.data(data);
+	obj.find('.delete').click(function() {
+		Rbac.ajax.delete({
+            confirmTitle: '确定删除用户?',
+            href: $(this).data('href'),
+            successTitle: '用户删除成功',
+            successFnc:function(){
+            	obj.remove();
+            	updateAccountSelect();
+            }
         });
+	});
+	obj.find('.bill').click(function() {
+	});
+	obj.find('.edit').click(function() {
+		var data = obj.data();
+		swal({
+			title: '修改账户',
+			html: formatTemplate(data,$('script[name="account-form"]').html()),
+			showCloseButton: true,
+			showCancelButton: true,
+			cancelButtonText:'取消',
+			confirmButtonText: '提交',
+		}).then(function(){
+			Rbac.ajax.request({
+		        href: '{{ route('data.money.accounts.store') }}' + '/' + data.id,
+		        data: $('form[name="add-account"]').serialize(),
+		        type:'put',
+		        successFnc:function(r){
+		        	obj.before(accountEvent(r.datas));
+		        	obj.remove();
+		        	updateAccountSelect();
+		        }
+		    });	
+		},function(){});
+	});
+	return obj;
+}
 
-      });
+function moneyTypeEvent(data){
+	var obj = $(formatTemplate(data,$('script[name="money-type-list"]').html()));
+	obj.data(data);
+	if(data.parent_id == 0){
+		obj.find('.delete').css('visibility','hidden');
+		obj.find('.edit').css('visibility','hidden');
+	}else{
+		obj.find('.delete').click(function() {
+			Rbac.ajax.delete({
+	            confirmTitle: '确定删除类别?',
+	            href: $(this).data('href'),
+	            successTitle: '删除成功',
+	            successFnc:function(){
+	            	obj.remove();
+	            	updateMoneyRevSelect();
+					updateMoneyUseSelect();
+	            }
+	        });
+		});
+		obj.find('.edit').click(function() {
+			swal({
+				title: '修改名称',
+				html: formatTemplate(data,$('script[name="money-type-form"]').html()),
+				showCloseButton: true,
+				showCancelButton: true,
+				cancelButtonText:'取消',
+				confirmButtonText: '提交',
+			}).then(function(){
+				Rbac.ajax.request({
+			        href: '{{ route('data.money.type.store') }}' + '/' + data.id,
+			        data: $('form[name="add-type"]').serialize(),
+			        type:'put',
+			        successFnc:function(r){
+			        	obj.before(accountEvent(r.datas));
+			        	obj.remove();
+						if(r.datas.parent_id == 2){
+			        		updateMoneyUseSelect();
+			        	}else{
+			        		updateMoneyRevSelect();
+			        	}
+			        }
+			    });	
+			},function(){});
+		});
+	}
+
+	return obj;
+}
+
+function updateAccountSelect(){
+	$('.money_accounts_select').html(getDataOptionFromDiv($('#external-events')));
+}
+
+function updateMoneyRevSelect(){
+	$('.money_rev_select').html(getDataOptionFromDiv($('#external-events1')));
+}
+
+function updateMoneyUseSelect(){
+	$('.money_use_select').html(getDataOptionFromDiv($('#external-events2')));
+}
+
+function getDataOptionFromDiv(obj){
+	var html = '';
+	obj.find('.external-event').each(function(index, el) {
+		var data = $(this).data();
+		html += '<option value="'+ data.id +'">' + data.name + '</option>' +'\n';
+	});
+	return html;
+}
+
+function updateAccountMoney(rev){
+	$('#external-events').find('.external-event').each(function(index, el) {
+		var data = $(this).data();
+		if(data.id == rev.id){
+			data = rev;
+			$(this).find('.account_money').html(rev.money);
+			return;
+		}
+	});
+}
+
+function addAccount(data){
+	$('#external-events').append(accountEvent(data));
+}
+
+function addMoneyRev(data){
+	$('#external-events1').append(moneyTypeEvent(data));
+}
+
+function addMoneyUse(data){
+	$('#external-events2').append(moneyTypeEvent(data));
+}
+
+function addMoneyType(parent_id){
+	var data = {'name':'','parent_id':parent_id};
+	swal({
+		title: '新增类别',
+		html: formatTemplate(data,$('script[name="money-type-form"]').html()),
+		showCloseButton: true,
+		showCancelButton: true,
+		cancelButtonText:'取消',
+		confirmButtonText: '提交',
+	}).then(function(){
+		Rbac.ajax.request({
+	        href: '{{ route('data.money.type.store') }}',
+	        data: $('form[name="add-type"]').serialize(),
+	        successFnc:function(r){
+	        	if(parent_id == 2){
+	        		addMoneyUse(r.datas);
+	        		updateMoneyUseSelect();
+	        	}else{
+	        		addMoneyRev(r.datas);
+	        		updateMoneyRevSelect();
+	        	}
+	        }
+	    });	
+	}, function(dismiss){});
+}
+
+$('#add_account').click(function(event) {
+	var data = {'name':'','money':'','note':''};
+	swal({
+		title: '新增账户',
+		html: formatTemplate(data,$('script[name="account-form"]').html()),
+		showCloseButton: true,
+		showCancelButton: true,
+		cancelButtonText:'取消',
+		confirmButtonText: '提交',
+	}).then(function(){
+		Rbac.ajax.request({
+	        href: '{{ route('data.money.accounts.store') }}',
+	        data: $('form[name="add-account"]').serialize(),
+	        successFnc:function(r){
+	        	addAccount(r.datas);
+	        	updateAccountSelect();
+	        }
+	    });	
+	}, function(dismiss) {});
+});
+
+$('#add_use_type').click(function(event) {
+	addMoneyType(2);
+});
+
+$('#add_rev_type').click(function(event) {
+	addMoneyType(1);
+});
+
+
+$('.datepicker').datepicker({
+  autoclose: true,
+  format:"yyyy/mm/dd"
+});
+</script>
+
+<script src="{{ asset('/plugins/daterangepicker/moment.min.js') }}"></script>
+<script src="{{ asset('/plugins/fullcalendar/fullcalendar.min.js') }}"></script>
+<script src="{{ asset('/plugins/fullcalendar/locale-all.js') }}"></script>
+
+<script type="text/javascript">
+var initialLocaleCode = 'zh-cn';
+
+$('input[type=checkbox]').attr({'checked':true});
+
+function getCheckboxByName(name){
+	var ids = [];
+	$('input[type=checkbox][name='+ name +']:checked').each(function(index, el) {
+		ids.push($(this).val());
+	});
+	return ids;
+}
+
+function updateRecordCount(data){
+	$('.records_type_count').each(function(index, el) {
+		var id = $(this).parents('.external-event').data('id');
+		if(data[id] != undefined){
+			$(this).html(data[id].count);
+			$(this).parents('.external-event').find('input').removeAttr('disabled');
+		}else{
+			$(this).html(0);
+			$(this).parents('.external-event').find('input').attr('disabled',true);
+		}
+	});
+}
+
+$('input[type=checkbox]').click(function(event) {
+	$('#calendar').fullCalendar( 'refetchEvents' );
+});
+
+
+$('#calendar').fullCalendar({
+	locale: initialLocaleCode,
+	header: {
+		left: 'prev,next today',
+		center: 'title',
+		right: 'month,listSeason,listMonth,listWeek,listDay'
+	},
+	buttonText:{
+		month: '表',
+		listMonth: '月',
+		listWeek: '周',
+		listDay: '天',
+	},
+	views:{
+		listSeason:{
+			type:'list',
+			buttonText:'季度',
+			duration: { months: 3 },
+		}
+	},
+	
+	defaultDate: '{{ date('Y-m-d') }}',
+	defaultView: 'month',
+	eventLimit: true,
+	eventBorderColor:'#fff',
+    events: function(start, end, timezone, callback) {
+
+    	swal({
+    		title:'Loading',
+    		text:'正在加载数据',
+    		allowOutsideClick:false,
+    		showConfirmButton:false,
+    	});
+
+    	$('#calendar').fullCalendar('removeEvents');
+    	
+    	$.ajax({
+	        url: '{{ route('data.money.records.index') }}',
+	        type: 'get',
+	        dataType:'json',
+	        data:{
+	        	start: start.unix(),
+                end: end.unix(),
+                type: getCheckboxByName('type'),
+                account: getCheckboxByName('account'),
+	        },
+	        success:function(r){
+	        	var data = r.datas;
+	        	var events = [];
+                for(var i in data){
+                	var temp = {};
+                	temp.title =  data[i].type.name + ' : ' + Math.abs(data[i].value) ;
+                	temp.start = data[i].date;
+                	temp.backgroundColor = (data[i].value > 0) ? '#4bc771' :'#da3232';
+                	temp.d = data[i];
+                	events.push(temp);
+                }
+                updateRecordCount(r.count);
+                callback(events);
+	        },
+	        complete:function(){
+	        	swal.close();	
+	        }
+	    });
+    	//loading.close();
+    	
+    },
+    eventRender: function(event, element , obj) {
+    	if(obj.type != 'month'){
+    		var html = '<td colspan="3"><div class="row">';
+    		if(event.d.value > 0){
+    			html += '<div class="col-sm-2">收入</div>';
+    			//element.find('.fc-list-item-time.fc-widget-content').html('收入');
+    			//element.find('.fc-list-item-marker.fc-widget-content').html('<i class="fa fa-plus"></i>');
+    		}else{
+    			html += '<div class="col-sm-2">支出</div>';
+    			//element.find('.fc-list-item-time.fc-widget-content').html('支出');
+    			//element.find('.fc-list-item-marker.fc-widget-content').html('<i class="fa fa-minus"></i>');
+    		}
+    		html += '<div class="col-sm-2">'+ event.d.value +'</i></div>';
+    		html += '<div class="col-sm-2">'+ event.d.account.name+'</i></div>';
+    		html += '<div class="col-sm-2">'+ event.d.type.name+'</i></div>';
+    		html += '<div class="col-sm-4">'+ event.d.note+'</i></div>';
+    		html += '</div></td>';
+
+    		//element.find('.fc-list-item-title.fc-widget-content').html(event.account.name + '&nbsp;&nbsp;' + event.value + '&nbsp;&nbsp;' + event.type.name);
+    		element.html(html);
+    	}else{
+
+    		element.attr({"data-toggle":"tooltip","title":event.d.account.name});
+    		if(event.d.value < 0){
+				element.css('backgroundColor','#da3232');
+	    	}else{
+	    		element.css('backgroundColor','#4bc771');
+	    	}
+    	}
+    	
+    },
+    eventClick: function(event, element) {
+    	//$('#calendar').fullCalendar('removeEvents',[event._id]);
+    	var data = {
+    		value:event.d.value,
+    		account_name:event.d.account.name,
+    		type_id : event.d.type.id,
+    		note: event.d.note,
+    	}; 
+
+    	var obj = $('<select></select>');
+    	var select_html = '';
+    	var title = '';
+    	
+    	if(data.value > 0){
+    		data.type = 1;
+    		title += '收入';
+    		select_html = getDataOptionFromDiv($('#external-events1'));
+    	}else{
+    		data.type = -1;
+    		title += '支出';
+    		select_html = getDataOptionFromDiv($('#external-events2'));
+    	}
+
+    	obj.html(select_html);
+    	obj.find('option').each(function(index, el) {
+    		if( $(this).attr('value') == data.type_id){
+    			$(this).attr('selected',true);
+    		}
+    	});
+
+    	data.value = Math.abs(data.value);
+    	data.type_html = obj.html();
+    	obj.remove();
+
+    	var showConfirmButton = true;
+    	if(data.type_id == 1 || data.type_id == 2){
+    		showConfirmButton = false;
+    	}
+
+    	swal({
+    		title: title+'详细信息',
+    		html: formatTemplate(data,$('script[name="records-form"]').html()),
+    		showConfirmButton: showConfirmButton,
+    		showCancelButton: true,
+    		confirmButtonText : '修改',
+    		cancelButton : '取消',
+    	}).then(function(){
+    		var put_data = $('form[name="records"]').serialize();
+
+    		swal({
+	    		title:'Loading',
+	    		text:'正在加载数据',
+	    		allowOutsideClick:false,
+	    		showConfirmButton:false,
+	    	});
+	    	
+	    	$.ajax({
+		        url: '{{ route('data.money.records.index') }}/'+event.d.id,
+		        type: 'put',
+		        dataType:'json',
+		        data: put_data,
+		        headers:{ 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+		        success:function(r){
+		        	if(r == undefined || r.status == undefined || r.status == 1){		 
+		        		event.title = r.datas.type.name + ' : ' + Math.abs(r.datas.value) ;
+		        		console.log(event.d.account);
+		        		console.log(r.datas.account);
+		        		if(event.d.account.money != r.datas.account.money){
+		        			updateAccountMoney(r.datas.account);
+		        		}
+		        		event.d = r.datas;
+		        		$('#calendar').fullCalendar('updateEvent', event);
+		        	}
+		        },
+		        complete:function(){
+		        	swal.close();	
+		        }
+		    });
+    	},function(){});
+
+    	data = {};
+
     }
+});
+</script>
 
-    ini_events($('#external-events div.external-event'));
 
-    /* initialize the calendar
-     -----------------------------------------------------------------*/
-    //Date for the calendar events (dummy data)
-    var date = new Date();
-    var d = date.getDate(),
-        m = date.getMonth(),
-        y = date.getFullYear();
-    $('#calendar').fullCalendar({
-      header: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'month,agendaWeek,agendaDay'
-      },
-      buttonText: {
-        today: 'today',
-        month: 'month',
-        week: 'week',
-        day: 'day'
-      },
-      //Random default events
-      events: [
-        {
-          title: 'All Day Event',
-          start: new Date(y, m, 1),
-          backgroundColor: "#f56954", //red
-          borderColor: "#f56954" //red
-        },
-        {
-          title: 'Long Event',
-          start: new Date(y, m, d - 5),
-          end: new Date(y, m, d - 2),
-          backgroundColor: "#f39c12", //yellow
-          borderColor: "#f39c12" //yellow
-        },
-        {
-          title: 'Meeting',
-          start: new Date(y, m, d, 10, 30),
-          allDay: false,
-          backgroundColor: "#0073b7", //Blue
-          borderColor: "#0073b7" //Blue
-        },
-        {
-          title: 'Lunch',
-          start: new Date(y, m, d, 12, 0),
-          end: new Date(y, m, d, 14, 0),
-          allDay: false,
-          backgroundColor: "#00c0ef", //Info (aqua)
-          borderColor: "#00c0ef" //Info (aqua)
-        },
-        {
-          title: 'Birthday Party',
-          start: new Date(y, m, d + 1, 19, 0),
-          end: new Date(y, m, d + 1, 22, 30),
-          allDay: false,
-          backgroundColor: "#00a65a", //Success (green)
-          borderColor: "#00a65a" //Success (green)
-        },
-        {
-          title: 'Click for Google',
-          start: new Date(y, m, 28),
-          end: new Date(y, m, 29),
-          url: 'http://google.com/',
-          backgroundColor: "#3c8dbc", //Primary (light-blue)
-          borderColor: "#3c8dbc" //Primary (light-blue)
-        }
-      ],
-      editable: true,
-      droppable: true, // this allows things to be dropped onto the calendar !!!
-      drop: function (date, allDay) { // this function is called when something is dropped
+<script type="text/javascript">
+$('.record-submit').click(function(event) {
+    swal({
+		title:'Loading',
+		text:'正在提交数据',
+		allowOutsideClick:false,
+		showConfirmButton:false,
+	});
 
-        // retrieve the dropped element's stored Event Object
-        var originalEventObject = $(this).data('eventObject');
+	$.ajax({
+        url: '{{ route('data.money.records.store') }}',
+        dataType:'json',
+        type:'post',
+        headers:{ 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        data:$(this).parents('form').serialize(),
+        success:function(r){
+        	var data = r.datas;
+        	var events = [];
+            for(var i in data){
+            	var temp = {};
+            	temp.title = ((data[i].value > 0) ? '收入':'支出')+ Math.abs(data[i].value);
+            	temp.start = data[i].date;
+            	temp.backgroundColor = (data[i].value > 0) ? '#4bc771' :'#da3232';
+            	temp.d = data[i];
 
-        // we need to copy it, so that multiple events don't have a reference to the same object
-        var copiedEventObject = $.extend({}, originalEventObject);
+            	updateAccountMoney(data[i].account);
 
-        // assign it the date that was reported
-        copiedEventObject.start = date;
-        copiedEventObject.allDay = allDay;
-        copiedEventObject.backgroundColor = $(this).css("background-color");
-        copiedEventObject.borderColor = $(this).css("border-color");
-
-        // render the event on the calendar
-        // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-        $('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
-
-        // is the "remove after drop" checkbox checked?
-        if ($('#drop-remove').is(':checked')) {
-          // if so, remove the element from the "Draggable Events" list
-          $(this).remove();
-        }
-
-      }
+            	$('#calendar').fullCalendar('renderEvent', temp, true); 
+            }
+        	
+        },complete:function(){
+	        swal.close();	
+	    }
     });
-
-    /* ADDING EVENTS */
-    var currColor = "#3c8dbc"; //Red by default
-    //Color chooser button
-    var colorChooser = $("#color-chooser-btn");
-    $("#color-chooser > li > a").click(function (e) {
-      e.preventDefault();
-      //Save color
-      currColor = $(this).css("color");
-      //Add color effect to button
-      $('#add-new-event').css({"background-color": currColor, "border-color": currColor});
-    });
-    $("#add-new-event").click(function (e) {
-      e.preventDefault();
-      //Get value and make sure it is not null
-      var val = $("#new-event").val();
-      if (val.length == 0) {
-        return;
-      }
-
-      //Create events
-      var event = $("<div />");
-      event.css({"background-color": currColor, "border-color": currColor, "color": "#fff"}).addClass("external-event");
-      event.html(val);
-      $('#external-events').prepend(event);
-
-      //Add draggable funtionality
-      ini_events(event);
-
-      //Remove event from text input
-      $("#new-event").val("");
-    });
-  });
+	return false;
+});
 </script>
 
 @endsection

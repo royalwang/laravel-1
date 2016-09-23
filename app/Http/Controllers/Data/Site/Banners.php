@@ -20,8 +20,6 @@ class Banners extends Controller
 
 	public function store(){
 		$banner = \App\Model\Banners::create(Request::all());
-		$banner->save();
-
 		return redirect()->route('data.site.banners.index');
 	}
 
@@ -42,7 +40,7 @@ class Banners extends Controller
 		return redirect()->route('data.site.banners.index');
 	}
 
-	public function destory($id){
+	public function destroy($id){
 		$banner = \App\Model\Banners::find($id);
 		if($banner != null){
 			$banner->delete();

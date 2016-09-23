@@ -45,7 +45,7 @@ class Orders extends \App\Http\Controllers\Controller
 	public function update($id){
 	}
 
-	public function destory($id){
+	public function destroy($id){
 		$order = \App\Model\Orders::find($id);
 		if($order != null){
 			$order->delete();

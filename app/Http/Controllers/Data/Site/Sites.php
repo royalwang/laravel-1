@@ -79,7 +79,7 @@ class Sites extends Controller
 		return redirect()->route('data.site.sites.index');
 	}
 
-	public function destory($id){
+	public function destroy($id){
 		$site = $this->find($id);
 		return response()->json(['status' => 1]);
 	}
