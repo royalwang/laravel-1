@@ -25,32 +25,63 @@
 		<th width="156">操作</th>
 	</tr>
 </thead>
-<tbody class="user-form">
-	@foreach($tables as $user)
+<tbody class="list-form">
+</tbody>
+</table>
+@endsection
+
+
+@section('list-content')
 	<tr>
 		<td width="35"><input type="checkbox" /></td>
-		<td>{{ $user->name }}</td>
-		<td>
-			@foreach($user->selfRoles as $role)
-			{{ $role->name }};
-			@endforeach
-		</td>
-		<td>{{ $user->created_at }}</td>
+		<td>{name}</td>
+		<td>{self_roles.name}</td>
+		<td>{created_at}</td>
 		<td>
 			<div class="btn-group">
 			@pcan($path . '.edit')
-			<a class="btn btn-default" href="{{ route($path . '.edit' , $user->id) }}"><i class="fa fa-edit"></i></a>
+			<button class="btn btn-default btn-edit"><i class="fa fa-edit"></i></button>
 			@endpcan
 			@pcan($path . '.destroy')
-			<button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $user->id ) }}"><i class="fa fa-trash"></i></button>
+			<button class="btn btn-danger btn-delete"><i class="fa fa-trash"></i></button>
 			@endpcan
 			</div>
 		</td>
 	</tr>
-	@endforeach
-</tbody>
-</table>
+@endsection
 
 
-	
+@section('form-content')
+
+    <div class="form-group">
+        <label class="control-label col-sm-2" >姓名</label>
+        <div class="col-sm-8"><input name="name" type="text" class="form-control" value="{name}" autocomplete="off"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-2" >登录名</label>
+        <div class="col-sm-8"><input name="username" type="text" class="form-control" value="{username}" autocomplete="off"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-2" >密码</label>
+        <div class="col-sm-8"><input name="password" type="password" class="form-control" value="{password}" autocomplete="off"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-2" >确认</label>
+        <div class="col-sm-8"><input name="password_confirmation" type="password" class="form-control" value="{password}" autocomplete="off"></div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-2">角色名</label>
+        <div class="col-sm-8">
+            <select class="form-control roles-select" multiple="multiple" name="roles[]" data-name="self_roles">
+            @foreach($roles as $role)
+                <option value="{{ $role->id }}">{{ $role->name }}</option>
+            @endforeach
+            </select>
+        </div>
+    </div>
+
 @endsection

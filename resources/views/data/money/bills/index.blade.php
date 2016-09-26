@@ -442,12 +442,20 @@ function accountEvent(data){
 		        data: $('form[name="add-account"]').serialize(),
 		        type:'put',
 		        successFnc:function(r){
-		        	obj.before(accountEvent(r.datas));
+	        		var new_obj = accountEvent(r.datas);
+		        	if(obj.find('input[type=checkbox]').is(':checked')){
+		        		new_obj.find('input[type=checkbox]').attr('checked',true);
+		        		new_obj.find('.account_money').html(r.datas.money);
+		        	}
+		        	obj.before(new_obj);
 		        	obj.remove();
 		        	updateAccountSelect();
 		        }
 		    });	
 		},function(){});
+	});
+	obj.find('input[type=checkbox]').click(function() {
+		$('#calendar').fullCalendar( 'refetchEvents' );
 	});
 	return obj;
 }
@@ -485,7 +493,13 @@ function moneyTypeEvent(data){
 			        data: $('form[name="add-type"]').serialize(),
 			        type:'put',
 			        successFnc:function(r){
-			        	obj.before(accountEvent(r.datas));
+			        	r.datas.count = obj.data('count');
+			        	var new_obj = moneyTypeEvent(r.datas);
+			        	if(obj.find('input[type=checkbox]').is(':checked')){
+			        		new_obj.find('input[type=checkbox]').attr('checked',true);
+			        		new_obj.find('.records_type_count').html(r.datas.count);
+			        	}
+			        	obj.before(new_obj);
 			        	obj.remove();
 						if(r.datas.parent_id == 2){
 			        		updateMoneyUseSelect();
@@ -495,6 +509,9 @@ function moneyTypeEvent(data){
 			        }
 			    });	
 			},function(){});
+		});
+		obj.find('input[type=checkbox]').click(function() {
+			$('#calendar').fullCalendar( 'refetchEvents' );
 		});
 	}
 
@@ -629,17 +646,15 @@ function updateRecordCount(data){
 		var id = $(this).parents('.external-event').data('id');
 		if(data[id] != undefined){
 			$(this).html(data[id].count);
+			$(this).parents('.external-event').data('count',data[id].count);
 			$(this).parents('.external-event').find('input').removeAttr('disabled');
 		}else{
 			$(this).html(0);
+			$(this).parents('.external-event').data('count',0);
 			$(this).parents('.external-event').find('input').attr('disabled',true);
 		}
 	});
 }
-
-$('input[type=checkbox]').click(function(event) {
-	$('#calendar').fullCalendar( 'refetchEvents' );
-});
 
 
 $('#calendar').fullCalendar({

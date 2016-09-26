@@ -39,5 +39,15 @@
 
     <script type="text/javascript">
         var loading_img = '<img src="{{ asset('img/loading.gif') }}">';
+        function getLoading(){
+            swal({
+                title:'Loading',
+                text:'正在加载数据',
+                allowEscapeKey:false,
+                allowOutsideClick:false,
+                showConfirmButton:false,
+            });
+        }
+
     </script>
 </head>

@@ -5,12 +5,26 @@ namespace App\Http\Controllers\Setting;
 use Request;
 use Permission;
 use Validator;
+use DB;
 
 class Users extends Controller
 {
 	public function index(){
-		$users = Request::user()->child()->with('selfRoles')->paginate($this->show);
-		return view( $this->path, ['tables' => $users] );
+
+		$user = Request::user();
+		$users = $user->child()->with('selfRoles')->paginate($this->show);
+
+		$roles = DB::table('roles')
+			->select('roles.*')
+			->join('roles_users','roles.id','=','roles_users.roles_id')
+			->where('roles_users.users_id',$user->id)
+			->union($user->childRoles())->get();
+
+
+		return view( $this->path, [
+			'tables' => $users,
+			'roles' => $roles,
+			] );
 	}
 
 	public function create(){
@@ -56,16 +70,20 @@ class Users extends Controller
     	Request::user()->child()->save($user);
     	if(!empty($data['roles']) && count($data['roles'])>0 ) 
     		$user->selfRoles()->attach($data['roles']);
-    	return redirect()->route('setting.users.index');
+    	
+    	return response()->json([
+        	'status' => 1 ,
+        	'datas'=> Request::user()->with('selfRoles')->find($user->id),
+        ]);
 	}
 
 	public function update($id){
-		$data = Request::all();
 
+		$data = Request::all();
 		$user = $this->find($id);
 		
 		$password_update = false;
-		if($data['password'] == '********' && $data['password_confirmation'] == '********' ){
+		if($data['password'] == '' && $data['password_confirmation'] == '' ){
 			$validator = Validator::make($data, [
 	            'name' => 'required|max:255|min:2',
 	            'username' => 'required|min:6|max:128|unique:users,username,' . $id ,
@@ -92,11 +110,17 @@ class Users extends Controller
     	$user->username = $data['username'];
     	$user->save();
 
-        if(!empty($data['roles']) && count($data['roles'])>0 ) 
+        if(!empty($data['roles']) && count($data['roles'])>0 ) {
         	$user->selfRoles()->sync($data['roles']);
+        }else{
+        	$user->selfRoles()->detach();
+        }
 
 
-        return redirect()->route('setting.users.index');
+        return response()->json([
+        	'status' => 1 ,
+        	'datas'=> Request::user()->with('selfRoles')->find($user->id),
+        ]);
 
 	}
 

@@ -16,7 +16,10 @@ class Roles extends Controller
 
 		$roles = $user->childRoles()->paginate($this->show);
 
-		return view($this->path, ['tables' => $roles]);
+		return view($this->path, [
+			'tables' => $roles,
+			'permissions' => Permission::getPerms(),
+			]);
 	}
 
 	public function create(){

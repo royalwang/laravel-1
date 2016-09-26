@@ -1,6 +1,11 @@
 
 <link rel="stylesheet" href="{{ asset('plugins/file-upload/css/jquery.fileupload.css') }}">
-
+<link href="{{ asset('/plugins/select2/select2.min.css') }}" rel="stylesheet">
+<style>
+.swal2-container label{
+    font-size: 11px;
+}
+</style>
 
 <div class="col-md-10">
     <div class="box box-primary">
@@ -34,7 +39,7 @@
                         <div id="example1_filter" class="dataTables_filter pull-right">
                             <div class="btn-group">
                                 @pcan($path .'.create')
-                                <a class="btn btn-default" href="{{ route($path .'.create') }}"><i class="fa fa-plus"></i></a>
+                                <a class="btn btn-default" onclick="return  addSwalHtml();"><i class="fa fa-plus"></i></a>
                                 @endpcan
 
                                 @pcan($path .'.upload')
@@ -90,16 +95,125 @@
     </div>
 </div>
 
+<script type="text/template" name="list">
+@yield('list-content')   
+</script>
 
+<script type="text/template" name="form">
+<form class="form-horizontal" name="form" id="swal-form">
+@yield('form-content')    
+</form>    
+</script>
+
+
+<script type="text/javascript" src="{{ asset('plugins/select2/select2.min.js')}}"></script>
 <script src="{{ asset('js/ajax.js') }}"></script>
 <script type="text/javascript">
-    $(".table-delete").click(function () {
+
+function formatTemplate(dta, tmpl) { 
+    function _getData(data,key){
+        var s = key.indexOf('.');
+        if(s > -1){
+            var ss = key.substr(0,s);
+            return (data[ss])?_getData(data[ss] , key.substr(s+1)) : '';
+        }else{
+            if($.isArray(data)){
+                var html = '';
+                $.each(data,function(index,e) {
+                    if(e[key]){
+                        html += e[key] + ';';
+                    }
+                });
+                return html;
+            }else{
+                return (data[key])? data[key]:'';
+            }
+        }
+        
+    }
+    return tmpl.replace(/{([a-zA-Z0-9_.]+)}/g, function(m1, m2) {
+        return _getData(dta,m2);
+    });  
+}
+
+
+var table = <?php echo $tables->toJson() ?>;
+var items = table.data;
+
+for(var i in items){
+    var obj = listEvent(items[i]);
+    $('tbody.list-form').append(obj);
+}
+
+function listEvent(data){
+    var obj = $(formatTemplate(data,$('script[name="list"]').html()));
+    obj.data(data);
+
+    obj.find('.btn-edit').click(function() {
+        var data = obj.data();
+
+        var form_obj = $('<div></div>');
+        form_obj.html(formatTemplate(data,$('script[name="form"]').html()));
+        form_obj.find('select').each(function(index, el) {
+            var key = $(this).data('name');
+            if(data[key]){
+                var value = data[key];
+                if($.isArray(value)){
+                    var temp = [];
+                    $.each(value , function(index, el) {
+                        if(el.id) temp.push(el.id);
+                    });
+                    $(this).find('option').each(function() {
+                        if($.inArray(parseInt($(this).val()), temp) > -1){
+                            $(this).attr('selected',true);
+                        }
+                    });
+                }else{
+                    $(this).find('option').each(function() {
+                        if($(this).val() == data[key]){
+                            $(this).attr('selected',true);
+                        }
+                    });
+                }
+            }           
+        });
+
+        swal({
+            title:'修改记录',
+            html: form_obj.html(),
+            showCancelButton:true,
+        }).then(function(){
+            var post_data = $('#swal-form').serialize();
+            var url = '{{ route($path.'.index')}}/'+data.id;
+            getLoading();
+
+            Rbac.ajax.request({
+                href: url,
+                data: post_data,
+                type:'put',
+                successFnc:function(r){
+                    obj.before(listEvent(r.datas));
+                    obj.remove();
+                }
+            }); 
+        },function(){});
+    });
+
+    obj.find('.btn-delete').click(function() {
+        var data = obj.data();
         Rbac.ajax.delete({
             confirmTitle: '确定删除用户?',
-            href: $(this).data('href'),
+            href: '{{ route($path.'.index')}}/'+data.id,
             successTitle: '用户删除成功'
         });
     });
+
+    return obj;
+}
+
+
+
+
 
     $(".deleteall").click(function () {
         Rbac.ajax.deleteAll({
@@ -139,6 +253,33 @@
         } 
         return url;
     }
+
+    function addSwalHtml() {
+        var data = {};
+        swal({
+            title:'添加新记录',
+            html: formatTemplate(data,$('script[name="form"]').html()),
+            showCancelButton:true,
+        }).then(function(){
+            var data = $('#swal-form').serialize();
+            var url = '{{ route($path.'.index')}}';
+            getLoading();
+
+            Rbac.ajax.request({
+                href: url,
+                data: data,
+                type:'post',
+                successFnc:function(r){
+                    $('tbody.list-form').append(listEvent(r.datas));
+                }
+            });    
+        },function(){});
+    };
+
+    function editSwalHtml() {
+
+    };
+
 
 </script>
 
