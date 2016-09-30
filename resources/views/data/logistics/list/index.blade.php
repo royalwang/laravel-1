@@ -95,8 +95,9 @@
                                     <th>网站订单号</th>
                                     <th style="min-width: 150px;">快递单号</th>
                                     <th>客户名字 / 客户电话</th>
-                                    <th>产品</th>
+                                    <th style="min-width: 200px;">产品</th>
                                     <th>货运方式</th>
+                                    <th>操作</th>
 								</tr>
 							</thead>
 							<tbody class="user-form">
@@ -110,6 +111,19 @@
                                     <td>{{ $order->name }} / {{ $order->phone }}</td>
                                     <td><img class="product" src="http://doc.ithao123.cn/uploads/u/23/35/233515a19d47ee719d7f2d35d7912069.jpg"></td>
                                     <td></td>
+                                    <td>
+                                        <div class="btn-group">
+                                        @pcan($path . '.show')
+                                        <button class="btn btn-default"><i class="fa fa-eye"></i></button>
+                                        @endpcan
+                                        @pcan($path . '.edit')
+                                        <button class="btn btn-default"><i class="fa fa-edit"></i></button>
+                                        @endpcan
+                                        @pcan($path . '.destroy')
+                                        <button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $order->id ) }}"><i class="fa fa-trash"></i></button>
+                                        @endpcan
+                                        </div>
+                                    </td>
 								</tr>
 								@endforeach
 							</tbody>
@@ -195,11 +209,31 @@ $(function () {
             );
         }
     }).bind('fileuploadstart', function (e) {
-        console.log('start1')
+        getLoading();
     }).bind('fileuploaddone', function (e , data) {
-        console.log(data.result)
+        swal({
+            title: '文件上传成功',
+            text: "是否同步上传数据",
+            showCloseButton: true,
+            showCancelButton: true,
+            cancelButtonText:'取消',
+            confirmButtonText: '提交',
+        }).then(function(){
+            getLoading();
+            Rbac.ajax.request({
+                href: '{{ route('data.logistics.orders.sync') }}',
+                data: data.result.files[0],
+                successFnc: function(r){
+                    swal({text:r.msg,type:'success'});
+                }
+            }); 
+        },function(){});
     }).bind('fileuploadfail', function (e) {
-        console.log('fail')
+        swal({
+            title: '文件上传失败',
+            text: "是否同步上传数据",
+            showCloseButton: true,
+        });
     });
     
 });

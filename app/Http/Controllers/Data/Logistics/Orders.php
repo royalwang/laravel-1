@@ -58,14 +58,21 @@ class Orders extends \App\Http\Controllers\Controller
 	}
 
 	public function sync(){
+		if(!isset(request()->url)) return response()->json(['status' => -1 , 'msg' => '获取不到上传文件']);
 
-		$fc = iconv('gb2312', 'utf-8//ignore', file_get_contents(requeset()->url)); 
-		
+
+		$fc = iconv('gb2312', 'utf-8//ignore', file_get_contents(request()->url)); 
+
+
 	    $handle=fopen("php://memory", "rw"); 
 	    fwrite($handle, $fc); 
 	    fseek($handle, 0); 
+	    
+
 
 	    $csv_header = fgetcsv($handle);
+	   	
+
 	    $paychannel_header = array(
 	    	'pay_id'		=> '流水号',
 	    	'order_id'		=> '订单号',
@@ -92,7 +99,13 @@ class Orders extends \App\Http\Controllers\Controller
     		if(!isset($header[$key])) $header[$key] = -1;
     	}
 
+    	$e_time = new eTime();
+		$e_time->start();
+
     	$i=0;
+
+    	$url = [];
+    	$newOrders = [];
 	    while (($data = fgetcsv($handle)) !== false) { 
 	    	$array = [];
 		    foreach($header as $k=>$csv_key){
@@ -108,13 +121,77 @@ class Orders extends \App\Http\Controllers\Controller
         		$order->host = $array['host'];
         		$order->email = $array['card_email'];
         		$order->pay_info = serialize($array);
-        		$order->save();
-        		$i++;
+
+        		$newOrders[$array['host']][$array['order_id']] = $order;
         	}
 		} 
-		$content['msg'] = '更新了'.$i.'条记录';
-	}
 
+		$url = [];
+		foreach($newOrders as $host=>$id){
+			$url[$host] = 'http://www.' .$host .'/controller.php?f=getOrder&id=' . implode(',',array_keys($id)); 
+        }
+
+        $orders = getUrls($url);
+
+        foreach($orders as $host=>$value){
+        	foreach($value as $id=>$data){
+        		$order = $newOrders[$host][$id];
+        		$order->order_info = serialize($data);
+        		$order->save();
+        	}
+        }
+
+
+		$e_time->mask();
+
+		return response()->json([
+			'status' => 1,
+			'msg' => $e_time->get(),
+			]);
+	}
 
 }
 
+function getUrls($urls){
+
+	$mh = curl_multi_init();
+	foreach($urls as $key => $value){
+	  	$ch[$key] = curl_init($value);
+
+	  	curl_setopt($ch[$key], CURLOPT_HEADER, true);
+	  	curl_setopt($ch[$key], CURLOPT_RETURNTRANSFER, true);
+	  
+	  	curl_multi_add_handle($mh,$ch[$key]);
+	}
+
+	// Executando consulta
+	do {
+	  	curl_multi_exec($mh, $running);
+	  	curl_multi_select($mh);
+	} while ($running > 0);
+
+	$data = [];
+	foreach($ch as $key=>$h){ 
+		$data[$key] =  curl_multi_getcontent($h) ; 
+      	curl_multi_remove_handle($mh, $h);
+	}
+
+	// Finalizando
+	curl_multi_close($mh);
+	return $data;
+}
+
+class eTime{
+	public $data;
+	private $_start;
+	function start(){
+		$this->_start = microtime(true);
+	}
+	function mask(){
+		$this->data[] = microtime(true) - $this->_start;
+		$this->start();
+	}
+	function get(){
+		return implode(',', $this->data);
+	}
+}

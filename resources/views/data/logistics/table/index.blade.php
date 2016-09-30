@@ -141,11 +141,23 @@
     );
 
 
+    $("img.product").one('load', function() {
+        console.log(1);
+    }).each(function() {
+        if(this.complete) {
+            console.log(2)
+            $(this).load();
+        }else{
+            console.log(124);
+        }
+            
+    });
+
 </script>
 
 <script src="{{ asset('plugins/file-upload/js/vendor/jquery.ui.widget.js') }}"></script>
-<script src="{{ asset('plugins/file-upload/js/jquery.iframe-transport.js') }}"></script>
 <script src="{{ asset('plugins/file-upload/js/jquery.fileupload.js') }}"></script>
+<script src="{{ asset('plugins/file-upload/js/jquery.iframe-transport.js') }}"></script>
 
 <script>
 /*jslint unparam: true */
@@ -155,13 +167,8 @@ $(function () {
     $('#fileupload').fileupload({
         url: $('#fileupload').data('href'),
         dataType: 'json',
+        type:'post',
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')} ,
-        done: function (e, data) {
-            console.log(data.result.msg);
-            window.location.reload();
-            if(data.result.error_msg && data.result.error_msg.length > 0)
-                console.log(data.result.error_msg);
-        },
         progressall: function (e, data) {
             var progress = parseInt(data.loaded / data.total * 100, 10);
             $('#progress .progress-bar').css(
@@ -169,14 +176,36 @@ $(function () {
                 progress + '%'
             );
         }
-        processfail:function(){
-
-        }
-    }).prop('disabled', !$.support.fileInput)
-        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+    }).bind('fileuploadstart', function (e) {
+        getLoading();
+    }).bind('fileuploaddone', function (e , data) {
+        swal({
+            title: '文件上传成功',
+            text: "是否同步上传数据",
+            showCloseButton: true,
+            showCancelButton: true,
+            cancelButtonText:'取消',
+            confirmButtonText: '提交',
+        }).then(function(){
+            getLoading();
+            Rbac.ajax.request({
+                href: '{{ route('data.logistics.orders.sync') }}',
+                data: data.result.files[0],
+                successFnc: function(r){
+                    swal({text:r.msg,type:'success'});
+                }
+            }); 
+        },function(){});
+    }).bind('fileuploadfail', function (e) {
+        swal({
+            title: '文件上传失败',
+            text: "是否同步上传数据",
+            showCloseButton: true,
+        });
+    });
+    
 });
 </script>
-
 
 
 
