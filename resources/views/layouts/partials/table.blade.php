@@ -82,7 +82,7 @@
                 <div class="row">
                 	<div class="col-sm-5">
                 		<div class="dataTables_info" id="example1_info" role="status" aria-live="polite">
-                            Showing {{ ($tables->currentPage()-1) * $show +1 }} to {{ $tables->currentPage() * $show }} of {{ $tables->count() }} entries</div>
+                            Showing {{ ($tables->currentPage()-1) * $show +1 }} to {{ $tables->currentPage() * $show }} of {{ $tables->total() }} entries</div>
                 	</div>
                 	<div class="col-sm-7">
                 		<div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">
@@ -106,7 +106,6 @@
 </script>
 
 
-<script type="text/javascript" src="{{ asset('plugins/select2/select2.min.js')}}"></script>
 <script src="{{ asset('js/ajax.js') }}"></script>
 <script type="text/javascript">
 
@@ -204,7 +203,10 @@ function listEvent(data){
         Rbac.ajax.delete({
             confirmTitle: '确定删除用户?',
             href: '{{ route($path.'.index')}}/'+data.id,
-            successTitle: '用户删除成功'
+            successTitle: '用户删除成功',
+            successFnc:function(){
+                obj.remove();
+            }
         });
     });
 

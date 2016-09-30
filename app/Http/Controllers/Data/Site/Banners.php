@@ -3,41 +3,43 @@
 namespace App\Http\Controllers\Data\Site;
 
 use Request;
+use Validator;
 
 class Banners extends Controller
 {
-	public function index(){
-		$banners = \App\Model\Banners::paginate($this->show);
-
-		return view($this->path,[
-			'tables' => $banners ,
-			]);
-	}
-
-	public function create(){
-		return view($this->path);
-	}
 
 	public function store(){
+
+		$validator = Validator::make(Request::all(), [
+            'name' => 'required|min:2|unique:banners',
+   		]);
+   		if ($validator->fails()) {
+            return response()->json(['status' => 0]);
+        }
 		$banner = \App\Model\Banners::create(Request::all());
-		return redirect()->route('data.site.banners.index');
-	}
-
-	public function edit($id){
-		$banner = \App\Model\Banners::find($id);
-		if($banner == null) return redirect()->route('data.site.banners.index');
-
-		return view($this->path,[
-			'banner' => $banner ,
-			]);
+		return response()->json([
+			'status' => 1,
+			'datas' => $banner,
+		]);
 	}
 
 	public function update($id){
 		$banner = \App\Model\Banners::find($id);
+		if($banner == null) response()->json(['status' => 0]);
+
+		$validator = Validator::make(Request::all(), [
+            'name' => 'required|min:2|unique:banners,id,'.$id,
+   		]);
+   		if ($validator->fails()) {
+            return response()->json(['status' => 0]);
+        }
 		$banner->fill(Request::all());
 		$banner->save();
 
-		return redirect()->route('data.site.banners.index');
+		return response()->json([
+			'status' => 1,
+			'datas' => $banner,
+		]);
 	}
 
 	public function destroy($id){

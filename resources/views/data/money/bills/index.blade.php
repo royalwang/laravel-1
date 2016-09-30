@@ -272,6 +272,16 @@
 				</div>
 			</div>	
         </div>
+
+		<div class="box box-solid">
+			<div class="box-header with-border">
+				<h4 class="box-title">总计</h4>
+			</div>
+			<div class="box-body">
+				<div id="external-total"></div>
+			</div>
+		</div>
+
     </div>
 </div>
 
@@ -369,8 +379,17 @@
 				<input name="note" class="form-control" placeholder="备注" value="{note}">
 			</div>
 		</div>
-
 	</form>
+</script>
+
+<script type="text/template" name="total-list">
+	<div class="external-event">
+		<div class="row">
+			<div class="col-sm-4">{name}</div>
+			<div class="col-sm-4">支出：</div>
+			<div class="col-sm-4">收入：</div>
+		</div>	
+	</div>
 </script>
 
 
@@ -392,6 +411,7 @@ function formatTemplate(dta, tmpl) {
 if(accounts.length > 0){
 	for(var i in accounts){
 		addAccount(accounts[i]);
+		addAccountTotal(accounts[i]);
 	}
 	updateAccountSelect();
 }
@@ -562,6 +582,10 @@ function addMoneyUse(data){
 	$('#external-events2').append(moneyTypeEvent(data));
 }
 
+function addAccountTotal(data){
+	$('#external-total').append(formatTemplate(data,$('script[name="total-list"]').html()));
+}
+
 function addMoneyType(parent_id){
 	var data = {'name':'','parent_id':parent_id};
 	swal({
@@ -670,6 +694,9 @@ $('#calendar').fullCalendar({
 		listWeek: '周',
 		listDay: '天',
 	},
+	viewRender: function(view, element){
+		console.log(view);
+	},
 	views:{
 		listSeason:{
 			type:'list',
@@ -682,6 +709,7 @@ $('#calendar').fullCalendar({
 	defaultView: 'month',
 	eventLimit: true,
 	eventBorderColor:'#fff',
+	navLinks: true,
     events: function(start, end, timezone, callback) {
 
     	swal({

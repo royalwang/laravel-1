@@ -3,41 +3,45 @@
 namespace App\Http\Controllers\Data\Site;
 
 use Request;
+use Validator;
 
 class PayChannels extends Controller
 {
-	public function index(){
-		$paychannel = \App\Model\PayChannel::paginate($this->show);
-
-		return view($this->path,[
-			'tables' => $paychannel ,
-			]);
-	}
-
-	public function create(){
-		return view($this->path);
-	}
+	public function index(){}
 
 	public function store(){
+		$validator = Validator::make(Request::all(), [
+            'name' => 'required|min:2|unique:pay_channel',
+   		]);
+   		if ($validator->fails()) {
+            return response()->json(['status' => 0]);
+        }
 		$paychannel = \App\Model\PayChannel::create(Request::all());
-		return redirect()->route('data.site.paychannels.index');
+		return response()->json([
+			'status' => 1,
+			'datas' => $paychannel,
+		]);
 	}
 
-	public function edit($id){
-		$paychannel = \App\Model\PayChannel::find($id);
-		if($paychannel == null) return redirect()->route('data.site.paychannels.index');
-
-		return view($this->path,[
-			'paychannel' => $paychannel ,
-			]);
-	}
 
 	public function update($id){
+
 		$paychannel = \App\Model\PayChannel::find($id);
+		if($paychannel == null) response()->json(['status' => 0]);
+
+		$validator = Validator::make(Request::all(), [
+            'name' => 'required|min:2|unique:pay_channel,id,'.$id,
+   		]);
+   		if ($validator->fails()) {
+            return response()->json(['status' => 0]);
+        }
 		$paychannel->fill(Request::all());
 		$paychannel->save();
 
-		return redirect()->route('data.site.paychannels.index');
+		return response()->json([
+			'status' => 1,
+			'datas' => $paychannel,
+		]);
 	}
 
 	public function destroy($id){

@@ -37,10 +37,10 @@
 		<td>
 			<div class="btn-group">
 			@pcan($path . '.edit')
-			<a class="btn btn-default" onclick=" return editSwalHtml();"><i class="fa fa-edit"></i></a>
+			<a class="btn btn-default btn-edit"><i class="fa fa-edit"></i></a>
 			@endpcan
 			@pcan($path . '.destroy')
-			<button class="btn btn-danger" onclick="return delSwalHtml();"><i class="fa fa-trash"></i></button>
+			<button class="btn btn-danger btn-delete"><i class="fa fa-trash"></i></button>
 			@endpcan
 			</div>
 		</td>

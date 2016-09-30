@@ -7,14 +7,7 @@ use Validator;
 
 class Sites extends Controller
 {
-	public function index(){
-		
-		$sites = Request::user()->sites()->paginate($this->show);
 
-		return view($this->path,[
-			'tables' => $sites ,
-			]);
-	}
 
 	public function ajax(){
 		$accounts = \App\Model\Sites::where('binded','0')->get();
@@ -28,65 +21,53 @@ class Sites extends Controller
 		return response()->json($json);
 	}
 
-	public function create(){
-
-		return view($this->path,[
-			'banners' => \App\Model\Banners::all() ,
-			'pay_channel' => \App\Model\PayChannel::all() ,
-			]);
-	}
 
 	public function store(){
 		$validator = Validator::make(Request::all(), [
-            'host' => 'required|active_url|unique:sites',
+            'host' => 'required|url|unique:sites',
    		]);
    		if ($validator->fails()) {
-            return redirect()->route('data.site.sites.create')
-                        ->withErrors($validator)
-                        ->withInput();
+            return response()->json(['status' => 0]);
         }
 
 		$site = new \App\Model\Sites(Request::all());
-		Request::user()->sites()->save($site);
-		return redirect()->route('data.site.sites.index');
-	}
+		$site->users_id = Request::user()->id;
+		$site->save();
 
-	public function edit($id){
-		$site = $this->find($id);
-
-		return view($this->path,[
-			'site' => $site ,
-			'banners' => \App\Model\Banners::all() ,
-			'pay_channel' => \App\Model\PayChannel::all() ,
-			]);
+		return response()->json([
+			'status' => 1,
+			'datas' => $site,
+		]);
 	}
 
 	public function update($id){
 		$site = $this->find($id);
 
 		$validator = Validator::make(Request::all(), [
-            'host' => 'required|active_url|unique:sites,host,'.$id,
+            'host' => 'required|url|unique:sites,host,'.$id,
    		]);
    		if ($validator->fails()) {
-            return redirect()->route('setting.site.sites.edit',$id)
-                        ->withErrors($validator)
-                        ->withInput();
+            return response()->json(['status' => 0]);
         }
 
 		$site->fill(Request::all());
 		$site->save();
 
-		return redirect()->route('data.site.sites.index');
+		return response()->json([
+			'status' => 1,
+			'datas' => $site,
+		]);
 	}
 
 	public function destroy($id){
 		$site = $this->find($id);
+		$site->delete();
 		return response()->json(['status' => 1]);
 	}
 
 	private function find($id){
 		$site = Request::user()->sites()->find($id) ;
-		if($site == null) return redirect()->route('setting.site.sites.index');
+		if($site == null) return response()->json(['status' => 0]);
 		return $site;
 	}
 

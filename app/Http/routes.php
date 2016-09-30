@@ -75,6 +75,8 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
         });
         
         Route::group(['namespace' => 'Site'], function () {    
+
+            Route::resource('/data/site/table'                    , 'Table');
             //ajax
             Route::resource('/data/site/sites/ajax'               , 'SitesAjax');
             //data upload download
@@ -95,8 +97,11 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
 
         Route::group(['namespace' => 'Logistics'], function () {    
             //data upload download
+            Route::post('/data/logistics/orders/upload'           , 'Orders@upload')->name('data.logistics.orders.upload');
             Route::post('/data/logistics/orders/sync'             , 'Orders@sync')->name('data.logistics.orders.sync');
             //page
+            Route::resource('/data/logistics/list'                , 'ListTable');
+            Route::resource('/data/logistics/table'               , 'Table');
             Route::resource('/data/logistics/orders'              , 'Orders');
         });   
 

@@ -42,7 +42,11 @@ class Permissions extends Controller
         //创建
 		$prem = \App\Model\Permissions::create($data);
 		Request::user()->selfRoles()->find(1)->permissions()->attach($prem);
-		return redirect()->route('setting.permissions.index');
+		
+		return response()->json([
+        	'status' => 1 ,
+        	'datas'=> $prem,
+        ]);
 	}
 
 	public function update($id){
@@ -61,7 +65,11 @@ class Permissions extends Controller
 		$permission = \App\Model\Permissions::find($id);
 		$permission->fill($data);
 		$permission->save();
-		return redirect()->route('setting.permissions.index');
+
+		return response()->json([
+        	'status' => 1 ,
+        	'datas'=> $permission,
+        ]);
 
 	}
 

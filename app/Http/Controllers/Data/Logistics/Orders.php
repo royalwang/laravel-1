@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Data\Logistics;
 
 use Request;
-use Excel;
 
 class Orders extends \App\Http\Controllers\Controller
 {
@@ -54,14 +53,14 @@ class Orders extends \App\Http\Controllers\Controller
 		return response()->json(['status' => 0]);
 	}
 
+	public function upload(){
+		$handler = new \App\Libs\UploadHandler(['accept_file_types'=>'/.csv$/i' ] );
+	}
+
 	public function sync(){
 
-		$name = $_FILES['files']['name'][0];
-        if (!ends_with($name , '.csv')) {
-        	return;
-        }
-
-		$fc = iconv('gb2312', 'utf-8//ignore', file_get_contents($_FILES['files']['tmp_name'][0])); 
+		$fc = iconv('gb2312', 'utf-8//ignore', file_get_contents(requeset()->url)); 
+		
 	    $handle=fopen("php://memory", "rw"); 
 	    fwrite($handle, $fc); 
 	    fseek($handle, 0); 
@@ -99,7 +98,6 @@ class Orders extends \App\Http\Controllers\Controller
 		    foreach($header as $k=>$csv_key){
         		$array[$k] = isset($data[$csv_key]) ? $data[$csv_key] : '';
         	}
-        	print_r($array);
 
         	$order = \App\Model\Orders::where('order_id',$array['order_id'])->where('host',$array['host'])->first();
         	if($order == null){
@@ -114,10 +112,7 @@ class Orders extends \App\Http\Controllers\Controller
         		$i++;
         	}
 		} 
-
-		$json['msg'] = '更新了'.$i.'条记录';
-
-		return response()->json($json);
+		$content['msg'] = '更新了'.$i.'条记录';
 	}
 
 

@@ -42,10 +42,10 @@
 		<td>
 			<div class="btn-group">
 			@pcan($path . '.edit')
-			<a class="btn btn-default" onclick=" return editSwalHtml();"><i class="fa fa-edit"></i></a>
+			<a class="btn btn-default btn-edit" ><i class="fa fa-edit"></i></a>
 			@endpcan
 			@pcan($path . '.destroy')
-			<button class="btn btn-danger" onclick="return delSwalHtml();"><i class="fa fa-trash"></i></button>
+			<button class="btn btn-danger btn-delete"><i class="fa fa-trash"></i></button>
 			@endpcan
 			</div>
 		</td>
@@ -68,7 +68,7 @@
     <div class="form-group">
         <label class="control-label col-sm-2">拥有权限</label>
         <div class="col-sm-8">
-            <select class="form-control permissions-select" multiple="multiple" name="permissions[]">
+            <select class="form-control" multiple="multiple" name="permissions[]" data-name="permissions">
             @foreach($permissions as $permission)
                 <option value="{{ $permission->id }}">{{ $permission->name }}</option>
             @endforeach
@@ -78,7 +78,7 @@
 
     <div class="form-group">
         <label class="control-label col-sm-2" >默认页面</label>
-        <div class="col-sm-8"><input name="default_page" value="{ default_page }" type="text" class="form-control" autocomplete="off"></div>
+        <div class="col-sm-8"><input name="default_page" value="{default_page}" type="text" class="form-control" autocomplete="off"></div>
     </div>
 
     

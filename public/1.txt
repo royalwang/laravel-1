@@ -1,13 +1,1 @@
-Array
-(
-    [name] =>  测试-小黄
-    [username] => test.xiaohuang
-    [password] => 
-    [password_confirmation] => 
-    [roles] => Array
-        (
-            [0] => 1
-            [1] => 2
-        )
-
-)
+{"files":[{"name":"queryTradeRecord (7).csv","size":950206,"type":"application\/octet-stream","url":"http:\/\/laravel-test.com\/files\/queryTradeRecord%20%287%29.csv","deleteUrl":"http:\/\/laravel-test.com\/index.php?file=queryTradeRecord%20%287%29.csv","deleteType":"DELETE"}]}

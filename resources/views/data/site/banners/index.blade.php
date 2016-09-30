@@ -20,30 +20,40 @@
 		<tr>
 			<th width="35"><input type="checkbox" /></th>
 			<th>名称</th>
-			<th>缩写</th>
 			<th width="156">操作</th>
 		</tr>
 	</thead>
-	<tbody class="user-form">
-		@foreach($tables as $banner)
-		<tr>
-			<td width="35"><input type="checkbox" /></td>
-			<td>{{ $banner->name }}</td>
-			<td>{{ $banner->code }}</td>
-			<td>
-				<div class="btn-group">
-				@pcan($path . '.edit')
-				<a class="btn btn-default" href="{{ route($path . '.edit' , $banner->id) }}"><i class="fa fa-edit"></i></a>
-				@endpcan
-				@pcan($path . '.destroy')
-				<button class="btn btn-danger table-delete" data-href="{{ route( $path . '.destroy' , $banner->id ) }}"><i class="fa fa-trash"></i></button>
-				@endpcan
-				</div>
-			</td>
-		</tr>
-		@endforeach
+	<tbody class="list-form">
 	</tbody>
 </table>
 
 @endsection
+
+@section('list-content')
+<tr>
+	<td width="35"><input type="checkbox" /></td>
+	<td>{name}</td>
+	<td>
+		<div class="btn-group">
+		@pcan($path . '.edit')
+		<button class="btn btn-default btn-edit"><i class="fa fa-edit"></i></button>
+		@endpcan
+		@pcan($path . '.destroy')
+		<button class="btn btn-danger btn-delete"><i class="fa fa-trash"></i></button>
+		@endpcan
+		</div>
+	</td>
+</tr>
+@endsection
+
+@section('form-content')
+	
+<div class="form-group">
+    <label class="control-label col-sm-2" >网址</label>
+    <div class="col-sm-8"><input name="name" type="text" value="{name}" class="form-control" autocomplete="off"></div>
+</div>
+
+
+@endsection
+
 

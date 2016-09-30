@@ -14,7 +14,7 @@ class Roles extends Controller
 	public function index(Request $request){
 		$user = Request::user();
 
-		$roles = $user->childRoles()->paginate($this->show);
+		$roles = $user->childRoles()->with('permissions')->paginate($this->show);
 
 		return view($this->path, [
 			'tables' => $roles,
@@ -59,7 +59,11 @@ class Roles extends Controller
 			$role->permissions()->attach($data['permissions']);
        		$role->save();
 		}
-		return redirect()->route('setting.roles.index');
+		
+		return response()->json([
+        	'status' => 1 ,
+        	'datas'=> Request::user()->childRoles()->with('permissions')->find($role->id),
+        ]);
 	}
 
 	public function update($id){
@@ -82,7 +86,11 @@ class Roles extends Controller
 		if(!empty($data['permissions']) && count($data['permissions'])>0 ){
 			$role->permissions()->sync($data['permissions']);
 		}
-		return redirect()->route('setting.roles.index');
+
+		return response()->json([
+        	'status' => 1 ,
+        	'datas'=> Request::user()->childRoles()->with('permissions')->find($role->id),
+        ]);
 
 	}
 

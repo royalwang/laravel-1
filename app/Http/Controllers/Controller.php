@@ -58,7 +58,7 @@ class Controller extends BaseController
             'site'=> [
                 'icon' => 'fa-database' ,
                 'name' => '网站数据' ,
-                'url'  => 'data.site.sites.index'
+                'url'  => 'data.site.table.index'
             ],
             'money'=>[
 				'url' => 'data.money.bills.index',
@@ -68,6 +68,7 @@ class Controller extends BaseController
             'logistics'=>[
                 'icon' => 'fa-database' ,
                 'name' => '后勤数据',
+                'url'  => 'data.logistics.table.index',
             ]
         ];
 
@@ -130,19 +131,6 @@ class Controller extends BaseController
             ]
         ];
 		
-		$sidebar_data_logistics = [
-            'orders' =>[
-                'url' => 'data.logistics.orders.index',
-                'icon' => 'fa-cloud-download',
-                'name' => '订单管理',
-            ],
-			'truck' =>[
-                'url' => 'data.logistics.truck.index',
-                'icon' => 'fa fa-truck',
-                'name' => '物流管理',
-            ],
-		];
-
         $sidebar_chart = [
             'ad' => [
                 'icon' => 'fa-pie-chart',
@@ -184,8 +172,8 @@ class Controller extends BaseController
         Menus::addItems($sidebar)
              ->addMenu('data',$sidebar_data)
              ->addMenu('data.ad',$sidebar_data_ad)
-             ->addMenu('data.site',$sidebar_data_site)
-			 ->addMenu('data.logistics',$sidebar_data_logistics)
+             //->addMenu('data.site',$sidebar_data_site)
+			 //->addMenu('data.logistics',$sidebar_data_logistics)
              ->addMenu('setting',$sidebar_setting)
              ->addMenu('chart',$sidebar_chart)
              ->addMenu('chart.ad',$sidebar_chart_ad)
