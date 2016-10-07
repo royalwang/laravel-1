@@ -37,6 +37,8 @@ var Rbac = window.Rbac || {};
                 } else {
                     window.location.reload();
                 }
+            }).error(function(){
+                swal('网页错误', '', 'error');
             });
             
         },

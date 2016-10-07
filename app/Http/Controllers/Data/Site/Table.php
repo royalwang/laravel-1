@@ -9,9 +9,7 @@ class Table extends \App\Http\Controllers\Controller
 {
 	public function index(){
 		
-		$sites    = Request::user()->sites()->orderBy('created_at','desc')->paginate($this->show);
-		$banners  = \App\Model\Banners::all();
-		$channel  = \App\Model\PayChannel::all();
+		$sites = Request::user()->sites()->orderBy('created_at','desc')->paginate($this->show);
 
 		return view($this->path,[
 			'tables'   => $sites,

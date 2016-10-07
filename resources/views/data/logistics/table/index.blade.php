@@ -160,6 +160,7 @@
 <script src="{{ asset('plugins/file-upload/js/jquery.iframe-transport.js') }}"></script>
 
 <script>
+
 /*jslint unparam: true */
 /*global window, $ */
 $(function () {
@@ -192,7 +193,39 @@ $(function () {
                 href: '{{ route('data.logistics.orders.sync') }}',
                 data: data.result.files[0],
                 successFnc: function(r){
-                    swal({text:r.msg,type:'success'});
+                    console.log(r);
+                    var html = '<ul style="height:35px;padding-right:20px;"><li class="col-sm-6">网站</li><li class="col-sm-3">订单号</li><li class="col-sm-3">状态</li></ul>';
+                    if(r.msg){
+                        var msg = r.msg;
+                        html += '<div style="max-height:200px;overflow-y:scroll;">';
+                        for (var host in msg) {
+                            for(var id in msg[host]){
+                                html += '<ul>';
+                                html += '<li class="col-sm-6">' + host +'</li>';
+                                html += '<li class="col-sm-3">' + id +'</li>';
+                                html += '<li class="col-sm-3">';
+                                switch(msg[host][id]){
+                                    case 0:
+                                        html += '已存在';
+                                    break;
+                                    case -1:
+                                        html += '添加失败';
+                                    break;
+                                    case 1:
+                                        html += '添加成功';
+                                    break;
+                                }
+                                html += '</li>';
+                                html += '</ul>';
+                            }
+                        }
+                        html += '</div>';
+                    }else{
+                        html +='<ul><li class="col-sm-12">没有更新内容</li></ul>';
+                    }
+
+                    swal({html:html});
+                    
                 }
             }); 
         },function(){});

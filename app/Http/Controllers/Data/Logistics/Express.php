@@ -4,24 +4,37 @@ namespace App\Http\Controllers\Data\Logistics;
 
 use Request;
 
-class Orders extends \App\Http\Controllers\Controller
+class Express extends \App\Http\Controllers\Controller
 {
 	public function index(){
-		$orders = \App\Model\Orders::orderBy('trade_date','desc')->paginate($this->show);
+		$express = \App\Model\Express::with('type','products')->paginate($this->show);
+		$express_type = \App\Model\ExpressType::all();
+		$express_business = \App\Model\ExpressBusiness::all();
 
 		return view($this->path,[
-			'tables' => $orders ,
-			'status' => '',
+			'tables' => $express ,
+			'express_type' => $express_type,
+			'express_business' => $express_business,
 			]);
 	}
 
 	public function show($id){
 
-		$order = \App\Model\Orders::with('site.banner','type','products.type')->find($id);
+		$order = \App\Model\Orders::find($id);
+
+		$orders = \App\Model\Orders::select('id')->orderBy('trade_date','desc')->get();
+		foreach($orders as $key=>$this_order){
+			if($this_order->id == $id){
+				$prev_id = isset($orders[$key-1])?$orders[$key-1]->id:-1;
+				$next_id = isset($orders[$key+1])?$orders[$key+1]->id:-1;
+				break;
+			}
+		}
 
 		return view($this->path,[
 			'order'   => $order ,
-			'products_types' => \App\Model\OrdersProductsType::all(),
+			'prev_id' => $prev_id,
+			'next_id' => $next_id
 		]);
 	}
 
@@ -115,7 +128,7 @@ class Orders extends \App\Http\Controllers\Controller
         		$msg[$array['host']][$array['order_id']] = 0 ;
         	}
 		} 
-
+		
 		foreach($newOrders as $host=>$id){
 			$site = \App\Model\Sites::where('host','http://'.$host)->orWhere('host','http://www.'.$host)->first();
 			if($site == null){
@@ -135,20 +148,10 @@ class Orders extends \App\Http\Controllers\Controller
 	        	if(!empty($datas)){
 	        		foreach($datas as $id=>$data){
 		        		$order = $newOrders[$host][$id];
-		        		$order->sites_id     = $value['site_id'];
+		        		$order->sites_id      = $value['site_id'];
 		        		$order->site_info    = $data['orders'];
+		        		$order->product_info = $data['products'];
 		        		$order->save();
-
-		        		$products = unserialize($data['products']);
-		        		$many = [];
-		        		foreach($products as $k=>$product){
-		        			$many[$k] = new \App\Model\OrdersProducts($product);
-			        		if(!empty($product['products_options_values']))
-			        			$many[$k]->products_attribute = $product['products_options_values'];
-		        		}
-
-		        		$order->products()->saveMany($many);
-
 		        		$msg[$host][$id] = 1 ;
 		        		unset($newOrders[$host][$id]);
 		        	}

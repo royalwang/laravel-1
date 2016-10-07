@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Data\Logistics;
 
 use Request;
+use DB;
 
 class ListTable extends \App\Http\Controllers\Controller
 {
@@ -11,7 +12,12 @@ class ListTable extends \App\Http\Controllers\Controller
 
 		$orders = new \App\Model\Orders;	
 		if(isset($data->orders_type_id) && !empty($data->orders_type_id)){
-			$orders = $orders->where('orders_type_id',$data->orders_type_id);
+			$orders = $orders->whereIn('id',function($query){
+				$query->selectRaw('orders_id')
+					  ->from('orders_to_type')
+					  ->where('orders_type_id',request()->orders_type_id)
+					  ->groupBy('orders_id');
+			});
 		}
 
 		if(isset($data->dstart) && !empty($data->dstart)){
@@ -22,7 +28,7 @@ class ListTable extends \App\Http\Controllers\Controller
 			$orders = $orders->where('trade_date','<=',$data->dend);
 		}
 
-		$orders = $orders->paginate($this->show);
+		$orders = $orders->with('site.banner','products.type')->paginate($this->show);
 
 		$orders_type = \App\Model\OrdersType::all();
 

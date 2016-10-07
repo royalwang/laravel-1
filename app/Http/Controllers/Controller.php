@@ -68,7 +68,24 @@ class Controller extends BaseController
             'logistics'=>[
                 'icon' => 'fa-database' ,
                 'name' => '后勤数据',
+            ]
+        ];
+
+        $sidebar_data_logistics = [
+            'orders' => [
+                'icon' => 'fa-database' ,
+                'name' => '订单数据',
                 'url'  => 'data.logistics.table.index',
+            ],
+            'express' => [
+                'icon' => 'fa-truck' ,
+                'name' => '物流查询',
+                'url'  => 'data.logistics.express.index',
+            ],
+            'supplier' => [
+                'icon' => 'fa-paperclip' ,
+                'name' => '订货调货',
+                'url'  => 'data.logistics.supplier.index',
             ]
         ];
 
@@ -173,7 +190,7 @@ class Controller extends BaseController
              ->addMenu('data',$sidebar_data)
              ->addMenu('data.ad',$sidebar_data_ad)
              //->addMenu('data.site',$sidebar_data_site)
-			 //->addMenu('data.logistics',$sidebar_data_logistics)
+			 ->addMenu('data.logistics',$sidebar_data_logistics)
              ->addMenu('setting',$sidebar_setting)
              ->addMenu('chart',$sidebar_chart)
              ->addMenu('chart.ad',$sidebar_chart_ad)

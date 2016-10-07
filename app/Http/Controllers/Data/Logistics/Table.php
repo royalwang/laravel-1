@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Data\Logistics;
 
 use Request;
+use DB;
 
 class Table extends \App\Http\Controllers\Controller
 {
@@ -10,8 +11,10 @@ class Table extends \App\Http\Controllers\Controller
 		$data = request();
 
 		$tables = \App\Model\Orders::selectRaw('count(*) as count , orders_type_id ,trade_date ')
+			->leftJoin('orders_to_type','orders.id','=','orders_to_type.orders_id')
 			->groupBy('trade_date','orders_type_id')
 			->orderBy('trade_date','dese');
+
 
 		if(isset($data->dstart) && !empty($data->dstart)){
 			$tables = $orders->where('trade_date','>=',$data->dstart);

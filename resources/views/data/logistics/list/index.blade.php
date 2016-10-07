@@ -18,7 +18,6 @@
         text-align: center;
     }
 </style>
-
 <div class="col-md-12">
     <div class="box box-primary">
         <div class="box-header">
@@ -47,7 +46,6 @@
                                     <option value="{{ $type->id }}">{{ $type->name }}</option>
                                     @endif
                                     @endforeach
-                                	<option>退款</option>
                                 </select></label>
                             </div>
                             <div class="dataTables_length pull-left" style="margin-left:20px;">
@@ -90,13 +88,10 @@
 							<thead>
 								<tr>
                                     <th>下单日期</th>
-                                    <th>订单状态</th>
                                     <th>通道订单号</th>
                                     <th>网站订单号</th>
-                                    <th style="min-width: 150px;">快递单号</th>
-                                    <th>客户名字 / 客户电话</th>
+                                    <th>客户名字 <br> 客户电话</th>
                                     <th style="min-width: 200px;">产品</th>
-                                    <th>货运方式</th>
                                     <th>操作</th>
 								</tr>
 							</thead>
@@ -104,17 +99,30 @@
 								@foreach($orders as $order)
 								<tr>
                                     <td>{{ $order->trade_date}}</td>
-                                    <td>{{ $order->type->name}}</td>
                                     <td>{{ $order->pay_id}}</td>
                                     <td>{{ $order->order_id}}</td>
-                                    <td>{{ $order->express }}</td>
-                                    <td>{{ $order->name }} / {{ $order->phone }}</td>
-                                    <td><img class="product" src="http://doc.ithao123.cn/uploads/u/23/35/233515a19d47ee719d7f2d35d7912069.jpg"></td>
-                                    <td></td>
+                                    <td><?php $payinfo = unserialize($order->pay_info); ?>
+                                    {{ $payinfo['card_name'] }} <br> {{ $payinfo['telephone'] }}
+                                    </td>
+                                    <td>
+                                    <ul>
+                                    @foreach($order->products as $product)
+                                    <li class="row">
+                                        <div class="col-sm-5"><img class="product" src="{{ $order->site->banner->name}}/{{ $product['products_image'] }}"></div>
+                                        <div class="col-sm-7" style="text-align:left;display:block;line-height:20px;">
+                                            <div class="col-sm-12"><span>{{ $product['products_name'] }}</span></div>
+                                            @if(!empty($product['products_options_values']))
+                                            <div class="col-sm-12">{{ $product['products_options'] }} : {{ $product['products_options_values'] }}</div>
+                                            @endif
+                                        </div>
+                                    </li>
+                                    @endforeach
+                                    </ul>
+                                    </td>
                                     <td>
                                         <div class="btn-group">
                                         @pcan($path . '.show')
-                                        <button class="btn btn-default"><i class="fa fa-eye"></i></button>
+                                        <a class="btn btn-default" href="{{ route('data.logistics.orders.show',$order->id) }}"><i class="fa fa-eye"></i></a>
                                         @endpcan
                                         @pcan($path . '.edit')
                                         <button class="btn btn-default"><i class="fa fa-edit"></i></button>
@@ -155,6 +163,12 @@
 <script src="{{ asset('plugins/daterangepicker/moment.min.js') }}"></script>
 <script src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
 <script src="{{ asset('js/ajax.js') }}"></script>
+
+
+
+
+
+
 <script type="text/javascript">
     $('#daterange-btn').daterangepicker(
         {
@@ -185,6 +199,8 @@
             console.log(124);
     });
 
+
+
 </script>
 
 <script src="{{ asset('plugins/file-upload/js/vendor/jquery.ui.widget.js') }}"></script>
@@ -192,6 +208,7 @@
 <script src="{{ asset('plugins/file-upload/js/jquery.iframe-transport.js') }}"></script>
 
 <script>
+
 /*jslint unparam: true */
 /*global window, $ */
 $(function () {
@@ -224,7 +241,39 @@ $(function () {
                 href: '{{ route('data.logistics.orders.sync') }}',
                 data: data.result.files[0],
                 successFnc: function(r){
-                    swal({text:r.msg,type:'success'});
+                    console.log(r);
+                    var html = '<ul style="height:35px;padding-right:20px;"><li class="col-sm-6">网站</li><li class="col-sm-3">订单号</li><li class="col-sm-3">状态</li></ul>';
+                    if(r.msg){
+                        var msg = r.msg;
+                        html += '<div style="max-height:200px;overflow-y:scroll;">';
+                        for (var host in msg) {
+                            for(var id in msg[host]){
+                                html += '<ul>';
+                                html += '<li class="col-sm-6">' + host +'</li>';
+                                html += '<li class="col-sm-3">' + id +'</li>';
+                                html += '<li class="col-sm-3">';
+                                switch(msg[host][id]){
+                                    case 0:
+                                        html += '已存在';
+                                    break;
+                                    case -1:
+                                        html += '添加失败';
+                                    break;
+                                    case 1:
+                                        html += '添加成功';
+                                    break;
+                                }
+                                html += '</li>';
+                                html += '</ul>';
+                            }
+                        }
+                        html += '</div>';
+                    }else{
+                        html +='<ul><li class="col-sm-12">没有更新内容</li></ul>';
+                    }
+
+                    swal({html:html});
+                    
                 }
             }); 
         },function(){});

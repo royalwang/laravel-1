@@ -8,7 +8,6 @@ use Validator;
 class Sites extends Controller
 {
 
-
 	public function ajax(){
 		$accounts = \App\Model\Sites::where('binded','0')->get();
 		$json = array();

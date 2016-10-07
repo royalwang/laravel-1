@@ -23,6 +23,9 @@ Route::get('logout', 'Auth\AuthController@logout');
 //Route::post('password/email', 'Auth\PasswordController@sendResetLinkEmail');
 //Route::post('password/reset', 'Auth\PasswordController@reset');
 
+Route::get('/test'                                                , 'Data\Logistics\Orders@test');
+Route::resource('/supplierapi'                                    , 'Data\Logistics\SupplierApi');
+
 
 Route::group(['middleware' => ['auth','permissions' ]], function ($route) {    
 
@@ -102,6 +105,10 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
             //page
             Route::resource('/data/logistics/list'                , 'ListTable');
             Route::resource('/data/logistics/table'               , 'Table');
+            Route::resource('/data/logistics/supplier'            , 'Supplier');
+            Route::resource('/data/logistics/express'             , 'Express');
+            Route::resource('/data/logistics/expresstype'         , 'ExpressType');
+            Route::resource('/data/logistics/expressbusiness'     , 'ExpressBusiness');
             Route::resource('/data/logistics/orders'              , 'Orders');
         });   
 
