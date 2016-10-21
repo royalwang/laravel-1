@@ -7,6 +7,7 @@
 
 @section('main-content')
 <link rel="stylesheet" href="{{ asset('/plugins/datepicker/datepicker3.css') }}">
+<link href="{{ asset('/plugins/jquery-ui-1.12.0/jquery-ui.min.css')}}" rel="stylesheet">
 
 <style>
 	.external-event{
@@ -36,8 +37,77 @@
 		resize: none;
 		min-height: 100px;
 	}
+	.sortable-test{
+		width: 50px;
+		height: 50px;
+		display: block;
+		float: left;
+		margin: 5px;
+		border: 1px solid #ccc;
+		line-height: 50px;
+		text-align: center;
+	}
+	.ui-selectable-helper{
+		z-index: 557;
+	}
+
+
+	#wrapper-cover{
+		display: none;
+	}
+	#wrapper {
+		position: absolute;
+	    width: 100%;
+	    left: 0;
+	    top: 0;
+	    height: 100%;
+	    z-index: 555;
+		background: rgba(0,0,0,.4);
+		opacity: 1;
+	}
+	#wrapper{
+		z-index: 556;
+	}
+	#example1_wrapper{
+		width: 1400px;
+	    margin: 161px auto 0;
+	    border: 1px solid #ccc;
+	    background: #fff;
+	    padding: 50px;
+    }
+
+    #example1_wrapper .content{
+    	height: 500px;
+    	overflow-y: scroll;
+    	margin: 0;
+    	padding:0;
+    }
+
+    #example1_wrapper .content > ul{
+    	display:block;
+		float: left;
+		padding:30px;
+		min-height: 100%;
+		width: 100%;
+    }
+
+    #example1_wrapper .content > ul li { float: left;  padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; }
+	#example1_wrapper .content > ul li h5 { margin: 0 0 0.4em; cursor: move;  text-overflow:ellipsis;white-space:nowrap;overflow: hidden;}
+	#example1_wrapper .content > ul li a { float: right; }
+	#example1_wrapper .content > ul li a.ui-icon-zoomin { float: left; }
+	#example1_wrapper .content > ul li img { width: 100%; cursor: move; }
+	#example1_wrapper .content > ul li.ui-selected , .gallery li.ui-selecting{border: 1px solid red}
+
+	ul#products li{ width:150px; }
+	ul#sproducts li{ width:80px; }
+
+	ul#products li h5{ font-size: 11px }
+	ul#sproducts li h5{ font-size: 10px }
+    
+
 
 </style>
+
 
 <div class="row">
 	<div class="col-md-3">
@@ -69,33 +139,26 @@
 	            </div>
 	        </div>
 	        <!-- /.box-header -->
-	        <div class="box-body">
-	            <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
-	                <div class="row">
-	                    <div class="col-sm-6" style="line-height:35px;">
-
-	                    </div>
-	                    <div class="col-sm-6">
-
-	                    </div>
-	                </div>
-	                <div class="row">
-	                    <div id="progress" class="progress col-sm-12 xxs">
-	                        <div class="progress-bar progress-bar-success progress-bar-striped"></div>
-	                    </div>
-	                </div>
-	                <div class="row">
-
-	                </div>
-
-	                <div class="row">
-
-	                </div>
-	            </div>
+	        <div class="box-body" id="selectable-body">
+	        	<table class="table">
+	        		<thead>
+	        			<tr>
+	        				<td width="150px">日期</td>
+	        				<td width="250px">商家</td>
+	        				<td>链接</td>
+	        				<td width="150px">状态</td>
+	        				<td width="150px">操作</td>
+	        			</tr>
+	        		</thead>
+	        		<tbody id="supplier_link">
+	        			
+	        		</tbody>
+	        	</table>
 	        </div>
 	    </div>
 	</div>
 </div>
+
 
 
 <script type="text/template" name="sidebar-form">
@@ -131,7 +194,9 @@
 	<div class="external-event">
 		<span>{name}
 		<div class="pull-right btn-group">
-            <a class="btn btn-danger btn-sm btn-delete" data-toggle="tooltip" data-href="{url}/{id}" title="删除"><i class="fa fa-trash-o"></i></a>
+            <a class="btn btn-danger btn-sm btn-delete" data-toggle="tooltip" title="删除"><i class="fa fa-trash-o"></i></a>
+            <a class="btn btn-info btn-sm btn-qq" data-toggle="tooltip" title="联系" href="tencent://message/?uin={qq}&Site=&Menu=yes"><i class="fa fa-qq"></i></a>
+            <a class="btn btn-primary btn-sm btn-do" data-toggle="tooltip" title="订货"><i class="fa fa-image"></i></a>
             <a class="btn btn-primary btn-sm btn-edit" data-toggle="tooltip" title="编辑"><i class="fa fa-pencil-square-o"></i></a>
          </div>
         </span>
@@ -139,45 +204,268 @@
 </script>
 
 
-<script type="text/template" name="sites-form">
-<form class="form-horizontal" name="swal-form">
-	<select>
-		<option>{orders}</option>
-	</select>
-</form>
+<script type="text/template" name="products-form">
+    <div id="example1_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
+		<div class="row">
+
+			<div class="col-sm-4">
+			  	<div class="title">商家名称：{sdata.name}</div>
+			  	<div class="content"><ul id="sproducts"></ul></div>
+			</div>
+			 
+			<div class="col-sm-8">
+				<div class="title">未处理产品</div>
+				<div class="content"><ul id="products"></ul></div>
+			</div>
+		</div>
+		<div class="row" style="margin: 20px;">
+			<div class="btn-group pull-right ">
+				<button class="btn btn-default btn-cancel">取消</button>
+				<button class="btn btn-danger btn-submit">确定</button>
+			</div>
+		</div>
+    </div>
 </script>
 
-<script type="text/template" name="sites-list">
+<script type="text/template" name="products-list">
+<li class="pull-left ui-corner-tr ui-widget-content" data-id="{id}">
+	<h5 class="ui-widget-header">{products_name}</h5>
+	<img src="{products_image}" width="96" height="72">
+	<i href="images/high_tatras.jpg" title="查看" class="ui-icon ui-icon-zoomin">查看</i>
+	<i href="images/high_tatras.jpg" title="询问" class="ui-icon ui-icon-trash">发送</i>
+</li>
+</script>
+
+<script type="text/template" name="sproducts-list">
+<li class="pull-left ui-corner-tr ui-widget-content" data-id="{id}">
+	<h5 class="ui-widget-header">{products_name}</h5>
+	<img src="{products_image}">
+	<i href="images/high_tatras.jpg" title="View larger image" class="ui-icon ui-icon-zoomin">查看</i>
+	<i href="images/high_tatras.jpg" title="View larger image" class="ui-icon ui-icon-trash">取回</i>
+</li>
+</script>
+
+
+<script type="text/template" name="supplierlink-list">
 <tr>
-	<td width="35"><input type="checkbox" /></td>
-	<td>{created_at}</td>
-	<td>{code}</td>
-	<td class="banner-name" data-id="{banners_id}"></td>
-	<td class="channel-name" data-id="{pay_channel_id}"></td>
+	<td>{updated_at}</td>
+	<td class="supplier_name" data-supplier-id="{supplier_id}"></td>
+	<td><input class="form-control disabled" name="link" disabled style="width:100%" value="{{ url('supplierapi') }}/{code}"></td>
+	<td>{type}</td>
 	<td>
-		<div class="btn-group">
-		@pcan($path . '.create')
-		<button class="btn btn-default btn-paste" data-toggle="tooltip" title="复制"><i class="fa fa-paste"></i></button>
-		@endpcan
-		@pcan($path . '.edit')
-		<button class="btn btn-default btn-edit" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></button>
-		@endpcan
-		@pcan($path . '.destroy')
-		<button class="btn btn-danger btn-delete" data-toggle="tooltip" title="删除"><i class="fa fa-trash"></i></button>
-		@endpcan
+		<div class="pull-right btn-group">
+			<button class="btn btn-default btn-delete">删除</button>
+			<button class="btn btn-default btn-send">发送</button>
 		</div>
 	</td>
-</tr>	
+</tr>
 </script>
 
+<div id="wrapper-cover">
+	<div id="wrapper"></div>
+</div>
+
+<script type="text/javascript" src="{{ asset('/plugins/jquery-ui-1.12.0/jquery-ui.min.js')}}"></script>
+<script>
 
 
+function loadJs(data) {
 
-<script src="{{ asset('plugins/datepicker/bootstrap-datepicker.js') }}"></script>
-<script src="{{ asset('js/ajax.js') }}"></script>
+
+	var pdata = data.pdata;
+	var phtml = '';
+	for(var i in pdata){
+		phtml += formatTemplate(pdata[i],$('script[name="products-list"]').html())
+	}
+
+	var sphtml = '';
+
+	$('#wrapper').html(formatTemplate(data,$('script[name="products-form"]').html()));
+	$('#wrapper').find('#products').html(phtml);
+	$('#wrapper').find('#sproducts').data(data.sdata);
+	$('#wrapper').find('#sproducts').html(sphtml);
+	$('#wrapper-cover').show();
+
+
+	$('#example1_wrapper .btn-cancel').click(function() {
+		closeThis();
+	});
+
+	$('#example1_wrapper .btn-submit').click(function() {
+		getLoading();
+		var ids = [];
+		$("#sproducts > li").each(function() {
+			ids.push($(this).data('id'));
+		});
+		Rbac.ajax.request({
+	        href: '{{ route('data.logistics.supplierlink.index') }}',
+	        data:  {id: ids , 'supplier_id':data.sdata.id},
+	        successFnc:function(r){
+	        	addSupplierLink(r.datas);
+	        	updateSupplier();
+	        	closeThis();
+	        }
+	    });
+	});
+
+ 	$(document).keydown(function(event){
+		if(event.keyCode == 27){
+			closeThis();
+		}
+	});
+
+    var $products = $( "#products" ),
+        $selected = $([]) ,
+    	$sproducts = $( "#sproducts" );
+ 
+ 	$("#example1_wrapper .content > ul").selectable({filter:'.ui-corner-tr'});
+
+    $('#example1_wrapper li.ui-corner-tr').draggable({
+		cancel: "a.ui-icon", 
+		revert: "invalid", 
+		containment: "document",
+		cursor: "move",
+		helper: "clone",
+		start:function(event , ui){
+			$(ui.helper).css({'z-index':558});
+			if(!$(this).hasClass('ui-selected')) return false;
+			$selected = $('.ui-selected').not(ui.helper);
+			//console.log($selected);
+		}
+    });
+ 
+    // Let the trash be droppable, accepting the gallery items
+    $products.droppable({
+      	accept: "#sproducts li.ui-corner-tr",
+      	classes: {
+        	"ui-droppable-active": "ui-state-highlight"
+      	},
+      	drop: function( event, ui ) {
+      	  	back( $selected );
+     	}
+    });
+ 
+    // Let the gallery be droppable as well, accepting items from the trash
+    $sproducts.droppable({
+		accept: "#products li.ui-corner-tr",
+		classes: {
+			"ui-droppable-active": "custom-state-active"
+		},
+		drop: function( event, ui ) {
+			send( $selected );
+		}
+    });
+
+    $( "#example1_wrapper .ui-corner-tr" ).click( function(e){
+    	console.log(123);
+
+    	var $item = $( this ),
+			$target = $( event.target );
+
+    	if ( $target.is( "i.ui-icon-trash" ) ) {
+			return send( $item );
+		} else if ( $target.is( "i.ui-icon-zoomin" ) ) {
+			return viewLargerImage( $target );
+		} else if ( $target.is( "i.ui-icon-refresh" ) ) {
+			return back( $item );
+		}
+
+
+	    if (e.ctrlKey == false) {
+	        $( "#example1_wrapper .ui-corner-tr" ).removeClass("ui-selected");
+	        $(this).addClass("ui-selected");
+	    }else {
+	        if ($(this).hasClass("ui-selected")) {
+	            $(this).removeClass("ui-selected");
+	        }else {
+	            $(this).addClass("ui-selected");
+	        }
+	    }
+	    return false;
+	});
+
+    function closeThis(){
+    	$('#wrapper').html('');
+		$('#wrapper-cover').hide();
+    }
+
+ 
+    // Image deletion function
+    var recycle_icon = "<i href='link/to/recycle/script/when/we/have/js/off' title='Recycle this image' class='ui-icon ui-icon-refresh'>Recycle image</i>";
+    function send( $item ) {
+		$item.fadeOut(function() {
+			$(this).removeAttr('style').removeClass('ui-selected');
+			$(this).find( "i.ui-icon-trash" ).remove();
+			$(this).append( recycle_icon ).appendTo( $sproducts ).fadeIn(function() {
+				$(this).animate({ width: "90px" }).find( "img" ).animate({ height: "36px" });
+			});
+		});
+    }
+ 
+    // Image recycle function
+    var trash_icon = "<i href='link/to/trash/script/when/we/have/js/off' title='Delete this image' class='ui-icon ui-icon-trash'>Delete image</i>";
+    function back( $item ) {
+      	$item.fadeOut(function() {
+      		$(this).removeAttr('style').removeClass('ui-selected');
+        	$(this).find( "i.ui-icon-refresh" ).remove();
+        	$(this).css( "width", "150px").append( trash_icon ).find( "img" ).css( "height", "72px" );
+        	$(this).appendTo( $products ).fadeIn();
+      	});
+    }
+ 
+    // Image preview function, demonstrating the ui.dialog used as a modal window
+    function viewLargerImage( $link ) {
+      var src = $link.attr( "href" ),
+        title = $link.siblings( "img" ).attr( "alt" ),
+        $modal = $( "img[src$='" + src + "']" );
+ 
+      if ( $modal.length ) {
+        $modal.dialog( "open" );
+      } else {
+        var img = $( "<img alt='" + title + "' width='384' height='288' style='display: none; padding: 8px;' />" )
+          .attr( "src", src ).appendTo( "body" );
+        setTimeout(function() {
+          img.dialog({
+            title: title,
+            width: 400,
+            modal: true
+          });
+        }, 1 );
+      }
+    }
+ }
+</script>
+
+<script type="text/javascript" src="{{ asset('plugins/datepicker/bootstrap-datepicker.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/ajax.js') }}"></script>
 <script type="text/javascript">
 
-var supplier = <?php echo $supplier->toJson() ?>;
+
+function copyToClipboard(text) {
+	  // create hidden text element, if it doesn't already exist
+    var targetId = "_hiddenCopyText_";
+    target = document.getElementById(targetId);
+    if (!target) {
+        var target = document.createElement("textarea");
+        target.style.position = "absolute";
+        target.style.left = "-9999px";
+        target.style.top = "0";
+        target.id = targetId;
+        document.body.appendChild(target);
+    }
+    target.textContent = text;
+    target.focus();
+    target.setSelectionRange(0, target.value.length);
+    
+    var succeed;
+    try {
+    	succeed = document.execCommand("copy");
+    } catch(e) {
+        succeed = false;
+    }
+
+    return succeed;
+}
 
 function formatTemplate(dta, tmpl) { 
     function _getData(data,key){
@@ -204,20 +492,47 @@ function formatTemplate(dta, tmpl) {
     });  
 }
 
+
+
+var supplier = <?php echo $supplier->toJson() ?>;
+var supplier_link = <?php echo $supplier_link->toJson() ?>;
+
+if(supplier_link.length > 0){
+	for(var i in supplier_link){
+		addSupplierLink(supplier_link[i]);
+	}
+}
+
 if(supplier.length > 0){
 	for(var i in supplier){
 		addSupplier(supplier[i]);
 	}
 }
 
+updateSupplier();
+
+function updateSupplier(){
+	$('#external-events1').children('.external-event').each(function(index, el) {
+		var data = $(el).data();
+		$('#supplier_link').find('td.supplier_name').each(function() {
+			if( $(this).data('supplier-id') == data.id )
+				$(this).html(data.name);		
+		});
+	});
+}
 
 function addSupplier(data){
-	$('#external-events1').append(supplierEvent(data, 1));
+	$('#external-events1').append(supplierEvent(data));
+}
+
+function addSupplierLink(data){
+	$('tbody#supplier_link').append(supplierLinkEvent(data));
 }
 
 function supplierEvent(data){
 	var obj = $(formatTemplate(data,$('script[name="sidebar-list"]').html()));
 	var url =  '{{ route('data.logistics.supplier.index') }}';
+
 	obj.data(data);
 	obj.find('.btn-delete').click(function() {
 		Rbac.ajax.delete({
@@ -226,6 +541,7 @@ function supplierEvent(data){
             successTitle: '删除成功',
             successFnc:function(){
             	obj.remove();
+            	updateSupplier();
             }
         });
 	});
@@ -245,18 +561,76 @@ function supplierEvent(data){
 		        data: $('form[name="swal-form"]').serialize(),
 		        type:'put',
 		        successFnc:function(r){
-	        		var new_obj = sidebarEvent(r.datas , title);
+	        		var new_obj = supplierEvent(r.datas);
 		        	obj.before(new_obj);
-		        	obj.remove();
-		        	type ? updateBanners() : updateChannels();
-		        	
+		        	obj.remove();  	
+		        	updateSupplier();
 		        }
 		    });	
 		},function(){});
 	});
 
+	obj.find('.btn-do').click(function() {
+		var data = {sdata:obj.data()};
+
+		getLoading();
+		$.ajax({
+			url: '{{ route('data.logistics.ordersproducts.index') }}',
+			type: 'get',
+			dataType: 'json',
+			data: {type: 1,locked :0},
+			success:function(r){
+				swal.close();
+				data.pdata = r.data;
+				loadJs(data);
+			}
+		});
+		
+	});
+
 	return obj;
 }
+
+function supplierLinkEvent(data){
+	var obj = $(formatTemplate(data,$('script[name="supplierlink-list"]').html()));
+	var url =  '{{ route('data.logistics.supplierlink.index') }}';
+	obj.data(data);
+	obj.find('.btn-delete').click(function() {
+		Rbac.ajax.delete({
+            confirmTitle: '确定删除?',
+            href: url + '/' + data.id,
+            successTitle: '删除成功',
+            successFnc:function(){
+            	obj.remove();
+            }
+        });
+	});
+
+	obj.find('.btn-edit').click(function() {
+		var data = obj.data();
+		getLoading();
+		$.ajax({
+			url: '{{ route('data.logistics.ordersproducts.index') }}',
+			type: 'get',
+			dataType: 'json',
+			data: {type: 1,locked :0},
+			success:function(r){
+				swal.close();
+				data.pdata = r.data;
+				loadJs(data);
+			}
+		});
+	});
+
+	obj.find('.btn-send').click(function(event) {
+		var data = obj.data();
+		copyToClipboard('{{ url('supplierapi') }}/' + data.code);
+	});
+
+
+	return obj;
+}
+
 
 
 
@@ -279,6 +653,8 @@ $('#add_supplier').click(function(event) {
 	    });	
 	}, function(dismiss) {});
 });
+
+
 
 
 

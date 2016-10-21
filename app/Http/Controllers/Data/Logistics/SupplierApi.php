@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Data\Logistics;
 
-use Request;
+use Illuminate\Routing\Controller as BaseController;
 
-class SupplierApi extends \App\Http\Controllers\Controller
+class SupplierApi extends BaseController
 {
-	public function index(){
-		$supplier  = \App\Model\Supplier::all();
+	public function index($code){
 
-		return view($this->path,[
-			'supplier'  => $supplier,
+		$link  = \App\Model\SupplierLink::where('code',$code)->first();
+		if($link == null){
+			return redirect()->route('error',404);
+		}
+
+		return view('data.logistics.supplierapi.index',[
+			'products'=> $link->products,
 		]);
 	}
 

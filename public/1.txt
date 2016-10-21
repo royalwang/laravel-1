@@ -1,1 +1,13 @@
-{"files":[{"name":"queryTradeRecord (7).csv","size":950206,"type":"application\/octet-stream","url":"http:\/\/laravel-test.com\/files\/queryTradeRecord%20%287%29.csv","deleteUrl":"http:\/\/laravel-test.com\/index.php?file=queryTradeRecord%20%287%29.csv","deleteType":"DELETE"}]}
+<pre class='xdebug-var-dump' dir='ltr'>
+<small>D:\wamp\www\laravel\app\Http\Controllers\Data\Logistics\SupplierLink.php:23:</small>
+<b>array</b> <i>(size=3)</i>
+  'id' <font color='#888a85'>=&gt;</font> 
+    <b>array</b> <i>(size=5)</i>
+      0 <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'1'</font> <i>(length=1)</i>
+      1 <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'2'</font> <i>(length=1)</i>
+      2 <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'3'</font> <i>(length=1)</i>
+      3 <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'4'</font> <i>(length=1)</i>
+      4 <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'5'</font> <i>(length=1)</i>
+  'supplier_id' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'1'</font> <i>(length=1)</i>
+  'code' <font color='#888a85'>=&gt;</font> <small>string</small> <font color='#cc0000'>'00cd8cf2040da214922608ea089e874f'</font> <i>(length=32)</i>
+</pre>
