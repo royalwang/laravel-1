@@ -105,6 +105,10 @@
 	ul#sproducts li h5{ font-size: 10px }
     
 
+    td{
+    	vertical-align:inherit!important;
+    }
+
 
 </style>
 
@@ -131,10 +135,18 @@
 	    <div class="box box-primary">
 	        <div class="box-header">
 	            <h3 class="box-title"></h3>
-	            <div class="box-tools pull-right">
+	            <div class="pull-left">
 	                <div class="has-feedback">
 	                <input type="text" class="form-control input-sm" placeholder="Search Mail">
 	                <span class="glyphicon glyphicon-search form-control-feedback"></span>
+	                </div>
+	            </div>
+	            <div class="pull-right">
+	                <div class="btn-group btn-status-group">
+	                	<button id="btn-free">未处理产品 (<span class="free num"><i class="fa fa-spinner fa-spin"></i></span>)</button>
+	                	<button class="">待确认单子 (<span class="unlocked num"><i class="fa fa-spinner fa-spin"></i></span>)</button>
+	                	<button class="">已确认单子 (<span class="locked num"><i class="fa fa-spinner fa-spin"></i></span>)</button>
+	                	<button class="">已调货单子 (<span class="confim num"><i class="fa fa-spinner fa-spin"></i></span>)</button>
 	                </div>
 	            </div>
 	        </div>
@@ -147,7 +159,7 @@
 	        				<td width="250px">商家</td>
 	        				<td>链接</td>
 	        				<td width="150px">状态</td>
-	        				<td width="150px">操作</td>
+	        				<td style="width: 200px;">操作</td>
 	        			</tr>
 	        		</thead>
 	        		<tbody id="supplier_link">
@@ -209,19 +221,19 @@
 		<div class="row">
 
 			<div class="col-sm-4">
-			  	<div class="title">商家名称：{sdata.name}</div>
-			  	<div class="content"><ul id="sproducts"></ul></div>
+			  	<div class="title">商家名称：<select class="supplier" name="supplier_id"></select></div>
+			  	<div class="content"><ul id="sproducts"><i class="fa fa-spinner fa-pulse fa-5x"></i></ul></div>
 			</div>
 			 
 			<div class="col-sm-8">
 				<div class="title">未处理产品</div>
-				<div class="content"><ul id="products"></ul></div>
+				<div class="content"><ul id="products"><i class="fa fa-spinner fa-pulse fa-5x"></i></ul></div>
 			</div>
 		</div>
 		<div class="row" style="margin: 20px;">
 			<div class="btn-group pull-right ">
 				<button class="btn btn-default btn-cancel">取消</button>
-				<button class="btn btn-danger btn-submit">确定</button>
+				<button class="btn btn-danger btn-submit disabled">确定</button>
 			</div>
 		</div>
     </div>
@@ -251,9 +263,10 @@
 	<td>{updated_at}</td>
 	<td class="supplier_name" data-supplier-id="{supplier_id}"></td>
 	<td><input class="form-control disabled" name="link" disabled style="width:100%" value="{{ url('supplierapi') }}/{code}"></td>
-	<td>{type}</td>
+	<td class="type"><i class="fa fa-spinner fa-spin"></i></td>
 	<td>
 		<div class="pull-right btn-group">
+			<button class="btn btn-default btn-edit">查看</button>
 			<button class="btn btn-default btn-delete">删除</button>
 			<button class="btn btn-default btn-send">发送</button>
 		</div>
@@ -269,175 +282,258 @@
 <script>
 
 
-function loadJs(data) {
+function loadJs(option) {
 
+	var defaultValue = {
+		type: 'add',
+		link : {
+			supplier_id : '',
+			code : ''
+		}
+	};
 
-	var pdata = data.pdata;
-	var phtml = '';
-	for(var i in pdata){
-		phtml += formatTemplate(pdata[i],$('script[name="products-list"]').html())
-	}
+	$.extend(defaultValue,option); 
 
-	var sphtml = '';
-
-	$('#wrapper').html(formatTemplate(data,$('script[name="products-form"]').html()));
-	$('#wrapper').find('#products').html(phtml);
-	$('#wrapper').find('#sproducts').data(data.sdata);
-	$('#wrapper').find('#sproducts').html(sphtml);
-	$('#wrapper-cover').show();
-
-
-	$('#example1_wrapper .btn-cancel').click(function() {
-		closeThis();
-	});
-
-	$('#example1_wrapper .btn-submit').click(function() {
-		getLoading();
-		var ids = [];
-		$("#sproducts > li").each(function() {
-			ids.push($(this).data('id'));
+	var addSupplier = function(){
+		var html = '';
+		$('#external-events1').children('.external-event').each(function(index, el) {
+			var data = $(el).data();
+			if(defaultValue.link.supplier_id == data.id)
+				html += '<option value="'+ data.id +'" selected>'+ data.name + '</option>';
+			else
+				html += '<option value="'+ data.id +'">'+ data.name + '</option>';
 		});
-		Rbac.ajax.request({
-	        href: '{{ route('data.logistics.supplierlink.index') }}',
-	        data:  {id: ids , 'supplier_id':data.sdata.id},
-	        successFnc:function(r){
-	        	addSupplierLink(r.datas);
-	        	updateSupplier();
-	        	closeThis();
-	        }
-	    });
-	});
+		$('#wrapper').find('select.supplier').html(html);
+	};
 
- 	$(document).keydown(function(event){
-		if(event.keyCode == 27){
-			closeThis();
+	var addSProduct = function(){
+		if(defaultValue.type == 'add'){
+			$('#wrapper').find('ul#sproducts').html('');
+		}else{
+			$.ajax({
+				url: '',
+				type: 'get',
+				dataType: 'json',
+				data: {code: defaultValue.code},
+				success:function(r){
+				}
+			});	
 		}
-	});
+	};
 
-    var $products = $( "#products" ),
-        $selected = $([]) ,
-    	$sproducts = $( "#sproducts" );
- 
- 	$("#example1_wrapper .content > ul").selectable({filter:'.ui-corner-tr'});
+	var addProduct = function(){
+		$.ajax({
+			url: '{{ route('data.logistics.ordersproducts.index') }}',
+			type: 'get',
+			dataType: 'json',
+			data: {type: 1,locked :0},
+			success:function(r){
+				var data = r.data;
+				var html = '';
+				for(var i in data){
+					html += formatTemplate(data[i],$('script[name="products-list"]').html())
+				}
+				$('#wrapper').find('ul#products').html(html);
+				addProductEvent();
+			}
+		});	
+	};
 
-    $('#example1_wrapper li.ui-corner-tr').draggable({
-		cancel: "a.ui-icon", 
-		revert: "invalid", 
-		containment: "document",
-		cursor: "move",
-		helper: "clone",
-		start:function(event , ui){
-			$(ui.helper).css({'z-index':558});
-			if(!$(this).hasClass('ui-selected')) return false;
-			$selected = $('.ui-selected').not(ui.helper);
-			//console.log($selected);
-		}
-    });
- 
-    // Let the trash be droppable, accepting the gallery items
-    $products.droppable({
-      	accept: "#sproducts li.ui-corner-tr",
-      	classes: {
-        	"ui-droppable-active": "ui-state-highlight"
-      	},
-      	drop: function( event, ui ) {
-      	  	back( $selected );
-     	}
-    });
- 
-    // Let the gallery be droppable as well, accepting items from the trash
-    $sproducts.droppable({
-		accept: "#products li.ui-corner-tr",
-		classes: {
-			"ui-droppable-active": "custom-state-active"
-		},
-		drop: function( event, ui ) {
-			send( $selected );
-		}
-    });
-
-    $( "#example1_wrapper .ui-corner-tr" ).click( function(e){
-    	console.log(123);
-
-    	var $item = $( this ),
-			$target = $( event.target );
-
-    	if ( $target.is( "i.ui-icon-trash" ) ) {
-			return send( $item );
-		} else if ( $target.is( "i.ui-icon-zoomin" ) ) {
-			return viewLargerImage( $target );
-		} else if ( $target.is( "i.ui-icon-refresh" ) ) {
-			return back( $item );
-		}
-
-
-	    if (e.ctrlKey == false) {
-	        $( "#example1_wrapper .ui-corner-tr" ).removeClass("ui-selected");
-	        $(this).addClass("ui-selected");
-	    }else {
-	        if ($(this).hasClass("ui-selected")) {
-	            $(this).removeClass("ui-selected");
-	        }else {
-	            $(this).addClass("ui-selected");
-	        }
-	    }
-	    return false;
-	});
-
-    function closeThis(){
+	var close = function(){
     	$('#wrapper').html('');
 		$('#wrapper-cover').hide();
     }
 
- 
-    // Image deletion function
-    var recycle_icon = "<i href='link/to/recycle/script/when/we/have/js/off' title='Recycle this image' class='ui-icon ui-icon-refresh'>Recycle image</i>";
-    function send( $item ) {
-		$item.fadeOut(function() {
-			$(this).removeAttr('style').removeClass('ui-selected');
-			$(this).find( "i.ui-icon-trash" ).remove();
-			$(this).append( recycle_icon ).appendTo( $sproducts ).fadeIn(function() {
-				$(this).animate({ width: "90px" }).find( "img" ).animate({ height: "36px" });
+	$('#wrapper').html($('script[name="products-form"]').html());
+	$('#wrapper-cover').show();
+
+	addSupplier();
+	addSProduct();
+	addProduct();
+
+	
+	$('#example1_wrapper .btn-cancel').click(function() {
+		close();
+	});
+
+	
+ 	$(document).keydown(function(event){
+		if(event.keyCode == 27){
+			close();
+		}
+	});
+
+	function addProductEvent(){
+
+	    var $products = $( "#products" ),
+	        $selected = $([]) ,
+	    	$sproducts = $( "#sproducts" );
+	 
+	 	$("#example1_wrapper .content > ul").selectable({filter:'.ui-corner-tr'});
+
+	    $('#example1_wrapper li.ui-corner-tr').draggable({
+			cancel: "a.ui-icon", 
+			revert: "invalid", 
+			containment: "document",
+			cursor: "move",
+			helper: "clone",
+			start:function(event , ui){
+				$(ui.helper).css({'z-index':558});
+				if(!$(this).hasClass('ui-selected')) return false;
+				$selected = $('.ui-selected').not(ui.helper);
+				//console.log($selected);
+			}
+	    });
+
+	    $('#example1_wrapper .btn-submit').removeClass('disabled');
+	    $('#example1_wrapper .btn-submit').click(function() {
+			getLoading();
+			var ids = [];
+			$("#sproducts > li").each(function() {
+				ids.push($(this).data('id'));
 			});
+			Rbac.ajax.request({
+		        href: '{{ route('data.logistics.supplierlink.index') }}',
+		        data:  {id: ids , 'supplier_id': $('#wrapper').find('select.supplier').val()},
+		        successFnc:function(r){
+		        	addSupplierLink(r.datas);
+		        	updateSupplier();
+		        	close();
+		        }
+		    });
 		});
+
+	 
+	    $products.droppable({
+	      	accept: "#sproducts li.ui-corner-tr",
+	      	classes: {
+	        	"ui-droppable-active": "ui-state-highlight"
+	      	},
+	      	drop: function( event, ui ) {
+	      	  	back( $selected );
+	     	}
+	    });
+	 
+	    $sproducts.droppable({
+			accept: "#products li.ui-corner-tr",
+			classes: {
+				"ui-droppable-active": "custom-state-active"
+			},
+			drop: function( event, ui ) {
+				send( $selected );
+			}
+	    });
+
+	    $( "#example1_wrapper .ui-corner-tr" ).click( function(e){
+
+	    	var $item = $( this ),
+				$target = $( event.target );
+
+	    	if ( $target.is( "i.ui-icon-trash" ) ) {
+				return send( $item );
+			} else if ( $target.is( "i.ui-icon-zoomin" ) ) {
+				return viewLargerImage( $target );
+			} else if ( $target.is( "i.ui-icon-refresh" ) ) {
+				return back( $item );
+			}
+
+
+		    if (e.ctrlKey == false) {
+		        $( "#example1_wrapper .ui-corner-tr" ).removeClass("ui-selected");
+		        $(this).addClass("ui-selected");
+		    }else {
+		        if ($(this).hasClass("ui-selected")) {
+		            $(this).removeClass("ui-selected");
+		        }else {
+		            $(this).addClass("ui-selected");
+		        }
+		    }
+		    return false;
+		});
+	 
+	    // Image deletion function
+	    var recycle_icon = "<i href='link/to/recycle/script/when/we/have/js/off' title='Recycle this image' class='ui-icon ui-icon-refresh'>Recycle image</i>";
+	    function send( $item ) {
+			$item.fadeOut(function() {
+				$(this).removeAttr('style').removeClass('ui-selected');
+				$(this).find( "i.ui-icon-trash" ).remove();
+				$(this).append( recycle_icon ).appendTo( $sproducts ).fadeIn(function() {
+					$(this).animate({ width: "90px" }).find( "img" ).animate({ height: "36px" });
+				});
+			});
+	    }
+	 
+	    // Image recycle function
+	    var trash_icon = "<i href='link/to/trash/script/when/we/have/js/off' title='Delete this image' class='ui-icon ui-icon-trash'>Delete image</i>";
+	    function back( $item ) {
+	      	$item.fadeOut(function() {
+	      		$(this).removeAttr('style').removeClass('ui-selected');
+	        	$(this).find( "i.ui-icon-refresh" ).remove();
+	        	$(this).css( "width", "150px").append( trash_icon ).find( "img" ).css( "height", "72px" );
+	        	$(this).appendTo( $products ).fadeIn();
+	      	});
+	    }
+	 
+	    // Image preview function, demonstrating the ui.dialog used as a modal window
+	    function viewLargerImage( $link ) {
+	      var src = $link.attr( "href" ),
+	        title = $link.siblings( "img" ).attr( "alt" ),
+	        $modal = $( "img[src$='" + src + "']" );
+	 
+	      if ( $modal.length ) {
+	        $modal.dialog( "open" );
+	      } else {
+	        var img = $( "<img alt='" + title + "' width='384' height='288' style='display: none; padding: 8px;' />" )
+	          .attr( "src", src ).appendTo( "body" );
+	        setTimeout(function() {
+	          img.dialog({
+	            title: title,
+	            width: 400,
+	            modal: true
+	          });
+	        }, 1 );
+	      }
+	    }
+
     }
- 
-    // Image recycle function
-    var trash_icon = "<i href='link/to/trash/script/when/we/have/js/off' title='Delete this image' class='ui-icon ui-icon-trash'>Delete image</i>";
-    function back( $item ) {
-      	$item.fadeOut(function() {
-      		$(this).removeAttr('style').removeClass('ui-selected');
-        	$(this).find( "i.ui-icon-refresh" ).remove();
-        	$(this).css( "width", "150px").append( trash_icon ).find( "img" ).css( "height", "72px" );
-        	$(this).appendTo( $products ).fadeIn();
-      	});
-    }
- 
-    // Image preview function, demonstrating the ui.dialog used as a modal window
-    function viewLargerImage( $link ) {
-      var src = $link.attr( "href" ),
-        title = $link.siblings( "img" ).attr( "alt" ),
-        $modal = $( "img[src$='" + src + "']" );
- 
-      if ( $modal.length ) {
-        $modal.dialog( "open" );
-      } else {
-        var img = $( "<img alt='" + title + "' width='384' height='288' style='display: none; padding: 8px;' />" )
-          .attr( "src", src ).appendTo( "body" );
-        setTimeout(function() {
-          img.dialog({
-            title: title,
-            width: 400,
-            modal: true
-          });
-        }, 1 );
-      }
-    }
+
+
  }
 </script>
 
 <script type="text/javascript" src="{{ asset('plugins/datepicker/bootstrap-datepicker.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/ajax.js') }}"></script>
+<script type="text/javascript">
+    function longPolling(url,data,doit,i) {
+    	if(i == undefined) i = 0;
+    	if(i == 20){
+    		window.location.reload();
+    	}
+    	setTimeout(function(){
+    		$.ajax({
+	            url: url,
+	            data: data,
+	            type: 'get',
+	            dataType: 'json',
+	            timeout: 10000,
+	            headers: { 
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') 
+				},
+				error:function(){
+					i++;
+					longPolling(url,data,doit,i);
+				},
+	            success: function (json) {
+	                doit(json);
+	                i = 0;
+	                longPolling(url,data,doit,i); 
+	            }
+	        });
+    	},5000);
+        
+    }
+</script>
+
 <script type="text/javascript">
 
 
@@ -511,6 +607,26 @@ if(supplier.length > 0){
 
 updateSupplier();
 
+longPolling('{{ url()->current().'/longpolling' }}' , '', function(data){
+	var link = data['link'];
+	$('tbody#supplier_link').children().each(function(index, el) {
+		var id = $(this).data('id');
+		if(link[id] && link[id] == 1){
+			$(this).find('.type').html('商家已确认')
+		}else{
+			$(this).find('.type').html('商家未处理')
+		}
+	});
+
+	var btn = data['btn'];
+	
+	for(var i in btn){
+		$('.btn-status-group').find('span.'+i).html(btn[i]);
+	}
+
+});
+
+
 function updateSupplier(){
 	$('#external-events1').children('.external-event').each(function(index, el) {
 		var data = $(el).data();
@@ -571,21 +687,7 @@ function supplierEvent(data){
 	});
 
 	obj.find('.btn-do').click(function() {
-		var data = {sdata:obj.data()};
-
-		getLoading();
-		$.ajax({
-			url: '{{ route('data.logistics.ordersproducts.index') }}',
-			type: 'get',
-			dataType: 'json',
-			data: {type: 1,locked :0},
-			success:function(r){
-				swal.close();
-				data.pdata = r.data;
-				loadJs(data);
-			}
-		});
-		
+		loadJs({link : { supplier_id : obj.data('id') } });
 	});
 
 	return obj;
@@ -607,19 +709,7 @@ function supplierLinkEvent(data){
 	});
 
 	obj.find('.btn-edit').click(function() {
-		var data = obj.data();
-		getLoading();
-		$.ajax({
-			url: '{{ route('data.logistics.ordersproducts.index') }}',
-			type: 'get',
-			dataType: 'json',
-			data: {type: 1,locked :0},
-			success:function(r){
-				swal.close();
-				data.pdata = r.data;
-				loadJs(data);
-			}
-		});
+		loadJs({type:'update',link:obj.data()});
 	});
 
 	obj.find('.btn-send').click(function(event) {
@@ -627,12 +717,8 @@ function supplierLinkEvent(data){
 		copyToClipboard('{{ url('supplierapi') }}/' + data.code);
 	});
 
-
 	return obj;
 }
-
-
-
 
 $('#add_supplier').click(function(event) {
 	var data = {title:'商家名称'};
@@ -655,11 +741,13 @@ $('#add_supplier').click(function(event) {
 });
 
 
+$('#btn-free').click(function(event) {
+	loadJs();
+});
 
 
 
 </script>
-
 
 
 

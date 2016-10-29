@@ -17,7 +17,9 @@ class SupplierLink extends Model
     }
 
     public function products(){
-        return $this->belongsToMany( OrdersProducts::class,'supplier_to_products','supplier_link_id');
+        return $this->hasMany( supplierProducts::class,'supplier_link_id');
     }
+
+
 
 }

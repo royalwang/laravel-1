@@ -16,6 +16,16 @@ class SupplierLink extends \App\Http\Controllers\Controller
 		]);
 	}
 
+	public function edit($id){
+		$product = \App\Model\SupplierLink::with('products')->where('id',$id);
+
+        if($product == null){
+        	return response()->json(['status' => 1, 'data'=> $product]);
+        }else{
+        	return response()->json(['status' => 0]);
+        }
+	}
+
 	public function store(){
 		$data         = Request::all();
 		$data['code'] = md5(time() . mt_rand(0,1000));

@@ -17,4 +17,8 @@ class SupplierProducts extends Model
         return $this->beLongsTo(Supplier::class);
     }
 
+    public function info(){
+        return $this->beLongsTo( OrdersProducts::class,'orders_products_id');
+    }
+
 }

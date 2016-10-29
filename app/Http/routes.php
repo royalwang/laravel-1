@@ -23,9 +23,12 @@ Route::get('logout', 'Auth\AuthController@logout');
 //Route::post('password/email', 'Auth\PasswordController@sendResetLinkEmail');
 //Route::post('password/reset', 'Auth\PasswordController@reset');
 
-Route::get('/test'                                                , 'Data\Logistics\SupplierLink@store');
 Route::get('/supplierapi/{code}'                                  , 'Data\Logistics\SupplierApi@index');
+Route::put('/supplierapi'                                         , 'Data\Logistics\SupplierApi@update');
+Route::post('/supplierapi/lock'                                   , 'Data\Logistics\SupplierApi@lock');
+
 Route::get('/error/{code}'                                        , 'Error@index')->name('error');
+
 
 
 Route::group(['middleware' => ['auth','permissions' ]], function ($route) {    
@@ -103,6 +106,7 @@ Route::group(['middleware' => ['auth','permissions' ]], function ($route) {
             //data upload download
             Route::post('/data/logistics/orders/upload'           , 'Orders@upload')->name('data.logistics.orders.upload');
             Route::post('/data/logistics/orders/sync'             , 'Orders@sync')->name('data.logistics.orders.sync');
+            Route::get('/data/logistics/supplier/longpolling'     , 'Supplier@longPolling');
             //page
             Route::resource('/data/logistics/list'                , 'ListTable');
             Route::resource('/data/logistics/table'               , 'Table');
